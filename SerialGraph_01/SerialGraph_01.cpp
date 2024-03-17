@@ -46,12 +46,12 @@ float scaler = 1; //needs to rescale all dots. not just new data
 
 //Serial
 char charArray[256] = "Empty"; //graphics text buffer
-//uint32_t numSamples = 0;
+uint32_t numSamples = 0; //keep track of the total number of received data (WIP)
 float myData;
 char incomingData[256] = ""; //Serial Rx Buffer
 
 int dataLength = 255;
-int readResult = 0;
+int bytesReceived = 0;
 
 //Globals
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded");
@@ -167,33 +167,26 @@ int main()
 
 	
 		//Handle Serial
-		readResult = SP->ReadData(incomingData, dataLength);
-		// printf("Bytes read: (0 means no data available) %i\n",readResult);
-		incomingData[readResult] = 0;
-		printf("%s", incomingData);
-		incomingData[readResult] = '\0';
-		if (readResult > 0) {
-			readResult = 0;
-			//numSamples++;
-			//if (numSamples > WINDOW_WIDTH) {
-			//	numSamples = 0;
-			//	sf::Color myRandColor; //playing with colors
-			//	myRandColor.r = rand() % 255;
-			//	myRandColor.g = rand() % 255;
-			//	myRandColor.b = rand() % 255;
-			//	for (int i = 0; i < WINDOW_WIDTH; i++) dot[i].setFillColor(myRandColor);
-			//}
-			printf("\nSerial Data: %s\n\n", incomingData);	// Display message from port
-			printf("Scaler: %f\n\n", scaler);	// Display message from port
+		bytesReceived = SP->ReadData(incomingData, dataLength); //number of bytes read
+		incomingData[bytesReceived] = 0;
+		incomingData[bytesReceived] = '\0';
+		if (bytesReceived > 0) {
+			bytesReceived = 0;
+			//numSamples++; //I could keep track of the sample count
 			sscanf_s(incomingData, "%f", &myData); // ascii to bin
-			sprintf_s(charArray, "Serial Data: %f", myData);
-			serialText.setString(charArray);
-			
+			//draw the dots
 			dot[WINDOW_WIDTH-1].setPosition(sf::Vector2f(WINDOW_WIDTH-1, (float)(-myData*scaler + (window.getSize().y / 2)))); //keep the dots y position but shift the x values from i+1 to i
 			for (int i = 0; i < WINDOW_WIDTH - 1; i++) dot[i].setPosition(sf::Vector2f(i,dot[i+1].getPosition().y) ); //keep the dots y position but shift the x values from i+1 to i
+			//draw linear interpolated lines
+			for (int i = 0; i < WINDOW_WIDTH - 1; i++) lineInterpol[i] = sf::Vertex(sf::Vector2f(i, dot[i + 1].getPosition().y), sf::Color::Red);
 			
-			for (int i = 0; i < WINDOW_WIDTH - 1; i++) lineInterpol[i] = sf::Vertex(sf::Vector2f(i, dot[i + 1].getPosition().y), sf::Color::Red); //draw linear interpolated lines
-					
+			sprintf_s(charArray, "Serial Data: %f", myData);
+			serialText.setString(charArray);
+
+			//Console
+			printf("\nSerial Data: %s\n\n", incomingData);	// Display ASCII message from port
+			//printf("Scaler: %f\n\n", scaler);	// Display message from port
+
 		}
 
 
