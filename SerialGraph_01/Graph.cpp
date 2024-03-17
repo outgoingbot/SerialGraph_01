@@ -5,17 +5,14 @@
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
 	frameSamples = (uint32_t)(size.x);
 
-	dataArray = new float[frameSamples];
+	for(int j=0; j<numVars; j++) dataArray[j] = new float[frameSamples];
 	frame.setSize(size);
 
-	
-	//frame.setOrigin(btn.width / 2, btn.height / 2);
 	frame.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
 	frame.setOutlineThickness(2);
 	frame.setOutlineColor(sf::Color::White);
 	frame.setFillColor(sf::Color::Black);
 
-	//sf::FloatRect lb = frame.getLocalBounds();
 	axis_x.setSize(sf::Vector2f(size.x, 2)); //x axis
 	axis_x.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y + (size.y / 2)));
 	axis_x.setFillColor(sf::Color::White);
@@ -23,20 +20,22 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	
 	
 
-	dot = new sf::CircleShape[frameSamples];
-	for (uint32_t i = 0; i < frameSamples; i++) { //initialize the dots
-		dot[i].setRadius(2.0);
-		dot[i].setOrigin(2.0, 2.0);
-		dot[i].setFillColor(sf::Color::Blue);
-		dot[i].setPosition(sf::Vector2f(frame.getPosition().x+i, axis_x.getPosition().y)); //place all dots on the x axis
-		dataArray[i] = 0.0f;//(float)(axis_x.getPosition().y);
+	for (int j = 0; j < numVars; j++) {
+		dot[j] = new sf::CircleShape[frameSamples];
+		for (uint32_t i = 0; i < frameSamples; i++) { //initialize the dots
+			dot[j][i].setRadius(2.0);
+			dot[j][i].setOrigin(2.0, 2.0);
+			dot[j][i].setFillColor(dotColor[j]);
+			dot[j][i].setPosition(sf::Vector2f(frame.getPosition().x + i, axis_x.getPosition().y)); //place all dots on the x axis
+			dataArray[j][i] = 0.0f;//(float)(axis_x.getPosition().y);
+		}
 	}
-
-	lineInterpol = new sf::Vertex[frameSamples - 1];
-	for (uint32_t i = 0; i < frameSamples - 1; i++) { //initialize the lines
-		lineInterpol[i] = sf::Vertex((sf::Vector2f(frame.getPosition().x+i, axis_x.getPosition().y))); //place all dots on the x axis
+	for (int j = 0; j < numVars; j++) {
+		lineInterpol[j] = new sf::Vertex[frameSamples - 1];
+		for (uint32_t i = 0; i < frameSamples - 1; i++) { //initialize the lines
+			lineInterpol[j][i] = sf::Vertex((sf::Vector2f(frame.getPosition().x + i, axis_x.getPosition().y))); //place all dots on the x axis
+		}
 	}
-
 
 
 	text.setFont(font);
@@ -59,33 +58,36 @@ void Graph::autoScale(bool) {
 
 }
 
-void Graph::update(float dataPoint, uint8_t len) {
+void Graph::update(float *dataPoint, uint8_t len) {
+	for (int j = 0; j < len; j++) {
+		for (uint32_t i = 0; i < frameSamples - 1; i++) {
+			dataArray[j][i] = dataArray[j][i + 1];
+			dot[j][i].setPosition(sf::Vector2f(frame.getPosition().x + i, (float)((-dataArray[j][i + 1] * scaler) + frame.getPosition().y + (frame.getSize().y / 2)))); //shift the dots left 1 pixel
+		}
 
-	for (uint32_t i = 0; i < frameSamples - 1; i++) {
-		dataArray[i] = dataArray[i + 1];
-		dot[i].setPosition(sf::Vector2f(frame.getPosition().x+i, (float)((-dataArray[i+1] * scaler) + frame.getPosition().y + (frame.getSize().y / 2)))); //shift the dots left 1 pixel
+
+		dataArray[j][frameSamples - 1] = dataPoint[j];
+		dot[j][frameSamples - 1].setPosition(sf::Vector2f(frame.getPosition().x + frameSamples - 1, (float)(-dataPoint[j] * scaler + frame.getPosition().y + (frame.getSize().y / 2)))); //keep the dots y position but shift the x values from i+1 to i
+
+		//draw linear interpolated lines
+		for (uint32_t i = 0; i < frameSamples - 1; i++) lineInterpol[j][i] = sf::Vertex(sf::Vector2f(frame.getPosition().x + i, (float)(-dataArray[j][i + 1] * scaler + frame.getPosition().y + (frame.getSize().y / 2))), dotColor[j]);
 	}
-
-	dataArray[frameSamples - 1] = dataPoint;
-	dot[frameSamples - 1].setPosition(sf::Vector2f(frame.getPosition().x+frameSamples - 1, (float)(-dataPoint * scaler + frame.getPosition().y +(frame.getSize().y / 2) ))); //keep the dots y position but shift the x values from i+1 to i
-	
-	//draw linear interpolated lines
-	for (uint32_t i = 0; i < frameSamples - 1; i++) lineInterpol[i] = sf::Vertex(sf::Vector2f(frame.getPosition().x+i, (float)(-dataArray[i + 1] * scaler + frame.getPosition().y + (frame.getSize().y / 2))), sf::Color::Red);
-
 }
 
-void Graph::draw() {
+void Graph::draw(uint8_t len) {
 	window.draw(frame);
 	window.draw(text);
 	window.draw(axis_x);
-	for (int i = 0; i < frameSamples; i++) window.draw(dot[i]);
-	window.draw(lineInterpol, frameSamples - 1, sf::Lines);
+	for (int j = 0; j < len; j++) {
+		for (int i = 0; i < frameSamples; i++) window.draw(dot[j][i]);
+		window.draw(lineInterpol[j], frameSamples - 1, sf::Lines);
+	}
 }
 
 
 
 bool Graph::isPressed(sf::Vector2i mousePosition) {
-#define MOUSESHIFT 30
+#define MOUSESHIFT 30 //hack to keep the mouse over the graph box
 	if (isMouseOverRect(mousePosition)) {
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			frame.setFillColor(sf::Color(255, 0, 255));

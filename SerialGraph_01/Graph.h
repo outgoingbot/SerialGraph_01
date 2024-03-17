@@ -6,6 +6,8 @@
 extern sf::RenderWindow window;
 extern sf::Font font;
 
+#define NUMFLOATS 3
+
 class Graph
 {
 public:
@@ -17,25 +19,26 @@ public:
 
 	void setScale(float scl);
 	void autoScale(bool);
-	void update(float dataPoint, uint8_t len);
-	void draw();
+	void update(float *dataPoint, uint8_t len);
+	void draw(uint8_t len);
 
 	float scaler = 0.1f;
 
 	sf::RectangleShape frame; //create button with wideth,height
 
 	sf::RectangleShape axis_x; //create button with wideth,height
+	const sf::Color dotColor[3] = { sf::Color::Red ,sf::Color::Green ,sf::Color::Blue };
+	sf::CircleShape* dot[NUMFLOATS];// = nullptr; //create the dots
+	sf::Vertex* lineInterpol[NUMFLOATS];// = nullptr;
 
-	sf::CircleShape* dot = nullptr; //create the dots
-	sf::Vertex* lineInterpol = nullptr;
-
-	sf::Text text;
+	sf::Text text; //just holds the graph title
+	//will want to to add some color blocks to inidcate the 3 variables color
 
 
 private:
 
 	uint32_t frameSamples;
-	float* dataArray;
+	float* dataArray[NUMFLOATS];
 
 
 };

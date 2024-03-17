@@ -42,13 +42,14 @@ next change will allow CSV strings with /r/n terminating
 #include "Graph.h"
 
 #define NUMFLOATS 3
+#define TOTALFLOATS 3
 //Graphics
 float scaler = 1.0f; //needs to rescale all dots. not just new data
 
 //Serial
 char charArray[256] = "Empty"; //graphics text buffer
 uint32_t numSamples = 0; //keep track of the total number of received data (WIP)
-float myData;
+float myData[TOTALFLOATS];
 char incomingData[256] = ""; //Serial Rx Buffer
 
 int dataLength = 255;
@@ -174,18 +175,18 @@ int main()
 		if (bytesReceived > 0) {
 			bytesReceived = 0;
 			//numSamples++; //I could keep track of the sample count
-			sscanf_s(incomingData, "%f", &myData); // ascii to bin
-			
-			Graph_1.update(myData, NUMFLOATS); //draw the data 3 floats
-												   
-												 
-			sprintf_s(charArray, "Serial Data: %f", myData);
-			serialText.setString(charArray);
+			//if (sscanf_s(incomingData, "%f,%f,%f", &myData[0], &myData[1], &myData[2]) == 3) { // ascii to bin
+			sscanf_s(incomingData, "%f,%f,%f", &myData[0], &myData[1], &myData[2]); // ascii to bin
+				Graph_1.update(myData, NUMFLOATS); //draw the data 3 floats
 
-			//Console
-			printf("\nSerial Data: %s\n\n", incomingData);	// Display ASCII message from port
-			//printf("Scaler: %f\n\n", scaler);	// Display message from port
 
+				sprintf_s(charArray, "Serial Data: %f, %f, %f", myData[0], myData[1], myData[2]);
+				serialText.setString(charArray);
+
+				//Console
+				printf("\nSerial Data: %s\n\n", incomingData);	// Display ASCII message from port
+				//printf("Scaler: %f\n\n", scaler);	// Display message from port
+			//}
 		}
 
 
@@ -203,12 +204,12 @@ int main()
 
 		}
 
-		//Handle the Button Pressed Event:
+		//Handle the Graph Pressed Event:
 		if (Graph_1.isPressed(sf::Mouse::getPosition(window))) {
 
 		}
 
-
+		//testing for now to scale the graph y axis (look slike shit, need to scale x also?)
 		Graph_1.setScale(scaler);
 
 		//display
@@ -216,15 +217,13 @@ int main()
 		
 		//draw the Gui Objects
 		Button_1.draw();
-		Graph_1.draw();
+		Graph_1.draw(NUMFLOATS);
 
 		window.draw(mousePosText);
 		window.draw(serialText);
-		//window.draw(axis_x);
 		window.draw(xMouseCross);
 		window.draw(yMouseCross);
-		//for(int i=0; i< WINDOW_WIDTH; i++) window.draw(dot[i]);
-		//window.draw(lineInterpol, WINDOW_WIDTH-1, sf::Lines); 
+
 		window.display();
 	}//end update loop
 
