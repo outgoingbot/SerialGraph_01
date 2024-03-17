@@ -39,10 +39,11 @@ next change will allow CSV strings with /r/n terminating
 
 #include "Config.h"
 #include "Buttons.h"
+#include "Graph.h"
 
-
+#define NUMFLOATS 3
 //Graphics
-float scaler = 1; //needs to rescale all dots. not just new data
+float scaler = 1.0f; //needs to rescale all dots. not just new data
 
 //Serial
 char charArray[256] = "Empty"; //graphics text buffer
@@ -87,7 +88,7 @@ int main()
 	//Button( Size, Position, Text)
 	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1200, 1000),"Button_1");
 
-
+	Graph Graph_1(sf::Vector2f(1500, WINDOW_HEIGHT/2), sf::Vector2f(200, 700), "Graph_1", NUMFLOATS);
 	
 
 	//Make shapes
@@ -154,8 +155,8 @@ int main()
 			else {
 				if (event.type == sf::Event::MouseWheelMoved) {
 					// display number of ticks mouse wheel has moved
-					if (event.mouseWheel.delta > 0) scaler+=0.01;
-					if (event.mouseWheel.delta < 0) scaler-=0.01;
+					if (event.mouseWheel.delta > 0) scaler+=1.0f;
+					if (event.mouseWheel.delta < 0) scaler-=1.0f;
 					
 					//this method below doesnt work because it scales the already scaled value
 					//for (int i = 0; i < WINDOW_WIDTH-1; i++) dot[i].setPosition(sf::Vector2f(i, (float) ( ( (dot[i].getPosition().y - (window.getSize().y / 2)) * scaler ) + (window.getSize().y / 2))) );
@@ -174,12 +175,10 @@ int main()
 			bytesReceived = 0;
 			//numSamples++; //I could keep track of the sample count
 			sscanf_s(incomingData, "%f", &myData); // ascii to bin
-			//draw the dots
-			dot[WINDOW_WIDTH-1].setPosition(sf::Vector2f(WINDOW_WIDTH-1, (float)(-myData*scaler + (window.getSize().y / 2)))); //keep the dots y position but shift the x values from i+1 to i
-			for (int i = 0; i < WINDOW_WIDTH - 1; i++) dot[i].setPosition(sf::Vector2f(i,dot[i+1].getPosition().y) ); //keep the dots y position but shift the x values from i+1 to i
-			//draw linear interpolated lines
-			for (int i = 0; i < WINDOW_WIDTH - 1; i++) lineInterpol[i] = sf::Vertex(sf::Vector2f(i, dot[i + 1].getPosition().y), sf::Color::Red);
 			
+			Graph_1.update(myData, NUMFLOATS); //draw the data 3 floats
+												   
+												 
 			sprintf_s(charArray, "Serial Data: %f", myData);
 			serialText.setString(charArray);
 
@@ -204,21 +203,28 @@ int main()
 
 		}
 
+		//Handle the Button Pressed Event:
+		if (Graph_1.isPressed(sf::Mouse::getPosition(window))) {
 
+		}
+
+
+		Graph_1.setScale(scaler);
 
 		//display
 		window.clear(sf::Color::Black);
 		
 		//draw the Gui Objects
 		Button_1.draw();
+		Graph_1.draw();
 
 		window.draw(mousePosText);
 		window.draw(serialText);
-		window.draw(axis_x);
+		//window.draw(axis_x);
 		window.draw(xMouseCross);
 		window.draw(yMouseCross);
-		for(int i=0; i< WINDOW_WIDTH; i++) window.draw(dot[i]);
-		window.draw(lineInterpol, WINDOW_WIDTH-1, sf::Lines); 
+		//for(int i=0; i< WINDOW_WIDTH; i++) window.draw(dot[i]);
+		//window.draw(lineInterpol, WINDOW_WIDTH-1, sf::Lines); 
 		window.display();
 	}//end update loop
 

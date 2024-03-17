@@ -19,12 +19,10 @@ public:
 	void draw();
 
 	sf::RectangleShape Button; //create button with wideth,height
-	
 	sf::Text text;
 
 private:
-	//sf::Font font;
-
+	
 
 
 };
