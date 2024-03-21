@@ -3,4 +3,4 @@
 #define WINDOW_HEIGHT 1080
 #define LINE_WIDTH 50
 
-#define COMM_PORT "\\\\.\\COM7"
+#define COMM_PORT "\\\\.\\COM29"

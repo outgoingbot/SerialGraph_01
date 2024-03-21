@@ -20,14 +20,14 @@ public:
 	void setScale(float scl);
 	void autoScale(bool);
 	void update(float *dataPoint, uint8_t len);
-	void draw(uint8_t len);
+	void draw(void);
 
 	float scaler = 0.1f;
 
 	sf::RectangleShape frame; //create button with wideth,height
 
 	sf::RectangleShape axis_x; //create button with wideth,height
-	const sf::Color dotColor[3] = { sf::Color::Red ,sf::Color::Green ,sf::Color::Blue };
+	const sf::Color dotColor[NUMFLOATS] = { sf::Color::Red ,sf::Color::Green ,sf::Color::Blue };
 	sf::CircleShape* dot[NUMFLOATS];// = nullptr; //create the dots
 	sf::Vertex* lineInterpol[NUMFLOATS];// = nullptr;
 
@@ -37,8 +37,9 @@ public:
 
 private:
 
-	uint32_t frameSamples;
+	uint32_t frameSamples; //number of samples per frame (based on frame width)
 	float* dataArray[NUMFLOATS];
+	int _len; //number of floats per graph
 
 
 };

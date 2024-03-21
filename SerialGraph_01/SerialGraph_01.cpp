@@ -18,10 +18,10 @@ possbily make a single shot to trigger on derivative (slope) of certain value or
 Have a Binary or ASCII mode
 
 Currenly Generating single float vlaue with /r/n terminating ASCXII string
-expected data format: "%f/r/n"
+expected data format: "%f\r\n"
 115200 Baud (set in RS232Comm.cpp line 46)
 
-next change will allow CSV strings with /r/n terminating
+next change will allow CSV strings with \r\n terminating
 
 */
 
@@ -41,7 +41,7 @@ next change will allow CSV strings with /r/n terminating
 #include "Buttons.h"
 #include "Graph.h"
 
-#define NUMFLOATS 3
+//#define NUMFLOATS 3
 #define TOTALFLOATS 3
 //Graphics
 float scaler = 1.0f; //needs to rescale all dots. not just new data
@@ -52,7 +52,7 @@ uint32_t numSamples = 0; //keep track of the total number of received data (WIP)
 float myData[TOTALFLOATS];
 char incomingData[256] = ""; //Serial Rx Buffer
 
-int dataLength = 255;
+int dataLength = 256;
 int bytesReceived = 0;
 
 //Globals
@@ -89,7 +89,8 @@ int main()
 	//Button( Size, Position, Text)
 	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1200, 1000),"Button_1");
 
-	Graph Graph_1(sf::Vector2f(1500, WINDOW_HEIGHT/2), sf::Vector2f(200, 700), "Graph_1", NUMFLOATS);
+	Graph Graph_1(sf::Vector2f(1500, WINDOW_HEIGHT/4), sf::Vector2f(20, 700), "Graph_1", NUMFLOATS);
+	Graph Graph_2(sf::Vector2f(1500, WINDOW_HEIGHT / 4), sf::Vector2f(20, 300), "Graph_2", NUMFLOATS);
 	
 
 	//Make shapes
@@ -169,15 +170,17 @@ int main()
 
 	
 		//Handle Serial
+		//can I put this in a thread?
 		bytesReceived = SP->ReadData(incomingData, dataLength); //number of bytes read
 		incomingData[bytesReceived] = 0;
 		incomingData[bytesReceived] = '\0';
 		if (bytesReceived > 0) {
 			bytesReceived = 0;
 			//numSamples++; //I could keep track of the sample count
-			//if (sscanf_s(incomingData, "%f,%f,%f", &myData[0], &myData[1], &myData[2]) == 3) { // ascii to bin
-			sscanf_s(incomingData, "%f,%f,%f", &myData[0], &myData[1], &myData[2]); // ascii to bin
+			if (sscanf_s(incomingData, "%f,%f,%f", &myData[0], &myData[1], &myData[2]) == 3) { // ascii to bin
+			//sscanf_s(incomingData, "%f,%f,%f", &myData[0], &myData[1], &myData[2]); // ascii to bin
 				Graph_1.update(myData, NUMFLOATS); //draw the data 3 floats
+				Graph_2.update(myData, NUMFLOATS); //draw the data 3 floats
 
 
 				sprintf_s(charArray, "Serial Data: %f, %f, %f", myData[0], myData[1], myData[2]);
@@ -186,7 +189,7 @@ int main()
 				//Console
 				printf("\nSerial Data: %s\n\n", incomingData);	// Display ASCII message from port
 				//printf("Scaler: %f\n\n", scaler);	// Display message from port
-			//}
+			}
 		}
 
 
@@ -208,16 +211,22 @@ int main()
 		if (Graph_1.isPressed(sf::Mouse::getPosition(window))) {
 
 		}
+		//Handle the Graph Pressed Event:
+		if (Graph_2.isPressed(sf::Mouse::getPosition(window))) {
+
+		}
 
 		//testing for now to scale the graph y axis (look slike shit, need to scale x also?)
 		Graph_1.setScale(scaler);
+		Graph_2.setScale(scaler);
 
 		//display
 		window.clear(sf::Color::Black);
 		
 		//draw the Gui Objects
 		Button_1.draw();
-		Graph_1.draw(NUMFLOATS);
+		Graph_1.draw();
+		Graph_2.draw();
 
 		window.draw(mousePosText);
 		window.draw(serialText);

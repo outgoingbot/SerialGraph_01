@@ -3,6 +3,7 @@
 
 //size, position
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
+	_len = (int)numVars;
 	frameSamples = (uint32_t)(size.x);
 
 	for(int j=0; j<numVars; j++) dataArray[j] = new float[frameSamples];
@@ -74,11 +75,11 @@ void Graph::update(float *dataPoint, uint8_t len) {
 	}
 }
 
-void Graph::draw(uint8_t len) {
+void Graph::draw(void) {
 	window.draw(frame);
 	window.draw(text);
 	window.draw(axis_x);
-	for (int j = 0; j < len; j++) {
+	for (int j = 0; j < _len; j++) {
 		for (int i = 0; i < frameSamples; i++) window.draw(dot[j][i]);
 		window.draw(lineInterpol[j], frameSamples - 1, sf::Lines);
 	}
