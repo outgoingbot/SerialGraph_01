@@ -5,6 +5,22 @@
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
 	_len = (int)numVars;
 	frameSamples = (uint32_t)(size.x);
+	for (int j = 0; j < numVars; j++) {
+		switch (j) {
+		case 0:
+			dotColor[j] = sf::Color::Red;
+		break;
+
+		case 1:
+			dotColor[j] = sf::Color::Green;
+		break;
+
+		case 2:
+			dotColor[j] = sf::Color::Blue;
+		break;
+		}
+	}
+	//const sf::Color dotColor[NUMFLOATS] = { sf::Color::Red ,sf::Color::Green ,sf::Color::Blue };
 
 	for(int j=0; j<numVars; j++) dataArray[j] = new float[frameSamples];
 	frame.setSize(size);
@@ -63,7 +79,7 @@ void Graph::update(float *dataPoint, uint8_t len) {
 	for (int j = 0; j < len; j++) {
 		for (uint32_t i = 0; i < frameSamples - 1; i++) {
 			dataArray[j][i] = dataArray[j][i + 1];
-			dot[j][i].setPosition(sf::Vector2f(frame.getPosition().x + i, (float)((-dataArray[j][i + 1] * scaler) + frame.getPosition().y + (frame.getSize().y / 2)))); //shift the dots left 1 pixel
+			dot[j][i].setPosition(sf::Vector2f(frame.getPosition().x + i, (float)((-dataArray[j][i + 1] * this->scaler) + frame.getPosition().y + (frame.getSize().y / 2)))); //shift the dots left 1 pixel
 		}
 
 
@@ -80,7 +96,7 @@ void Graph::draw(void) {
 	window.draw(text);
 	window.draw(axis_x);
 	for (int j = 0; j < _len; j++) {
-		for (int i = 0; i < frameSamples; i++) window.draw(dot[j][i]);
+		//for (int i = 0; i < frameSamples; i++) window.draw(dot[j][i]);
 		window.draw(lineInterpol[j], frameSamples - 1, sf::Lines);
 	}
 }
@@ -104,6 +120,18 @@ bool Graph::isPressed(sf::Vector2i mousePosition) {
 			axis_x.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y + (frame.getSize().y / 2)));
 			return false;
 			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+		}
+
+		sf::Event event;
+		while (window.pollEvent(event)) {
+			if (event.type == sf::Event::MouseWheelMoved) {
+				// display number of ticks mouse wheel has moved
+				if (event.mouseWheel.delta > 0) this->scaler += 1.0f;
+				if (event.mouseWheel.delta < 0) this->scaler -= 1.0f;
+
+				//this method below doesnt work because it scales the already scaled value
+				//for (int i = 0; i < WINDOW_WIDTH-1; i++) dot[i].setPosition(sf::Vector2f(i, (float) ( ( (dot[i].getPosition().y - (window.getSize().y / 2)) * scaler ) + (window.getSize().y / 2))) );
+			}
 		}
 	}
 	return false;

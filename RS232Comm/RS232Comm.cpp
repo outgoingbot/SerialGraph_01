@@ -1,7 +1,10 @@
 #include "RS232Comm.h"
-
+extern std::thread serial_thread;
+extern bool killThread;
 Serial::Serial(const char *portName)
 {
+	rxBuffer = new CircularQueue(256);
+	rxBuffer->zeroBuffer();
 	//We're not yet connected
 	this->connected = false;
 
@@ -65,6 +68,21 @@ Serial::Serial(const char *portName)
 				//We wait as the arduino board will be reseting
 				Sleep(ARDUINO_WAIT_TIME);
 			}
+
+			//now set the timeouts ( we control the timeout overselves using WaitForXXX()
+			COMMTIMEOUTS timeouts;
+
+			timeouts.ReadIntervalTimeout = MAXDWORD;
+			timeouts.ReadTotalTimeoutMultiplier = 0;
+			timeouts.ReadTotalTimeoutConstant = 0;
+			timeouts.WriteTotalTimeoutMultiplier = 0;
+			timeouts.WriteTotalTimeoutConstant = 0;
+
+			if (!SetCommTimeouts(hSerial, &timeouts))
+			{
+				printf("ALERT: Could not set Serial Port parameters");
+			}
+
 		}
 	}
 
@@ -82,42 +100,110 @@ Serial::~Serial()
 	}
 }
 
-int Serial::ReadData(char *buffer, unsigned int nbChar)
+void Serial::ReadData(char* buffer, unsigned int nbChar, int* returnVal)
 {
-	//Number of bytes we'll have read
-	DWORD bytesRead;
-	//Number of bytes we'll really ask to read
-	unsigned int toRead;
+	while (!killThread) {
+		//std::this_thread::sleep_for(std::chrono::milliseconds(2));
+		
+		static char c;
 
-	//Use the ClearCommError function to get status info on the Serial port
-	ClearCommError(this->hSerial, &this->errors, &this->status);
+		//Number of bytes we'll have read
+		DWORD bytesRead = 0;
+		
+		//Number of bytes we'll really ask to read
+		unsigned int toRead = 0;
 
-	//Check if there is something to read
-	if (this->status.cbInQue > 0)
-	{
-		//If there is we check if there is enough data to read the required number
-		//of characters, if not we'll read only the available characters to prevent
-		//locking of the application.
-		if (this->status.cbInQue > nbChar)
+		ClearCommError(this->hSerial, &this->errors, &this->status);
+		//while (this->status.cbInQue <= 0) { //block thread until there is data to read
+		//	//Use the ClearCommError function to get status info on the Serial port
+		//	ClearCommError(this->hSerial, &this->errors, &this->status);
+		//	//std::this_thread::sleep_for(std::chrono::microseconds(100));
+		//}
+		
+		
+		//Check if there is something to read
+		if (this->status.cbInQue > 0)
 		{
-			toRead = nbChar;
-		}
-		else
-		{
-			toRead = this->status.cbInQue;
-		}
+			queueSize = this->status.cbInQue;
+			//If there is we check if there is enough data to read the required number
+			//of characters, if not we'll read only the available characters to prevent
+			//locking of the application.
+			if (this->status.cbInQue > nbChar)
+			{
+				toRead = nbChar;
+			}
+			else
+			{
+				toRead = this->status.cbInQue;
+			}
 
-		//Try to read the require number of chars, and return the number of read bytes on success
-		if (ReadFile(this->hSerial, buffer, toRead, &bytesRead, NULL))
-		{
-			return bytesRead;
-		}
+			//Try to read the require number of chars, and return the number of read bytes on success
+			if (ReadFile(this->hSerial, buffer, toRead, &bytesRead, NULL))
+			{
+				//std::cout << buffer;
+				for (uint8_t i = 0; i < bytesRead; i++) rxBuffer->push(*(buffer + i));
 
+
+
+
+
+				if (this->rxBuffer->qSizeUsed() > 0) { //if i got at least 1 byte
+					c = this->rxBuffer->pop();
+
+
+
+					if (!firstPayload) {
+						switch (c) {
+						case ',':
+							asciiDataString[subStringIdx][subStringCharIdx] = '\0';
+							subStringCharIdx = 0;
+							subStringIdx++;
+							break;
+
+						case '\n':
+							asciiDataString[subStringIdx][subStringCharIdx] = '\0';
+							//for (int i = 0; i < NUMFLOATS; i++) {
+							//	myData[i] = (float)atof(asciiDataString[i]);
+							//	memset(asciiDataString[i], '\0', SUBSTRING_LEN);
+							//}
+							//
+							myData[0] = (float)atof(asciiDataString[0]);
+							memset(asciiDataString[0], '\0', SUBSTRING_LEN);
+
+							myData[1] = (float)atof(asciiDataString[1]);
+							memset(asciiDataString[1], '\0', SUBSTRING_LEN);
+
+							myData[2] = (float)atof(asciiDataString[2]);
+							memset(asciiDataString[2], '\0', SUBSTRING_LEN);
+
+							payloadComplete = true;
+							//printf("myData[0] = %f, myData[1] = %f, myData[2] = %f Qs:%i\r\n", myData[0], myData[1], myData[2], queueSize);
+
+							subStringCharIdx = 0;
+							subStringIdx = 0;
+							break;
+
+						default:
+							asciiDataString[subStringIdx][subStringCharIdx] = c;
+							subStringCharIdx++;
+							break;
+						}
+					}
+
+					if (c == '\n' && firstPayload == true) {
+						firstPayload = false; //dont process first payload
+					}
+
+
+
+				}
+
+				*returnVal = (int)bytesRead;
+			}
+
+
+		}
 	}
-
-	//If nothing has been read, or that an error was detected return 0
-	return 0;
-
 }
 
 

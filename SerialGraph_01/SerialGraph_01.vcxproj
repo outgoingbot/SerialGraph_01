@@ -92,6 +92,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)SFML\Include;$(SolutionDir);$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="..\RS232Comm\RS232Comm.cpp" />
     <ClCompile Include="Buttons.cpp" />
+    <ClCompile Include="CircularQueue.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="Labels.cpp" />
     <ClCompile Include="SerialGraph_01.cpp">
@@ -168,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="..\RS232Comm\RS232Comm.h" />
     <ClInclude Include="Buttons.h" />
+    <ClInclude Include="CircularQueue.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Labels.h" />

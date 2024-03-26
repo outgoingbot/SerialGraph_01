@@ -18,7 +18,7 @@ possbily make a single shot to trigger on derivative (slope) of certain value or
 Have a Binary or ASCII mode
 
 Currenly Generating single float vlaue with /r/n terminating ASCXII string
-expected data format: "%f\r\n"
+expected data format: "%f,%f,%f\n"
 115200 Baud (set in RS232Comm.cpp line 46)
 
 next change will allow CSV strings with \r\n terminating
@@ -27,6 +27,12 @@ next change will allow CSV strings with \r\n terminating
 
 #include "SerialGraph_01.h"
 #include <iostream>
+
+#include <string>
+#include <thread>
+#include <chrono>
+#include <algorithm>
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -34,34 +40,45 @@ next change will allow CSV strings with \r\n terminating
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <RS232Comm.h>
+#include "RS232Comm/RS232Comm.h"
 #include <cmath>
 
 #include "Config.h"
 #include "Buttons.h"
 #include "Graph.h"
 
-//#define NUMFLOATS 3
+#include "CircularQueue.h"
+
+
+//using namespace std::chrono;
+
 #define TOTALFLOATS 3
+#define SUBSTRING_LEN 32
 //Graphics
 float scaler = 1.0f; //needs to rescale all dots. not just new data
 
-//Serial
-char charArray[256] = "Empty"; //graphics text buffer
-uint32_t numSamples = 0; //keep track of the total number of received data (WIP)
-float myData[TOTALFLOATS];
-char incomingData[256] = ""; //Serial Rx Buffer
 
-int dataLength = 256;
+char charArray[256] = "Empty"; //wtf this used for again?
+
+
+							   //Serial
+uint32_t numSamples = 0; //keep track of the total number of received data (WIP)
+char incomingData[256] = { 0 }; //Serial Rx Buffer
+unsigned int dataLength = 1;
 int bytesReceived = 0;
+
+bool killThread = false;
+
 
 //Globals
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded");
 sf::Font font;
 
+
+
 int main()
 {	
-	// ...
+
 	auto image = sf::Image{};
 	if (!image.loadFromFile("../res/icon.png"))
 	{
@@ -70,10 +87,10 @@ int main()
 	}
 	window.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
 
-	Serial* SP = new Serial(COMM_PORT);    // adjust as needed \\\\.\\COM10
-	if (SP->IsConnected()) printf("We're connected");
+	Serial SP(COMM_PORT);    // adjust in config.h
+	if (SP.IsConnected()) printf("We're connected\r\n");
 
-	
+
 	//Load Font
 	if (!font.loadFromFile("../res/Pumpkin_Pancakes.ttf")) {
 		printf("Error loading Font");
@@ -81,23 +98,38 @@ int main()
 	}
 
 	//set FPS
-	window.setFramerateLimit(200);
-
-
+	window.setFramerateLimit(10000);
+	
 	//Create Gui Objects
-
 	//Button( Size, Position, Text)
-	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1200, 1000),"Button_1");
+	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1340, 150),"Button_1");
 
-	Graph Graph_1(sf::Vector2f(1500, WINDOW_HEIGHT/4), sf::Vector2f(20, 700), "Graph_1", NUMFLOATS);
-	Graph Graph_2(sf::Vector2f(1500, WINDOW_HEIGHT / 4), sf::Vector2f(20, 300), "Graph_2", NUMFLOATS);
+	//Graph( Size, Position, Text, number of floats to display)
+	Graph Graph_1(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1500), "Graph_1", NUMFLOATS);
+	Graph Graph_2(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1200), "Graph_2", NUMFLOATS);
+	Graph Graph_3(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 900), "Graph_3", NUMFLOATS);
+	Graph Graph_4(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 600), "Graph_4", NUMFLOATS);
+	Graph Graph_5(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1500), "Graph_5", NUMFLOATS);
+	Graph Graph_6(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1200), "Graph_6", NUMFLOATS);
+	Graph Graph_7(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 900), "Graph_7", NUMFLOATS);
+	Graph Graph_8(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 600), "Graph_8", NUMFLOATS);
+
+	Graph Graph_loopTime(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 200), "LoopTime", NUMFLOATS);
 	
 
 	//Make shapes
+	char loopText[64]="";
+	sf::Text loopTimeText;
+	loopTimeText.setFont(font);
+	loopTimeText.setString(loopText);
+	loopTimeText.setCharacterSize(50);
+	loopTimeText.setFillColor(sf::Color::Magenta);
+	loopTimeText.setPosition(sf::Vector2f(1800, 1300));
+	
 	//give me the mouse postion to help with layout
 	sf::Text mousePosText;
 	mousePosText.setFont(font);
-	mousePosText.setString(charArray);
+	mousePosText.setString(charArray); //wrong char array!
 	mousePosText.setCharacterSize(25);
 	mousePosText.setFillColor(sf::Color::Green);
 	mousePosText.setPosition(sf::Vector2f(100, 100));
@@ -136,62 +168,40 @@ int main()
 	sf::Vertex lineInterpol[WINDOW_WIDTH - 1];
 
 	
-
+	//getting around 20mS without using threads
+	std::thread serial_thread(&Serial::ReadData, &SP, incomingData, dataLength, &bytesReceived); ///retrieve buffer
 //-----------------------------------------MAIN LOOP------------------------------------------------------------
 	while (window.isOpen())
 	{
+		auto startTime = std::chrono::high_resolution_clock::now();
+		
+
+
 
 		//Get inputs
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) posText.move(10,0);
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) posText.move(-10, 0);
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) posText.move(0, -10);
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) posText.move(0, 10);
+//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) posText.move(10,0);
+//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) posText.move(-10, 0);
+//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) posText.move(0, -10);
+//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) posText.move(0, 10);
 
 
 		sf::Event event;
-		while (window.pollEvent(event)){
+		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
 				window.close();
-				SP->~Serial(); //deconstruct
+				//SP.~Serial(); //deconstruct
 			}
-			else {
-				if (event.type == sf::Event::MouseWheelMoved) {
-					// display number of ticks mouse wheel has moved
-					if (event.mouseWheel.delta > 0) scaler+=1.0f;
-					if (event.mouseWheel.delta < 0) scaler-=1.0f;
-					
-					//this method below doesnt work because it scales the already scaled value
-					//for (int i = 0; i < WINDOW_WIDTH-1; i++) dot[i].setPosition(sf::Vector2f(i, (float) ( ( (dot[i].getPosition().y - (window.getSize().y / 2)) * scaler ) + (window.getSize().y / 2))) );
-				}
-			}
+			//else {
+			//	if (event.type == sf::Event::MouseWheelMoved) {
+			//		// display number of ticks mouse wheel has moved
+			//		if (event.mouseWheel.delta > 0) scaler += 1.0f;
+			//		if (event.mouseWheel.delta < 0) scaler -= 1.0f;
+
+			//		//this method below doesnt work because it scales the already scaled value
+			//		//for (int i = 0; i < WINDOW_WIDTH-1; i++) dot[i].setPosition(sf::Vector2f(i, (float) ( ( (dot[i].getPosition().y - (window.getSize().y / 2)) * scaler ) + (window.getSize().y / 2))) );
+			//	}
+			//}
 		}
-
-
-
-	
-		//Handle Serial
-		//can I put this in a thread?
-		bytesReceived = SP->ReadData(incomingData, dataLength); //number of bytes read
-		incomingData[bytesReceived] = 0;
-		incomingData[bytesReceived] = '\0';
-		if (bytesReceived > 0) {
-			bytesReceived = 0;
-			//numSamples++; //I could keep track of the sample count
-			if (sscanf_s(incomingData, "%f,%f,%f", &myData[0], &myData[1], &myData[2]) == 3) { // ascii to bin
-			//sscanf_s(incomingData, "%f,%f,%f", &myData[0], &myData[1], &myData[2]); // ascii to bin
-				Graph_1.update(myData, NUMFLOATS); //draw the data 3 floats
-				Graph_2.update(myData, NUMFLOATS); //draw the data 3 floats
-
-
-				sprintf_s(charArray, "Serial Data: %f, %f, %f", myData[0], myData[1], myData[2]);
-				serialText.setString(charArray);
-
-				//Console
-				printf("\nSerial Data: %s\n\n", incomingData);	// Display ASCII message from port
-				//printf("Scaler: %f\n\n", scaler);	// Display message from port
-			}
-		}
-
 
 		xMouseCross.setPosition(sf::Vector2f(0, sf::Mouse::getPosition(window).y));
 		yMouseCross.setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x, 0));
@@ -215,26 +225,85 @@ int main()
 		if (Graph_2.isPressed(sf::Mouse::getPosition(window))) {
 
 		}
+		//Handle the Graph Pressed Event:
+		if (Graph_3.isPressed(sf::Mouse::getPosition(window))) {
 
-		//testing for now to scale the graph y axis (look slike shit, need to scale x also?)
-		Graph_1.setScale(scaler);
-		Graph_2.setScale(scaler);
+		}
+		//Handle the Graph Pressed Event:
+		if (Graph_4.isPressed(sf::Mouse::getPosition(window))) {
 
+		}
+		//Handle the Graph Pressed Event:
+		if (Graph_5.isPressed(sf::Mouse::getPosition(window))) {
+
+		}
+		//Handle the Graph Pressed Event:
+		if (Graph_6.isPressed(sf::Mouse::getPosition(window))) {
+
+		}
+		//Handle the Graph Pressed Event:
+		if (Graph_7.isPressed(sf::Mouse::getPosition(window))) {
+
+		}
+		//Handle the Graph Pressed Event:
+		if (Graph_8.isPressed(sf::Mouse::getPosition(window))) {
+
+		}
+
+		
 		//display
 		window.clear(sf::Color::Black);
 		
 		//draw the Gui Objects
 		Button_1.draw();
+
 		Graph_1.draw();
 		Graph_2.draw();
+		Graph_3.draw();
+		Graph_4.draw();
+		Graph_5.draw();
+		Graph_6.draw();
+		Graph_7.draw();
+		Graph_8.draw();
 
+		Graph_loopTime.draw();
+
+		window.draw(loopTimeText);
 		window.draw(mousePosText);
 		window.draw(serialText);
 		window.draw(xMouseCross);
 		window.draw(yMouseCross);
 
 		window.display();
-	}//end update loop
 
+		if (SP.payloadComplete) { // ascii to bin
+			SP.payloadComplete = false;
+			printf("myData[0] = %f, myData[1] = %f, myData[2] = %f Qs:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize);
+
+			Graph_1.update(SP.myData, NUMFLOATS); //draw the data 3 floats
+			Graph_2.update(SP.myData, NUMFLOATS); //draw the data 3 floats
+			Graph_3.update(SP.myData, NUMFLOATS); //draw the data 3 floats
+			Graph_4.update(SP.myData, NUMFLOATS); //draw the data 3 floats
+			Graph_5.update(SP.myData, NUMFLOATS); //draw the data 3 floats
+			Graph_6.update(SP.myData, NUMFLOATS); //draw the data 3 floats
+			Graph_7.update(SP.myData, NUMFLOATS); //draw the data 3 floats
+			Graph_8.update(SP.myData, NUMFLOATS); //draw the data 3 floats
+			sprintf_s(charArray, "Serial Data: %f, %f, %f", SP.myData[0], SP.myData[1], SP.myData[2]);
+			serialText.setString(charArray);
+		}
+			
+
+
+
+		auto stopTime = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);
+		float loopTimeDuration = (float)duration.count()/1000.f;
+		sprintf_s(loopText, "Loop Time: %f", loopTimeDuration);
+		loopTimeText.setString(loopText);
+		Graph_loopTime.update(&loopTimeDuration, 1);		
+
+	}//end update loop
+	killThread = true;
+	serial_thread.join();
 	return 0;
 }

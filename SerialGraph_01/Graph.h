@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
+
 extern sf::RenderWindow window;
 extern sf::Font font;
 
@@ -22,12 +23,12 @@ public:
 	void update(float *dataPoint, uint8_t len);
 	void draw(void);
 
-	float scaler = 0.1f;
+	float scaler = 0.5f;
 
 	sf::RectangleShape frame; //create button with wideth,height
 
 	sf::RectangleShape axis_x; //create button with wideth,height
-	const sf::Color dotColor[NUMFLOATS] = { sf::Color::Red ,sf::Color::Green ,sf::Color::Blue };
+	sf::Color dotColor[NUMFLOATS];
 	sf::CircleShape* dot[NUMFLOATS];// = nullptr; //create the dots
 	sf::Vertex* lineInterpol[NUMFLOATS];// = nullptr;
 
