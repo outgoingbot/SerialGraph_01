@@ -27,25 +27,25 @@ Buttons::~Buttons() {
 
 //have a on click
 
-bool Buttons::isPressed(sf::Vector2i mousePosition) {
-
-	if (isMouseOverRect(mousePosition)) {		
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			Button.setFillColor(sf::Color(255, 0, 255));
-			return true;
-			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
-		}
-
-		//move the object
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-			Button.setPosition(sf::Vector2f(mousePosition.x,mousePosition.y));
-			text.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
-			return false;
-			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
-		}
-	}
-	return false;
-}
+//bool Buttons::isPressed(sf::Vector2i mousePosition) {
+//
+//	if (isMouseOverRect(mousePosition)) {		
+//		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+//			Button.setFillColor(sf::Color(255, 0, 255));
+//			return true;
+//			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+//		}
+//
+//		//move the object
+//		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+//			Button.setPosition(sf::Vector2f(mousePosition.x,mousePosition.y));
+//			text.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
+//			return false;
+//			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+//		}
+//	}
+//	return false;
+//}
 
 bool Buttons::isMouseOverRect(sf::Vector2i mousePosition) {
 	if (mousePosition.x > Button.getPosition().x - (Button.getSize().x/2) && mousePosition.x < Button.getPosition().x + (Button.getSize().x/2)) {
@@ -58,7 +58,35 @@ bool Buttons::isMouseOverRect(sf::Vector2i mousePosition) {
 	return false;
 }
 
+
+
+Button_State_t Buttons::getState(sf::Vector2i mousePosition) {
+	Button_State_t returnVal = STATE_READY;
+
+	if (isMouseOverRect(mousePosition)) {
+		returnVal |= STATE_HOVER;
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			Button.setFillColor(sf::Color(255, 0, 255));
+			returnVal |=STATE_CLICK_LEFT;
+		}
+
+		//move the object
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+			Button.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
+			text.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
+			returnVal |= STATE_CLICK_LEFT;
+			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+		}
+	}
+	return returnVal;
+}
+
+
 void Buttons::draw() {
 	window.draw(Button);
 	window.draw(text);
 }
+
+//Button_State_t& operator+(Button_State_t &orig) {
+//
+//}

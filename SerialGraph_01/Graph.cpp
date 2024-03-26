@@ -1,5 +1,5 @@
 #include "Graph.h"
-#define XSCALE 5 //testing 1,10,100
+#define XSCALE 1 //testing 1,10,100
 
 //size, position
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
@@ -38,13 +38,13 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	
 
 	for (int j = 0; j < numVars; j++) {
-		dot[j] = new sf::CircleShape[frameSamples];
+		//dot[j] = new sf::CircleShape[frameSamples];
 		for (uint32_t i = 0; i < frameSamples; i++) { //initialize the dots
-			dot[j][i].setRadius(2.0);
-			dot[j][i].setOrigin(2.0, 2.0);
-			dot[j][i].setFillColor(dotColor[j]);
-			dot[j][i].setPosition(sf::Vector2f(frame.getPosition().x + i, axis_x.getPosition().y)); //place all dots on the x axis
-			dataArray[j][i] = 0.0f;//(float)(axis_x.getPosition().y);
+			//dot[j][i].setRadius(2.0);
+			//dot[j][i].setOrigin(2.0, 2.0);
+			//dot[j][i].setFillColor(dotColor[j]);
+			//dot[j][i].setPosition(sf::Vector2f(frame.getPosition().x + i, axis_x.getPosition().y)); //place all dots on the x axis
+			dataArray[j][i] = 0.0f;
 		}
 	}
 	for (int j = 0; j < numVars; j++) {

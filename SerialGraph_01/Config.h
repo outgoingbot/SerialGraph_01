@@ -4,4 +4,6 @@
 #define LINE_WIDTH 50
 
 #define COMM_PORT "\\\\.\\COM12"
+
+#define NUM_GRAPHS 8
 //#define COMM_PORT "COM3"

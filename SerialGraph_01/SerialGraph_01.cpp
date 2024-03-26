@@ -35,6 +35,7 @@ next change will allow CSV strings with \r\n terminating
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/OpenGL.hpp>
 #include <SFML/System.hpp>
 #include <Windows.h>    
 #include <stdlib.h>
@@ -58,7 +59,8 @@ next change will allow CSV strings with \r\n terminating
 float scaler = 1.0f; //needs to rescale all dots. not just new data
 
 
-char charArray[256] = "Empty"; //wtf this used for again?
+char charArrayDebug[256] = "Empty"; //wtf this used for again?
+char charArrayMousePos[256] = "Empty"; //wtf this used for again?
 
 
 							   //Serial
@@ -71,7 +73,7 @@ bool killThread = false;
 
 
 //Globals
-sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded");
+sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded", sf::Style::Default, sf::ContextSettings(32));
 sf::Font font;
 
 sf::Vector2f mousePosf;
@@ -98,21 +100,25 @@ int main()
 	}
 
 	//set FPS
-	window.setFramerateLimit(10000);
-	
+	//window.setFramerateLimit(10000);
+	//window.setVerticalSyncEnabled(true);
+	window.setActive(true);
+
 	//Create Gui Objects
 	//Button( Size, Position, Text)
 	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1340, 150),"Button_1");
+	std::vector<Graph> Graph_Vector;
 
-	//Graph( Size, Position, Text, number of floats to display)
-	Graph Graph_1(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1500), "Graph_1", NUMFLOATS);
-	Graph Graph_2(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1200), "Graph_2", NUMFLOATS);
-	Graph Graph_3(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 900), "Graph_3", NUMFLOATS);
-	Graph Graph_4(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 600), "Graph_4", NUMFLOATS);
-	Graph Graph_5(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1500), "Graph_5", NUMFLOATS);
-	Graph Graph_6(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1200), "Graph_6", NUMFLOATS);
-	Graph Graph_7(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 900), "Graph_7", NUMFLOATS);
-	Graph Graph_8(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 600), "Graph_8", NUMFLOATS);
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1500), "Graph_1", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1200), "Graph_2", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 900), "Graph_3", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 600), "Graph_4", NUMFLOATS));
+
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1500), "Graph_5", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1200), "Graph_6", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 900), "Graph_7", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 600), "Graph_8", NUMFLOATS));
+
 
 	Graph Graph_loopTime(sf::Vector2f(600, WINDOW_HEIGHT / 12), sf::Vector2f(2250, 200), "LoopTime", NUMFLOATS);
 	
@@ -129,7 +135,7 @@ int main()
 	//give me the mouse postion to help with layout
 	sf::Text mousePosText;
 	mousePosText.setFont(font);
-	mousePosText.setString(charArray); //wrong char array!
+	mousePosText.setString(charArrayMousePos); //wrong char array!
 	mousePosText.setCharacterSize(25);
 	mousePosText.setFillColor(sf::Color::Green);
 	mousePosText.setPosition(sf::Vector2f(100, 100));
@@ -171,116 +177,106 @@ int main()
 	//getting around 20mS without using threads
 	std::thread serial_thread(&Serial::ReadData, &SP, incomingData, dataLength, &bytesReceived); ///retrieve buffer
 //-----------------------------------------MAIN LOOP------------------------------------------------------------
-	while (window.isOpen())
+	bool running = true;
+	while (running)
 	{
 		auto startTime = std::chrono::high_resolution_clock::now();
 		
-
-
-
-		//Get inputs
-//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) posText.move(10,0);
-//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) posText.move(-10, 0);
-//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) posText.move(0, -10);
-//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) posText.move(0, 10);
-
+		//Get Keyboard inputs
+		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) posText.move(10,0);
+		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) posText.move(-10, 0);
+		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) posText.move(0, -10);
+		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) posText.move(0, 10);
 
 		sf::Event event;
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
-				window.close();
-				//SP.~Serial(); //deconstruct
+				//window.close();
+				SP.~Serial(); //deconstruct
+				running = false;
 			}
-			if (event.type == sf::Event::Resized) {
+			else if (event.type == sf::Event::Resized) {
+				glViewport(0, 0, event.size.width, event.size.height);
 				// update the view to the new size of the window
 				//sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
 				//window.setView(sf::View(visibleArea));
 				//SP.~Serial(); //deconstruct
 			}
-			//else {
-			//	if (event.type == sf::Event::MouseWheelMoved) {
-			//		// display number of ticks mouse wheel has moved
-			//		if (event.mouseWheel.delta > 0) scaler += 1.0f;
-			//		if (event.mouseWheel.delta < 0) scaler -= 1.0f;
+			else if (event.type == sf::Event::MouseWheelMoved) {
+					// display number of ticks mouse wheel has moved
+					if (event.mouseWheel.delta > 0) scaler += 1.0f;
+					if (event.mouseWheel.delta < 0) scaler -= 1.0f;
 
-			//		//this method below doesnt work because it scales the already scaled value
-			//		//for (int i = 0; i < WINDOW_WIDTH-1; i++) dot[i].setPosition(sf::Vector2f(i, (float) ( ( (dot[i].getPosition().y - (window.getSize().y / 2)) * scaler ) + (window.getSize().y / 2))) );
-			//	}
-			//}
+			}
 		}
 		
-		
+		//Mouse Position Even after Windows Resizing
 		mousePosf = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
 		xMouseCross.setPosition(sf::Vector2f(0, mousePosf.y));
-		
 		yMouseCross.setPosition(sf::Vector2f(mousePosf.x,0));
-
-		sprintf_s(charArray, "(%f  %f)", (float)(sf::Mouse::getPosition(window).x), (float)(WINDOW_HEIGHT - sf::Mouse::getPosition(window).y));
-		mousePosText.setString(charArray);
+		sprintf_s(charArrayMousePos, "(%f  %f)", (float)(sf::Mouse::getPosition(window).x), (float)(WINDOW_HEIGHT - sf::Mouse::getPosition(window).y));
+		mousePosText.setString(charArrayMousePos);
 		mousePosText.setPosition(sf::Vector2f(mousePosf.x + 20, mousePosf.y)); //set text
 
 
 
 		//Handle the Button Pressed Event:
-		if (Button_1.isPressed((sf::Vector2i)mousePosf)) {
+		if (Button_1.getState((sf::Vector2i)mousePosf)) {
 
 		}
 
 		//Handle the Graph Pressed Event:
-		if (Graph_1.isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[0].isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_2.isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[1].isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_3.isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[2].isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_4.isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[3].isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_5.isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[4].isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_6.isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[5].isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_7.isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[6].isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_8.isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[7].isPressed((sf::Vector2i)mousePosf)) {
 
 		}
+
 
 		//Handle the Graph Pressed Event:
 		if (Graph_loopTime.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 
-		
-		//display
-		window.clear(sf::Color::Black);
+		//---------------------------------------------------display-------------------------------------------------
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+		//window.clear(sf::Color::Black);
 		
 		//draw the Gui Objects
 		Button_1.draw();
-
-		Graph_1.draw();
-		Graph_2.draw();
-		Graph_3.draw();
-		Graph_4.draw();
-		Graph_5.draw();
-		Graph_6.draw();
-		Graph_7.draw();
-		Graph_8.draw();
-
+		
+		
+		//draw all of the graphs
+		for (int i = 0; i < NUM_GRAPHS; i++)Graph_Vector[i].draw();
+		
 		Graph_loopTime.draw();
 
 		window.draw(loopTimeText);
@@ -291,53 +287,21 @@ int main()
 
 		window.display();
 
+
+		//---------------------------------------------------Process Serial Packet-------------------------------------------------
+
 		if (SP.payloadComplete) { // ascii to bin
 			SP.payloadComplete = false;
 			printf("Data: %f, %f, %f Qs:%i pIdx:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize, SP.payloadIdx);
-			sprintf_s(charArray, "Serial Data: %f, %f, %f", SP.myData[0], SP.myData[1], SP.myData[2]);
-			serialText.setString(charArray);
+			sprintf_s(charArrayDebug, "Serial Data: %f, %f, %f", SP.myData[0], SP.myData[1], SP.myData[2]);
+			serialText.setString(charArrayDebug);
 
-			switch (SP.payloadIdx) {
-				case 1:
-					Graph_1.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
-					break;
-
-				case 2:
-					Graph_2.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
-					break;
-
-				case 3:
-					Graph_3.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
-					break;
-
-				case 4:
-					Graph_4.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
-					break;
-
-				case 5:
-					Graph_5.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
-					break;
-
-				case 6:
-					Graph_6.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
-					break;
-
-				case 7:
-					Graph_7.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
-					break;
-
-				case 8:
-					Graph_8.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
-					break;
-
-				default:
-					break;
-			}
+			if(SP.payloadIdx) Graph_Vector[SP.payloadIdx-1].update(SP.myData, NUMFLOATS);
 		}
 			
 
 
-
+		//---------------------------------------------------Loop Timing Info-------------------------------------------------
 		auto stopTime = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);
 		float loopTimeDuration = (float)duration.count()/1000.f;

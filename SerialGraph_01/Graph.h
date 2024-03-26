@@ -30,7 +30,7 @@ public:
 
 	sf::RectangleShape axis_x; //create button with wideth,height
 	sf::Color dotColor[NUMFLOATS];
-	sf::CircleShape* dot[NUMFLOATS];// = nullptr; //create the dots
+	//sf::CircleShape* dot[NUMFLOATS];// = nullptr; //create the dots
 	sf::Vertex* lineInterpol[NUMFLOATS];// = nullptr;
 
 	sf::Text text; //just holds the graph title
