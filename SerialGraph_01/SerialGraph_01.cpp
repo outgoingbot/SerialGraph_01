@@ -74,7 +74,7 @@ bool killThread = false;
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded");
 sf::Font font;
 
-
+sf::Vector2f mousePosf;
 
 int main()
 {	
@@ -191,6 +191,12 @@ int main()
 				window.close();
 				//SP.~Serial(); //deconstruct
 			}
+			if (event.type == sf::Event::Resized) {
+				// update the view to the new size of the window
+				//sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+				//window.setView(sf::View(visibleArea));
+				//SP.~Serial(); //deconstruct
+			}
 			//else {
 			//	if (event.type == sf::Event::MouseWheelMoved) {
 			//		// display number of ticks mouse wheel has moved
@@ -202,51 +208,60 @@ int main()
 			//	}
 			//}
 		}
+		
+		
+		mousePosf = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
-		xMouseCross.setPosition(sf::Vector2f(0, sf::Mouse::getPosition(window).y));
-		yMouseCross.setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x, 0));
+		xMouseCross.setPosition(sf::Vector2f(0, mousePosf.y));
+		
+		yMouseCross.setPosition(sf::Vector2f(mousePosf.x,0));
 
 		sprintf_s(charArray, "(%f  %f)", (float)(sf::Mouse::getPosition(window).x), (float)(WINDOW_HEIGHT - sf::Mouse::getPosition(window).y));
 		mousePosText.setString(charArray);
-		mousePosText.setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x + 20, sf::Mouse::getPosition(window).y)); //set text
+		mousePosText.setPosition(sf::Vector2f(mousePosf.x + 20, mousePosf.y)); //set text
 
 
 
 		//Handle the Button Pressed Event:
-		if (Button_1.isPressed(sf::Mouse::getPosition(window))) {
+		if (Button_1.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 
 		//Handle the Graph Pressed Event:
-		if (Graph_1.isPressed(sf::Mouse::getPosition(window))) {
+		if (Graph_1.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_2.isPressed(sf::Mouse::getPosition(window))) {
+		if (Graph_2.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_3.isPressed(sf::Mouse::getPosition(window))) {
+		if (Graph_3.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_4.isPressed(sf::Mouse::getPosition(window))) {
+		if (Graph_4.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_5.isPressed(sf::Mouse::getPosition(window))) {
+		if (Graph_5.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_6.isPressed(sf::Mouse::getPosition(window))) {
+		if (Graph_6.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_7.isPressed(sf::Mouse::getPosition(window))) {
+		if (Graph_7.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_8.isPressed(sf::Mouse::getPosition(window))) {
+		if (Graph_8.isPressed((sf::Vector2i)mousePosf)) {
+
+		}
+
+		//Handle the Graph Pressed Event:
+		if (Graph_loopTime.isPressed((sf::Vector2i)mousePosf)) {
 
 		}
 
@@ -278,18 +293,46 @@ int main()
 
 		if (SP.payloadComplete) { // ascii to bin
 			SP.payloadComplete = false;
-			printf("myData[0] = %f, myData[1] = %f, myData[2] = %f Qs:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize);
-
-			Graph_1.update(SP.myData, NUMFLOATS); //draw the data 3 floats
-			Graph_2.update(SP.myData, NUMFLOATS); //draw the data 3 floats
-			Graph_3.update(SP.myData, NUMFLOATS); //draw the data 3 floats
-			Graph_4.update(SP.myData, NUMFLOATS); //draw the data 3 floats
-			Graph_5.update(SP.myData, NUMFLOATS); //draw the data 3 floats
-			Graph_6.update(SP.myData, NUMFLOATS); //draw the data 3 floats
-			Graph_7.update(SP.myData, NUMFLOATS); //draw the data 3 floats
-			Graph_8.update(SP.myData, NUMFLOATS); //draw the data 3 floats
+			printf("Data: %f, %f, %f Qs:%i pIdx:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize, SP.payloadIdx);
 			sprintf_s(charArray, "Serial Data: %f, %f, %f", SP.myData[0], SP.myData[1], SP.myData[2]);
 			serialText.setString(charArray);
+
+			switch (SP.payloadIdx) {
+				case 1:
+					Graph_1.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
+					break;
+
+				case 2:
+					Graph_2.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
+					break;
+
+				case 3:
+					Graph_3.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
+					break;
+
+				case 4:
+					Graph_4.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
+					break;
+
+				case 5:
+					Graph_5.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
+					break;
+
+				case 6:
+					Graph_6.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
+					break;
+
+				case 7:
+					Graph_7.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
+					break;
+
+				case 8:
+					Graph_8.update(SP.myData, NUMFLOATS); //draw the data 3 floats	
+					break;
+
+				default:
+					break;
+			}
 		}
 			
 

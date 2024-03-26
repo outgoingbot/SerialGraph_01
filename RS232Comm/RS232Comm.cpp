@@ -46,7 +46,7 @@ Serial::Serial(const char *portName)
 		else
 		{
 			//Define serial connection parameters for the arduino board
-			dcbSerialParams.BaudRate = CBR_115200;
+			dcbSerialParams.BaudRate = 2000000;//CBR_115200;
 			dcbSerialParams.ByteSize = 8;
 			dcbSerialParams.StopBits = ONESTOPBIT;
 			dcbSerialParams.Parity = NOPARITY;
@@ -177,6 +177,8 @@ void Serial::ReadData(char* buffer, unsigned int nbChar, int* returnVal)
 							memset(asciiDataString[2], '\0', SUBSTRING_LEN);
 
 							payloadComplete = true;
+							payloadIdx++;
+							if (payloadIdx > 8) payloadIdx = 1;
 							//printf("myData[0] = %f, myData[1] = %f, myData[2] = %f Qs:%i\r\n", myData[0], myData[1], myData[2], queueSize);
 
 							subStringCharIdx = 0;

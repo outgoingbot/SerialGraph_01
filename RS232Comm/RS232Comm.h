@@ -46,6 +46,7 @@ public:
 	int subStringCharIdx = 0;
 	bool payloadComplete = false;
 	bool firstPayload = true;
+	int payloadIdx = 0;
 
 	#define TOTALFLOATS 3
 	#define SUBSTRING_LEN 32

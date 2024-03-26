@@ -1,10 +1,10 @@
 #include "Graph.h"
-
+#define XSCALE 1 //testing 1,10,100
 
 //size, position
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
 	_len = (int)numVars;
-	frameSamples = (uint32_t)(size.x);
+	frameSamples = (uint32_t)(size.x/ XSCALE);
 	for (int j = 0; j < numVars; j++) {
 		switch (j) {
 		case 0:
@@ -50,7 +50,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	for (int j = 0; j < numVars; j++) {
 		lineInterpol[j] = new sf::Vertex[frameSamples - 1];
 		for (uint32_t i = 0; i < frameSamples - 1; i++) { //initialize the lines
-			lineInterpol[j][i] = sf::Vertex((sf::Vector2f(frame.getPosition().x + i, axis_x.getPosition().y))); //place all dots on the x axis
+			lineInterpol[j][i] = sf::Vertex((sf::Vector2f(frame.getPosition().x + (i*XSCALE), axis_x.getPosition().y))); //place all dots on the x axis
 		}
 	}
 
@@ -87,12 +87,12 @@ void Graph::update(float *dataPoint, uint8_t len) {
 		}
 
 		scaler = frame.getSize().y / maxVal;
-		axis_x.setPosition(frame.getPosition().x, frame.getPosition().y+frame.getSize().y + (scaler*minVal));
+		axis_x.setPosition(frame.getPosition().x, frame.getPosition().y+frame.getSize().y - (minVal));
 		dataArray[j][frameSamples - 1] = dataPoint[j];
 		//dot[j][frameSamples - 1].setPosition(sf::Vector2f(frame.getPosition().x + frameSamples - 1, (float)(-dataPoint[j] * scaler + frame.getPosition().y + (frame.getSize().y / 2)))); //keep the dots y position but shift the x values from i+1 to i
 
 		//draw linear interpolated lines
-		for (uint32_t i = 0; i < frameSamples - 1; i++) lineInterpol[j][i] = sf::Vertex(sf::Vector2f(frame.getPosition().x + i, (float)((-dataArray[j][i + 1] * scaler) + axis_x.getPosition().y)), dotColor[j]);
+		for (uint32_t i = 0; i < frameSamples - 1; i++) lineInterpol[j][i] = sf::Vertex(sf::Vector2f(frame.getPosition().x + (i*XSCALE), (float)((-dataArray[j][i + 1] * scaler) + axis_x.getPosition().y)), dotColor[j]);
 	}
 }
 
