@@ -1,5 +1,5 @@
 #include "Graph.h"
-#define XSCALE 1 //testing 1,10,100
+#define XSCALE 5 //testing 1,10,100
 
 //size, position
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
@@ -102,7 +102,7 @@ void Graph::draw(void) {
 	window.draw(axis_x);
 	for (int j = 0; j < _len; j++) {
 		//for (int i = 0; i < frameSamples; i++) window.draw(dot[j][i]);
-		window.draw(lineInterpol[j], frameSamples - 1, sf::Lines);
+		window.draw(lineInterpol[j], frameSamples - 1, sf::LineStrip);
 	}
 }
 
