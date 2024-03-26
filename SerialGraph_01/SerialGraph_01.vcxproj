@@ -166,6 +166,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\RS232Comm;C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\RS232Comm;C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="UtilFuncs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\RS232Comm\RS232Comm.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Labels.h" />
     <ClInclude Include="SerialGraph_01.h" />
+    <ClInclude Include="UtilFuncs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

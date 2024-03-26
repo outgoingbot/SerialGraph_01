@@ -114,7 +114,7 @@ int main()
 	Graph Graph_7(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 900), "Graph_7", NUMFLOATS);
 	Graph Graph_8(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 600), "Graph_8", NUMFLOATS);
 
-	Graph Graph_loopTime(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 200), "LoopTime", NUMFLOATS);
+	Graph Graph_loopTime(sf::Vector2f(600, WINDOW_HEIGHT / 12), sf::Vector2f(2250, 200), "LoopTime", NUMFLOATS);
 	
 
 	//Make shapes
@@ -124,7 +124,7 @@ int main()
 	loopTimeText.setString(loopText);
 	loopTimeText.setCharacterSize(50);
 	loopTimeText.setFillColor(sf::Color::Magenta);
-	loopTimeText.setPosition(sf::Vector2f(1800, 1300));
+	loopTimeText.setPosition(sf::Vector2f(2250, WINDOW_HEIGHT-300));
 	
 	//give me the mouse postion to help with layout
 	sf::Text mousePosText;

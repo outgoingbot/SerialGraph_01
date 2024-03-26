@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
+#include "UtilFuncs.h"
 
 extern sf::RenderWindow window;
 extern sf::Font font;
@@ -42,6 +43,8 @@ private:
 	float* dataArray[NUMFLOATS];
 	int _len; //number of floats per graph
 
+	float maxVal=10;
+	float minVal=0;
 
 };
 
