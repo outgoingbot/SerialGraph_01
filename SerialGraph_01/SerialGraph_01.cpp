@@ -47,40 +47,32 @@ next change will allow CSV strings with \r\n terminating
 #include "Config.h"
 #include "Buttons.h"
 #include "Graph.h"
-
+#include "Label.h"
 #include "CircularQueue.h"
 
+//Debug vars
+char charArrayDebug[256] = "Empty";
 
-//using namespace std::chrono;
-
-#define TOTALFLOATS 3
-#define SUBSTRING_LEN 32
-//Graphics
-float scaler = 1.0f; //needs to rescale all dots. not just new data
-
-
-char charArrayDebug[256] = "Empty"; //wtf this used for again?
-char charArrayMousePos[256] = "Empty"; //wtf this used for again?
-
-
-							   //Serial
+//Serial
 uint32_t numSamples = 0; //keep track of the total number of received data (WIP)
 char incomingData[256] = { 0 }; //Serial Rx Buffer
 unsigned int dataLength = 1;
 int bytesReceived = 0;
 
+
+//loop control
 bool killThread = false;
 
 
-//Globals
+//SFML Globals (dont change or remove)
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded", sf::Style::Default, sf::ContextSettings(32));
 sf::Font font;
-
 sf::Vector2f mousePosf;
+
 
 int main()
 {	
-
+	//set the Program Window Icon
 	auto image = sf::Image{};
 	if (!image.loadFromFile("../res/icon.png"))
 	{
@@ -89,6 +81,7 @@ int main()
 	}
 	window.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
 
+	//create the Comm port class object
 	Serial SP(COMM_PORT);    // adjust in config.h
 	if (SP.IsConnected()) printf("We're connected\r\n");
 
@@ -106,52 +99,32 @@ int main()
 
 	//Create Gui Objects
 	//Button( Size, Position, Text)
-	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1340, 150),"Button_1");
-	std::vector<Graph> Graph_Vector;
+	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1340, 150),sf::Color::Green,"Button_1");
 
+	std::vector<Graph> Graph_Vector;
 	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1500), "Graph_1", NUMFLOATS));
 	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1200), "Graph_2", NUMFLOATS));
 	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 900), "Graph_3", NUMFLOATS));
 	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 600), "Graph_4", NUMFLOATS));
-
 	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1500), "Graph_5", NUMFLOATS));
 	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1200), "Graph_6", NUMFLOATS));
 	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 900), "Graph_7", NUMFLOATS));
 	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 600), "Graph_8", NUMFLOATS));
 
-
 	Graph Graph_loopTime(sf::Vector2f(600, WINDOW_HEIGHT / 12), sf::Vector2f(2250, 200), "LoopTime", NUMFLOATS);
 	
-
-	//Make shapes
 	char loopText[64]="";
-	sf::Text loopTimeText;
-	loopTimeText.setFont(font);
-	loopTimeText.setString(loopText);
-	loopTimeText.setCharacterSize(50);
-	loopTimeText.setFillColor(sf::Color::Magenta);
-	loopTimeText.setPosition(sf::Vector2f(2250, WINDOW_HEIGHT-300));
+	Label loopTimeText(50, sf::Vector2f(2250, 300), sf::Color::Magenta, loopText);
 	
 	//give me the mouse postion to help with layout
-	sf::Text mousePosText;
-	mousePosText.setFont(font);
-	mousePosText.setString(charArrayMousePos); //wrong char array!
-	mousePosText.setCharacterSize(25);
-	mousePosText.setFillColor(sf::Color::Green);
-	mousePosText.setPosition(sf::Vector2f(100, 100));
+	char charArrayMousePos[256] = "Empty";
+	Label mousePosText(25, sf::Vector2f(100, 100), sf::Color::Green, charArrayMousePos);
 
-	//Display the serial data received
-	sf::Text serialText;
-	serialText.setFont(font);
-	serialText.setString(incomingData);
-	serialText.setCharacterSize(50);
-	serialText.setFillColor(sf::Color::Red);
-	serialText.setPosition(sf::Vector2f(0, 50));	//random spot
+	//To Display the serial data received
+	char charArraySerialData[256] = "Empty";
+	Label serialText(50, sf::Vector2f(0, WINDOW_HEIGHT-50), sf::Color::Yellow, charArraySerialData);
 	
-	sf::RectangleShape axis_x(sf::Vector2f(WINDOW_WIDTH, 2)); //x axis
-	axis_x.setPosition(sf::Vector2f(0, (window.getSize().y/2)-1));
-	axis_x.setFillColor(sf::Color::White);
-
+	
 	sf::RectangleShape xMouseCross(sf::Vector2f(WINDOW_WIDTH, 2)); //x mouse crosshair
 	xMouseCross.setPosition(sf::Vector2f(0, (window.getSize().y / 2) - 1));
 	xMouseCross.setFillColor(sf::Color::Magenta);
@@ -160,21 +133,7 @@ int main()
 	yMouseCross.setPosition(sf::Vector2f((window.getSize().x / 2) - 1, 0));
 	yMouseCross.setFillColor(sf::Color::Magenta);
 	
-	
-	//the descrete serial data
-	sf::CircleShape dot[WINDOW_WIDTH]; //create the dots
-	for (int i = 0; i < WINDOW_WIDTH; i++) { //initialize the dots
-		dot[i].setRadius(2.0);
-		dot[i].setOrigin(2.0, 2.0);
-		dot[i].setFillColor(sf::Color::Red);
-		dot[i].setPosition(sf::Vector2f(i, window.getSize().y / 2)); //place all dots on the x axis
-	}
-	
-	//connected lines that interpolate the descrete serial data
-	sf::Vertex lineInterpol[WINDOW_WIDTH - 1];
-
-	
-	//getting around 20mS without using threads
+	//getting around 1mS without using threads
 	std::thread serial_thread(&Serial::ReadData, &SP, incomingData, dataLength, &bytesReceived); ///retrieve buffer
 //-----------------------------------------MAIN LOOP------------------------------------------------------------
 	bool running = true;
@@ -204,8 +163,8 @@ int main()
 			}
 			else if (event.type == sf::Event::MouseWheelMoved) {
 					// display number of ticks mouse wheel has moved
-					if (event.mouseWheel.delta > 0) scaler += 1.0f;
-					if (event.mouseWheel.delta < 0) scaler -= 1.0f;
+					//if (event.mouseWheel.delta > 0) scaler += 1.0f;
+					//if (event.mouseWheel.delta < 0) scaler -= 1.0f;
 
 			}
 		}
@@ -215,9 +174,10 @@ int main()
 
 		xMouseCross.setPosition(sf::Vector2f(0, mousePosf.y));
 		yMouseCross.setPosition(sf::Vector2f(mousePosf.x,0));
+		
 		sprintf_s(charArrayMousePos, "(%f  %f)", (float)(sf::Mouse::getPosition(window).x), (float)(WINDOW_HEIGHT - sf::Mouse::getPosition(window).y));
-		mousePosText.setString(charArrayMousePos);
-		mousePosText.setPosition(sf::Vector2f(mousePosf.x + 20, mousePosf.y)); //set text
+		mousePosText.setText(charArrayMousePos);
+		mousePosText.setPos(sf::Vector2f(mousePosf.x + 20, mousePosf.y)); //set text
 
 
 
@@ -227,43 +187,54 @@ int main()
 		}
 
 		//Handle the Graph Pressed Event:
-		if (Graph_Vector[0].isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[0].getState((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_Vector[1].isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[1].getState((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_Vector[2].isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[2].getState((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_Vector[3].isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[3].getState((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_Vector[4].isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[4].getState((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_Vector[5].isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[5].getState((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_Vector[6].isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[6].getState((sf::Vector2i)mousePosf)) {
 
 		}
 		//Handle the Graph Pressed Event:
-		if (Graph_Vector[7].isPressed((sf::Vector2i)mousePosf)) {
+		if (Graph_Vector[7].getState((sf::Vector2i)mousePosf)) {
 
 		}
 
 
-		//Handle the Graph Pressed Event:
-		if (Graph_loopTime.isPressed((sf::Vector2i)mousePosf)) {
+		//Handle the Looptime Graph Pressed Event:
+		if (Graph_loopTime.getState((sf::Vector2i)mousePosf)) {
 
 		}
+
+		//Handle Labels
+		if (loopTimeText.getState((sf::Vector2i)mousePosf)) {
+
+		}
+
+		if (serialText.getState((sf::Vector2i)mousePosf)) {
+
+		}
+
+
 
 		//---------------------------------------------------display-------------------------------------------------
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -278,10 +249,10 @@ int main()
 		for (int i = 0; i < NUM_GRAPHS; i++)Graph_Vector[i].draw();
 		
 		Graph_loopTime.draw();
+		loopTimeText.draw();
+		mousePosText.draw();
+		serialText.draw();
 
-		window.draw(loopTimeText);
-		window.draw(mousePosText);
-		window.draw(serialText);
 		window.draw(xMouseCross);
 		window.draw(yMouseCross);
 
@@ -293,8 +264,8 @@ int main()
 		if (SP.payloadComplete) { // ascii to bin
 			SP.payloadComplete = false;
 			printf("Data: %f, %f, %f Qs:%i pIdx:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize, SP.payloadIdx);
-			sprintf_s(charArrayDebug, "Serial Data: %f, %f, %f", SP.myData[0], SP.myData[1], SP.myData[2]);
-			serialText.setString(charArrayDebug);
+			sprintf_s(charArraySerialData, "Serial Data: %f, %f, %f", SP.myData[0], SP.myData[1], SP.myData[2]);
+			serialText.setText(charArraySerialData);
 
 			if(SP.payloadIdx) Graph_Vector[SP.payloadIdx-1].update(SP.myData, NUMFLOATS);
 		}
@@ -306,10 +277,12 @@ int main()
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);
 		float loopTimeDuration = (float)duration.count()/1000.f;
 		sprintf_s(loopText, "Loop Time: %f", loopTimeDuration);
-		loopTimeText.setString(loopText);
+		loopTimeText.setText(loopText);
 		Graph_loopTime.update(&loopTimeDuration, 1);		
 
 	}//end update loop
+
+	window.close();
 	killThread = true;
 	serial_thread.join();
 	return 0;

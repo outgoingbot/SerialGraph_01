@@ -2,7 +2,9 @@
 
 
 //set size, position, text
-Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, const char* string) {
+
+Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string) {
+	_color = color;
 	Button.setSize(size);
 
 	sf::FloatRect btn = Button.getLocalBounds();
@@ -25,56 +27,23 @@ Buttons::~Buttons() {
 	//delete rectangle shape and text. needed?
 }
 
-//have a on click
-
-//bool Buttons::isPressed(sf::Vector2i mousePosition) {
-//
-//	if (isMouseOverRect(mousePosition)) {		
-//		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-//			Button.setFillColor(sf::Color(255, 0, 255));
-//			return true;
-//			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
-//		}
-//
-//		//move the object
-//		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-//			Button.setPosition(sf::Vector2f(mousePosition.x,mousePosition.y));
-//			text.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
-//			return false;
-//			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
-//		}
-//	}
-//	return false;
-//}
-
-bool Buttons::isMouseOverRect(sf::Vector2i mousePosition) {
-	if (mousePosition.x > Button.getPosition().x - (Button.getSize().x/2) && mousePosition.x < Button.getPosition().x + (Button.getSize().x/2)) {
-		if (mousePosition.y > Button.getPosition().y- (Button.getSize().y / 2) && mousePosition.y < Button.getPosition().y + (Button.getSize().y/2)) {
-			Button.setFillColor(sf::Color(0, 0, 255));
-			return true;
-		}
-	}
-	Button.setFillColor(sf::Color(255, 0, 0));
-	return false;
-}
-
 
 
 Button_State_t Buttons::getState(sf::Vector2i mousePosition) {
-	Button_State_t returnVal = STATE_READY;
+	Button_State_t returnVal = BUTTON_STATE_READY;
 
 	if (isMouseOverRect(mousePosition)) {
-		returnVal |= STATE_HOVER;
+		returnVal |= BUTTON_STATE_HOVER;
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			Button.setFillColor(sf::Color(255, 0, 255));
-			returnVal |=STATE_CLICK_LEFT;
+			returnVal |= BUTTON_STATE_CLICK_LEFT;
 		}
 
 		//move the object
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 			Button.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
 			text.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
-			returnVal |= STATE_CLICK_LEFT;
+			returnVal |= BUTTON_STATE_CLICK_RIGHT;
 			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
 		}
 	}
@@ -82,11 +51,20 @@ Button_State_t Buttons::getState(sf::Vector2i mousePosition) {
 }
 
 
+bool Buttons::isMouseOverRect(sf::Vector2i mousePosition) {
+	if (mousePosition.x > Button.getPosition().x - (Button.getSize().x / 2) && mousePosition.x < Button.getPosition().x + (Button.getSize().x / 2)) {
+		if (mousePosition.y > Button.getPosition().y - (Button.getSize().y / 2) && mousePosition.y < Button.getPosition().y + (Button.getSize().y / 2)) {
+			Button.setFillColor(sf::Color(255, 0, 0));
+			return true;
+		}
+	}
+	Button.setFillColor(_color);
+	return false;
+}
+
+
+
 void Buttons::draw() {
 	window.draw(Button);
 	window.draw(text);
 }
-
-//Button_State_t& operator+(Button_State_t &orig) {
-//
-//}

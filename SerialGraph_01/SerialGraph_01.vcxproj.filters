@@ -24,9 +24,6 @@
     <ClCompile Include="Buttons.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Labels.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -51,9 +48,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Buttons.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Labels.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graph.h">

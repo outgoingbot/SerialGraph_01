@@ -5,10 +5,20 @@
 #include <SFML/System.hpp>
 #include "UtilFuncs.h"
 
+
 extern sf::RenderWindow window;
 extern sf::Font font;
 
 #define NUMFLOATS 3
+
+typedef enum {
+	GRAPH_STATE_READY = 0x00U,
+	GRAPH_STATE_HOVER = 0x01U,
+	GRAPH_STATE_CLICK_LEFT = 0x02U,
+	GRAPH_STATE_CLICK_RIGHT = 0x04U
+} Graph_Flags_t;
+
+typedef uint8_t Graph_State_t;
 
 class Graph
 {
@@ -16,8 +26,9 @@ public:
 	Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars);
 	~Graph();
 
-	bool isPressed(sf::Vector2i mousePosition);
 	bool isMouseOverRect(sf::Vector2i mousePosition);
+	
+	Graph_State_t getState(sf::Vector2i mousePosition);
 
 	void setScale(float scl);
 	void autoScale(bool);
@@ -30,7 +41,6 @@ public:
 
 	sf::RectangleShape axis_x; //create button with wideth,height
 	sf::Color dotColor[NUMFLOATS];
-	//sf::CircleShape* dot[NUMFLOATS];// = nullptr; //create the dots
 	sf::Vertex* lineInterpol[NUMFLOATS];// = nullptr;
 
 	sf::Text text; //just holds the graph title
@@ -47,4 +57,3 @@ private:
 	float minVal=0;
 
 };
-

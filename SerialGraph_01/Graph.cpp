@@ -36,20 +36,17 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	
 	
 	
-
+	//change this to memSet
 	for (int j = 0; j < numVars; j++) {
-		//dot[j] = new sf::CircleShape[frameSamples];
-		for (uint32_t i = 0; i < frameSamples; i++) { //initialize the dots
-			//dot[j][i].setRadius(2.0);
-			//dot[j][i].setOrigin(2.0, 2.0);
-			//dot[j][i].setFillColor(dotColor[j]);
-			//dot[j][i].setPosition(sf::Vector2f(frame.getPosition().x + i, axis_x.getPosition().y)); //place all dots on the x axis
+		for (uint32_t i = 0; i < frameSamples; i++) { //initialize the dataArray
 			dataArray[j][i] = 0.0f;
 		}
 	}
+
+
 	for (int j = 0; j < numVars; j++) {
 		lineInterpol[j] = new sf::Vertex[frameSamples - 1];
-		for (uint32_t i = 0; i < frameSamples - 1; i++) { //initialize the lines
+		for (uint32_t i = 0; i < frameSamples - 1; i++) { //initialize the lineStrip verticies
 			lineInterpol[j][i] = sf::Vertex((sf::Vector2f(frame.getPosition().x + (i*XSCALE), axis_x.getPosition().y))); //place all dots on the x axis
 		}
 	}
@@ -78,52 +75,59 @@ void Graph::autoScale(bool) {
 void Graph::update(float *dataPoint, uint8_t len) {
 	maxVal = 0;
 	minVal = 100000;
+
+	
 	for (int j = 0; j < len; j++) {
+		//Search for Max and Min Values (this could be tracked as the serial data comes in maybe?)
 		for (uint32_t i = 0; i < frameSamples - 1; i++) {	
 			dataArray[j][i] = dataArray[j][i + 1];
-			if (dataArray[j][i] > maxVal) maxVal = dataArray[j][i]+1;
+			if (dataArray[j][i] > maxVal) maxVal = dataArray[j][i];
 			if (dataArray[j][i] < minVal) minVal = dataArray[j][i];
-			//dot[j][i].setPosition(sf::Vector2f(frame.getPosition().x + i, (float)((-dataArray[j][i + 1] * this->scaler) + frame.getPosition().y + (frame.getSize().y / 2)))); //shift the dots left 1 pixel
 		}
-
-		scaler = frame.getSize().y / maxVal;
+		
+		//Set the scaler to multiply the data by. this auto scales the data to fit in the graph window (top edge)
+		scaler = frame.getSize().y / (maxVal+1);
+		
+		//Trying to Set the X axis position to so the Min Value is close graph window edge (bottom edge)		
 		axis_x.setPosition(frame.getPosition().x, frame.getPosition().y+frame.getSize().y - (minVal));
+		
+		//Store the new Data float value in the Rightmost data point
 		dataArray[j][frameSamples - 1] = dataPoint[j];
-		//dot[j][frameSamples - 1].setPosition(sf::Vector2f(frame.getPosition().x + frameSamples - 1, (float)(-dataPoint[j] * scaler + frame.getPosition().y + (frame.getSize().y / 2)))); //keep the dots y position but shift the x values from i+1 to i
-
-		//draw linear interpolated lines
+		
+		//draw linear interpolated lines by shifting all the data points Left
 		for (uint32_t i = 0; i < frameSamples - 1; i++) lineInterpol[j][i] = sf::Vertex(sf::Vector2f(frame.getPosition().x + (i*XSCALE), (float)((-dataArray[j][i + 1] * scaler) + axis_x.getPosition().y)), dotColor[j]);
 	}
 }
+
 
 void Graph::draw(void) {
 	window.draw(frame);
 	window.draw(text);
 	window.draw(axis_x);
-	for (int j = 0; j < _len; j++) {
-		//for (int i = 0; i < frameSamples; i++) window.draw(dot[j][i]);
-		window.draw(lineInterpol[j], frameSamples - 1, sf::LineStrip);
-	}
+	for (int j = 0; j < _len; j++) window.draw(lineInterpol[j], frameSamples - 1, sf::LineStrip);
 }
 
 
 
-bool Graph::isPressed(sf::Vector2i mousePosition) {
+Graph_State_t Graph::getState(sf::Vector2i mousePosition) {
 #define MOUSESHIFT 30 //hack to keep the mouse over the graph box
+	Graph_State_t returnVal = GRAPH_STATE_READY;
+	
 	if (isMouseOverRect(mousePosition)) {
+		 returnVal |= GRAPH_STATE_HOVER;
+
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			frame.setFillColor(sf::Color(255, 0, 255));
-			return true;
+			returnVal |= GRAPH_STATE_CLICK_LEFT;
 			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
 		}
 
 		//move the object
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 			frame.setPosition(sf::Vector2f(mousePosition.x- MOUSESHIFT, mousePosition.y - MOUSESHIFT));
-			///text.setPosition(sf::Vector2f(mousePosition.x-10, mousePosition.y-10));
 			text.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y));
 			axis_x.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y + (frame.getSize().y / 2)));
-			return false;
+			returnVal |= GRAPH_STATE_CLICK_RIGHT;
 			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
 		}
 
@@ -141,6 +145,10 @@ bool Graph::isPressed(sf::Vector2i mousePosition) {
 	}
 	return false;
 }
+
+
+
+
 
 bool Graph::isMouseOverRect(sf::Vector2i mousePosition) {
 	if (mousePosition.x > frame.getPosition().x && mousePosition.x < frame.getPosition().x+frame.getSize().x) {

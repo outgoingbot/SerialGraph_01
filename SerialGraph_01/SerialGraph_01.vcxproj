@@ -163,7 +163,6 @@
     <ClCompile Include="CircularQueue.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="Label.cpp" />
-    <ClCompile Include="Labels.cpp" />
     <ClCompile Include="SerialGraph_01.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\RS232Comm;C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\RS232Comm;C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -179,7 +178,6 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Label.h" />
-    <ClInclude Include="Labels.h" />
     <ClInclude Include="SerialGraph_01.h" />
     <ClInclude Include="Slider.h" />
     <ClInclude Include="UtilFuncs.h" />
