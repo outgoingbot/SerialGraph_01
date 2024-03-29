@@ -116,14 +116,14 @@ int main()
 	elements.push_back(&Button_2);
 
 	std::vector<Graph*> Graph_Vector;
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(650, 1500), "Graph_1", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(650, 1200), "Graph_2", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(650, 900), "Graph_3", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(650, 600), "Graph_4", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2000, 1500), "Graph_5", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2000, 1200), "Graph_6", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2000, 900), "Graph_7", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2000, 600), "Graph_8", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(750, 1400), "Graph_1", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(750, 1100), "Graph_2", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(750, 800), "Graph_3", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(750, 500), "Graph_4", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2100, 1400), "Graph_5", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2100, 1100), "Graph_6", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2100, 800), "Graph_7", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2100, 500), "Graph_8", NUMFLOATS));
 
 	// stuff elements vector with Graph_Vector
 	for (auto vector : Graph_Vector) elements.push_back(vector);
@@ -198,12 +198,12 @@ int main()
 		//Mouse Position Even after Windows Resizing
 		mousePosf = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
-		xMouseCross.setPosition(sf::Vector2f(0, mousePosf.y));
-		yMouseCross.setPosition(sf::Vector2f(mousePosf.x,0));
-		
-		sprintf_s(charArrayMousePos, "(%f  %f)", (float)(sf::Mouse::getPosition(window).x), (float)(WINDOW_HEIGHT - sf::Mouse::getPosition(window).y));
-		mousePosText.setText(charArrayMousePos);
-		mousePosText.setPos(sf::Vector2f(mousePosf.x + 50, mousePosf.y + 50)); //set text
+		//xMouseCross.setPosition(sf::Vector2f(0, mousePosf.y));
+		//yMouseCross.setPosition(sf::Vector2f(mousePosf.x,0));
+		//
+		//sprintf_s(charArrayMousePos, "(%f  %f)", (float)(sf::Mouse::getPosition(window).x), (float)(WINDOW_HEIGHT - sf::Mouse::getPosition(window).y));
+		//mousePosText.setText(charArrayMousePos);
+		//mousePosText.setPos(sf::Vector2f(mousePosf.x + 50, mousePosf.y + 50)); //set text
 
 		if (movingElement != nullptr) {
 			// Keep track of which element we are dragging 
@@ -235,8 +235,8 @@ int main()
 
 		for (auto element : elements) element->draw();
 
-		window.draw(xMouseCross);
-		window.draw(yMouseCross);
+		//window.draw(xMouseCross);
+		//window.draw(yMouseCross);
 
 		window.display(); //show drawn objects to the display buffer
 

@@ -4,7 +4,7 @@
 //map one domain to another
 class UtilFuncs {
 public:
-	inline float mapFloat(float x, float in_min, float in_max, float out_min, float out_max);
+	static float mapFloat(float x, float in_min, float in_max, float out_min, float out_max);
 	//float constrain function
 	float constrainFloat(float x, float min, float max);
 
