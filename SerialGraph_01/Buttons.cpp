@@ -1,8 +1,10 @@
 #include "Buttons.h"
 
+extern sf::RenderWindow window;
+extern sf::Font font;
+//extern mutex_t gui_mutex;
 
 //set size, position, text
-
 Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string) {
 	_color = color;
 	Button.setSize(size);
@@ -29,24 +31,26 @@ Buttons::~Buttons() {
 
 
 
-Button_State_t Buttons::getState(sf::Vector2i mousePosition) {
-	Button_State_t returnVal = BUTTON_STATE_READY;
+UI_State_t Buttons::getState(sf::Vector2i mousePosition) {
+	UI_State_t returnVal = BUTTON_STATE_READY;
 
-	if (isMouseOverRect(mousePosition)) {
-		returnVal |= BUTTON_STATE_HOVER;
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			Button.setFillColor(sf::Color(255, 0, 255));
-			returnVal |= BUTTON_STATE_CLICK_LEFT;
-		}
+		if (isMouseOverRect(mousePosition)) {
+			returnVal |= BUTTON_STATE_HOVER;
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+				Button.setFillColor(sf::Color(255, 0, 255));
+				returnVal |= BUTTON_STATE_CLICK_LEFT;
+			}
 
-		//move the object
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-			Button.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
-			text.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
-			returnVal |= BUTTON_STATE_CLICK_RIGHT;
-			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+		//	//move the object
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+				Button.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
+				text.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
+				returnVal |= BUTTON_STATE_CLICK_RIGHT;
+				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+			}
+			else {
+			}
 		}
-	}
 	return returnVal;
 }
 

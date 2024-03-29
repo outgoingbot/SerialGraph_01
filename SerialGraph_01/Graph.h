@@ -1,13 +1,10 @@
 #pragma once
 #include "Config.h"
+#include "UIElement.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include "UtilFuncs.h"
-
-
-extern sf::RenderWindow window;
-extern sf::Font font;
 
 #define NUMFLOATS 3
 
@@ -18,9 +15,8 @@ typedef enum {
 	GRAPH_STATE_CLICK_RIGHT = 0x04U
 } Graph_Flags_t;
 
-typedef uint8_t Graph_State_t;
 
-class Graph
+class Graph : public UIElement
 {
 public:
 	Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars);
@@ -28,7 +24,7 @@ public:
 
 	bool isMouseOverRect(sf::Vector2i mousePosition);
 	
-	Graph_State_t getState(sf::Vector2i mousePosition);
+	UI_State_t getState(sf::Vector2i mousePosition);
 
 	void setScale(float scl);
 	void autoScale(bool);
@@ -48,7 +44,6 @@ public:
 
 
 private:
-
 	uint32_t frameSamples; //number of samples per frame (based on frame width)
 	float* dataArray[NUMFLOATS];
 	int _len; //number of floats per graph

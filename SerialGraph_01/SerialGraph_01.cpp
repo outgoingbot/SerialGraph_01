@@ -50,6 +50,7 @@ next change will allow CSV strings with \r\n terminating
 #include "Label.h"
 #include "CircularQueue.h"
 
+
 //Debug vars
 char charArrayDebug[256] = "Empty";
 
@@ -59,15 +60,16 @@ char incomingData[256] = { 0 }; //Serial Rx Buffer
 unsigned int dataLength = 1;
 int bytesReceived = 0;
 
+//SFML Globals (dont change or remove)
 
 //loop control
-bool killThread = false;
-
-
-//SFML Globals (dont change or remove)
+bool killThread = false; //rename to killSerialThread
+uint8_t gui_ID = 0;
+//graphics
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded", sf::Style::Default, sf::ContextSettings(32));
 sf::Font font;
 sf::Vector2f mousePosf;
+//SFML Globals (dont change or remove)
 
 
 int main()
@@ -102,14 +104,14 @@ int main()
 	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1340, 150),sf::Color::Green,"Button_1");
 
 	std::vector<Graph> Graph_Vector;
-	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1500), "Graph_1", NUMFLOATS));
-	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 1200), "Graph_2", NUMFLOATS));
-	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 900), "Graph_3", NUMFLOATS));
-	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(20, 600), "Graph_4", NUMFLOATS));
-	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1500), "Graph_5", NUMFLOATS));
-	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 1200), "Graph_6", NUMFLOATS));
-	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 900), "Graph_7", NUMFLOATS));
-	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(1400, 600), "Graph_8", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(650, 1500), "Graph_1", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(650, 1200), "Graph_2", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(650, 900), "Graph_3", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(650, 600), "Graph_4", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2000, 1500), "Graph_5", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2000, 1200), "Graph_6", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2000, 900), "Graph_7", NUMFLOATS));
+	Graph_Vector.push_back(Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2000, 600), "Graph_8", NUMFLOATS));
 
 	Graph Graph_loopTime(sf::Vector2f(600, WINDOW_HEIGHT / 12), sf::Vector2f(2250, 200), "LoopTime", NUMFLOATS);
 	
@@ -137,6 +139,8 @@ int main()
 	std::thread serial_thread(&Serial::ReadData, &SP, incomingData, dataLength, &bytesReceived); ///retrieve buffer
 //-----------------------------------------MAIN LOOP------------------------------------------------------------
 	bool running = true;
+	UIElement* movingElement = nullptr;
+
 	while (running)
 	{
 		auto startTime = std::chrono::high_resolution_clock::now();
@@ -155,10 +159,13 @@ int main()
 				running = false;
 			}
 			else if (event.type == sf::Event::Resized) {
+				
 				glViewport(0, 0, event.size.width, event.size.height);
 				// update the view to the new size of the window
-				//sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-				//window.setView(sf::View(visibleArea));
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+					sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+					window.setView(sf::View(visibleArea));
+				}
 				//SP.~Serial(); //deconstruct
 			}
 			else if (event.type == sf::Event::MouseWheelMoved) {
@@ -179,62 +186,113 @@ int main()
 		mousePosText.setText(charArrayMousePos);
 		mousePosText.setPos(sf::Vector2f(mousePosf.x + 20, mousePosf.y)); //set text
 
-
-
-		//Handle the Button Pressed Event:
-		if (Button_1.getState((sf::Vector2i)mousePosf)) {
-
+		if (movingElement != nullptr) {
+			movingElement->getState((sf::Vector2i)mousePosf);
+			// If the right mouse button is depressed, release movingElement
+			if (!sf::Mouse::isButtonPressed(sf::Mouse::Right)) movingElement = nullptr;
 		}
+		else 
+		{
+			//Handle the Button Pressed Event:
+			if (Button_1.getState((sf::Vector2i)mousePosf)) {
+				// if the right mouse is pressed on this element, set it to the moving element
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					movingElement = &Button_1;
+					goto HANDLED_UI;
+				}
 
-		//Handle the Graph Pressed Event:
-		if (Graph_Vector[0].getState((sf::Vector2i)mousePosf)) {
+			}
 
-		}
-		//Handle the Graph Pressed Event:
-		if (Graph_Vector[1].getState((sf::Vector2i)mousePosf)) {
+			//Handle the Graph Pressed Event:
+			if (Graph_Vector[0].getState((sf::Vector2i)mousePosf)) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					movingElement = &Graph_Vector[0];
+					goto HANDLED_UI;
+				}
+			}
 
-		}
-		//Handle the Graph Pressed Event:
-		if (Graph_Vector[2].getState((sf::Vector2i)mousePosf)) {
+			//Handle the Graph Pressed Event:
+			if (Graph_Vector[1].getState((sf::Vector2i)mousePosf)) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					movingElement = &Graph_Vector[1];
+					goto HANDLED_UI;
+				}
+			}
 
-		}
-		//Handle the Graph Pressed Event:
-		if (Graph_Vector[3].getState((sf::Vector2i)mousePosf)) {
+			//Handle the Graph Pressed Event:
+			if (Graph_Vector[2].getState((sf::Vector2i)mousePosf)) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					movingElement = &Graph_Vector[2];
+					goto HANDLED_UI;
+				}
+			}
 
-		}
-		//Handle the Graph Pressed Event:
-		if (Graph_Vector[4].getState((sf::Vector2i)mousePosf)) {
+			//Handle the Graph Pressed Event:
+			if (Graph_Vector[3].getState((sf::Vector2i)mousePosf)) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					movingElement = &Graph_Vector[3];
+					goto HANDLED_UI;
+				}
+			}
 
-		}
-		//Handle the Graph Pressed Event:
-		if (Graph_Vector[5].getState((sf::Vector2i)mousePosf)) {
+			//Handle the Graph Pressed Event:
+			if (Graph_Vector[4].getState((sf::Vector2i)mousePosf)) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					movingElement = &Graph_Vector[4];
+					goto HANDLED_UI;
+				}
+			}
 
-		}
-		//Handle the Graph Pressed Event:
-		if (Graph_Vector[6].getState((sf::Vector2i)mousePosf)) {
+			//Handle the Graph Pressed Event:
+			if (Graph_Vector[5].getState((sf::Vector2i)mousePosf)) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					movingElement = &Graph_Vector[5];
+					goto HANDLED_UI;
+				}
+			}
 
-		}
-		//Handle the Graph Pressed Event:
-		if (Graph_Vector[7].getState((sf::Vector2i)mousePosf)) {
+			//Handle the Graph Pressed Event:
+			if (Graph_Vector[6].getState((sf::Vector2i)mousePosf)) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					movingElement = &Graph_Vector[6];
+					goto HANDLED_UI;
+				}
+			}
 
-		}
+			//Handle the Graph Pressed Event:
+			if (Graph_Vector[7].getState((sf::Vector2i)mousePosf)) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+					movingElement = &Graph_Vector[7];
+					goto HANDLED_UI;
+				}
+			}
 
 
 		//Handle the Looptime Graph Pressed Event:
 		if (Graph_loopTime.getState((sf::Vector2i)mousePosf)) {
-
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+				movingElement = &Graph_loopTime;
+				goto HANDLED_UI;
+			}
 		}
 
 		//Handle Labels
 		if (loopTimeText.getState((sf::Vector2i)mousePosf)) {
-
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+				movingElement = &loopTimeText;
+				goto HANDLED_UI;
+			}
 		}
 
 		if (serialText.getState((sf::Vector2i)mousePosf)) {
-
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+				movingElement = &serialText;
+				goto HANDLED_UI;
+			}
 		}
+	}
 
-
+		HANDLED_UI:
 
 		//---------------------------------------------------display-------------------------------------------------
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

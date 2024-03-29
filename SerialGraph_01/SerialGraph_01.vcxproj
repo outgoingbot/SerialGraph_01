@@ -168,6 +168,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\RS232Comm;C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="Slider.cpp" />
+    <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UtilFuncs.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -178,8 +179,10 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Label.h" />
+    <ClInclude Include="Mutex_Obj.h" />
     <ClInclude Include="SerialGraph_01.h" />
     <ClInclude Include="Slider.h" />
+    <ClInclude Include="UIElement.h" />
     <ClInclude Include="UtilFuncs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

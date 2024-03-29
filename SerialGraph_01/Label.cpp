@@ -1,11 +1,13 @@
 #include "Label.h"
+extern sf::RenderWindow window;
+extern sf::Font font;
+
 
 //set size, position, text
 Label::Label(unsigned int size, sf::Vector2f position, sf::Color color, const char* string) {
 	_color = color;
-	text.setCharacterSize(size);
-
 	text.setFont(font);
+	text.setCharacterSize(size);
 	text.setString(string);
 	sf::FloatRect rc = text.getLocalBounds();
 	text.setOrigin(rc.width / 2, rc.height / 2);
@@ -20,7 +22,7 @@ Label::~Label() {
 
 
 void Label::setPos(sf::Vector2f position) {
-	text.setPosition(sf::Vector2f(position.x+20, position.y+20));
+	text.setPosition(sf::Vector2f(position.x, position.y));
 }
 
 void Label::setText(const char* string) {
@@ -34,21 +36,29 @@ void Label::setText(const float f) {
 	text.setString(string);
 }
 
-Label_State_t Label::getState(sf::Vector2i mousePosition) {
-	Label_State_t returnVal = LABEL_STATE_READY;
+UI_State_t Label::getState(sf::Vector2i mousePosition) {
+	UI_State_t returnVal = LABEL_STATE_READY;
+
+	//store the global into a private var
 
 	if (isMouseOverRect(mousePosition)) {
-		returnVal |= LABEL_STATE_HOVER;
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			text.setFillColor(sf::Color(255, 0, 255));
-			returnVal |= LABEL_STATE_CLICK_LEFT;
-		}
 
-		//move the object
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-			text.setPosition(sf::Vector2f(mousePosition.x-20, mousePosition.y-20));
-			returnVal |= LABEL_STATE_CLICK_RIGHT;
-			//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+		if (isMouseOverRect(mousePosition)) {
+			returnVal |= LABEL_STATE_HOVER;
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+				text.setFillColor(sf::Color(255, 0, 255));
+				returnVal |= LABEL_STATE_CLICK_LEFT;
+			}
+
+			//move the object
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+				text.setPosition(sf::Vector2f(mousePosition.x - 20, mousePosition.y - 20));
+				returnVal |= LABEL_STATE_CLICK_RIGHT;
+				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+			}
+			else {
+
+			}
 		}
 	}
 	return returnVal;

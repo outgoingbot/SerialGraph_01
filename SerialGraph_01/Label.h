@@ -3,9 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
+#include "UIElement.h"
 
-extern sf::RenderWindow window;
-extern sf::Font font;
+
 
 typedef enum {
 	LABEL_STATE_READY = 0x00U,
@@ -14,9 +14,9 @@ typedef enum {
 	LABEL_STATE_CLICK_RIGHT = 0x04U
 } Label_Flags_t;
 
-typedef uint8_t Label_State_t;
+//typedef uint8_t Label_State_t;
 
-class Label
+class Label : public UIElement
 {
 public:
 	Label(unsigned int size, sf::Vector2f position, sf::Color color, const char* string);
@@ -26,7 +26,7 @@ public:
 
 	void setPos(sf::Vector2f position);
 
-	Label_State_t getState(sf::Vector2i mousePosition);
+	UI_State_t getState(sf::Vector2i mousePosition);
 
 	bool isMouseOverRect(sf::Vector2i mousePosition);
 
