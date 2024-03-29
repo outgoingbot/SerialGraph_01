@@ -20,7 +20,7 @@ class Buttons : public UIElement
 {
 public:
 
-	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string);
+	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)() = nullptr);
 	~Buttons();
 
 	UI_State_t getState(sf::Vector2i mousePosition);
@@ -36,7 +36,7 @@ public:
 
 private:
 
-
+	uint8_t(*buttonCallback)() = nullptr;
 
 };
 

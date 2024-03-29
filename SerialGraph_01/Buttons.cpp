@@ -5,7 +5,7 @@ extern sf::Font font;
 //extern mutex_t gui_mutex;
 
 //set size, position, text
-Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string) {
+Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t (*callback)()) {
 	_color = color;
 	Button.setSize(size);
 
@@ -21,7 +21,7 @@ Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, cons
 	text.setOrigin(rc.width / 2, rc.height / 2);
 	text.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
 	text.setFillColor(sf::Color::White);
-	
+	buttonCallback = callback;
 }
 
 
@@ -39,6 +39,7 @@ UI_State_t Buttons::getState(sf::Vector2i mousePosition) {
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 				Button.setFillColor(sf::Color(255, 0, 255));
 				returnVal |= BUTTON_STATE_CLICK_LEFT;
+				if(buttonCallback != nullptr) buttonCallback();
 			}
 
 		//	//move the object

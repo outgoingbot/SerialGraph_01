@@ -81,12 +81,13 @@ void Graph::autoScale(bool) {
 
 }
 
-void Graph::update(float *dataPoint, uint8_t len) {
+void Graph::update(float *dataPoint) {
+	if (dataPoint == nullptr) return;
 	maxVal = 0;
 	minVal = 100000;
 
 	
-	for (int j = 0; j < len; j++) {
+	for (int j = 0; j < _len; j++) {
 		//Search for Max and Min Values (this could be tracked as the serial data comes in maybe?)
 		for (uint32_t i = 0; i < frameSamples - 1; i++) {	
 			dataArray[j][i] = dataArray[j][i + 1];
@@ -140,6 +141,14 @@ UI_State_t Graph::getState(sf::Vector2i mousePosition) {
 				text.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y));
 				axis_x.setPosition(sf::Vector2f(frame.getPosition().x-frame.getSize().x/2, frame.getPosition().y));
 					
+				// Update Graph Lines
+				//draw linear interpolated lines by shifting all the data points Left
+				for (int j = 0; j < _len; j++) {
+					for (uint32_t i = 0; i < frameSamples - 1; i++) {
+						lineInterpol[j][i] = sf::Vertex(sf::Vector2f(axis_x.getPosition().x + (i*XSCALE), (float)((-dataArray[j][i] * scaler) + axis_x.getPosition().y)), dotColor[j]);
+					}
+				}
+
 				returnVal |= GRAPH_STATE_CLICK_RIGHT;
 				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
 			}

@@ -28,7 +28,7 @@ public:
 
 	void setScale(float scl);
 	void autoScale(bool);
-	void update(float *dataPoint, uint8_t len);
+	void update(float *dataPoint=nullptr);
 	void draw(void);
 
 	float scaler = 0.5f;
