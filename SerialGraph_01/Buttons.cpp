@@ -59,7 +59,7 @@ UI_State_t Buttons::getState(sf::Vector2i mousePosition) {
 bool Buttons::isMouseOverRect(sf::Vector2i mousePosition) {
 	if (mousePosition.x > Button.getPosition().x - (Button.getSize().x / 2) && mousePosition.x < Button.getPosition().x + (Button.getSize().x / 2)) {
 		if (mousePosition.y > Button.getPosition().y - (Button.getSize().y / 2) && mousePosition.y < Button.getPosition().y + (Button.getSize().y / 2)) {
-			Button.setFillColor(sf::Color(255, 0, 0));
+			Button.setFillColor(sf::Color::Yellow);
 			return true;
 		}
 	}

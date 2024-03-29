@@ -30,8 +30,8 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	for(int j=0; j<numVars; j++) dataArray[j] = new float[frameSamples];
 	frame.setSize(size);
 	
-	sf::FloatRect grph = frame.getLocalBounds();
-	frame.setOrigin(grph.width / 2, grph.height / 2);
+	sf::FloatRect graphRec = frame.getLocalBounds();
+	frame.setOrigin(graphRec.width / 2, graphRec.height / 2);
 
 	frame.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
 	frame.setOutlineThickness(2);
@@ -60,11 +60,11 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 		}
 	}
 
-
+	graphRec = frame.getGlobalBounds();
 	text.setFont(font);
 	text.setString(title);
 	text.setCharacterSize(40);
-	text.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y));
+	text.setPosition(sf::Vector2f(graphRec.left, graphRec.top));
 	text.setFillColor(sf::Color::White);
 
 }
@@ -123,6 +123,8 @@ void Graph::draw(void) {
 UI_State_t Graph::getState(sf::Vector2i mousePosition) {
 #define MOUSESHIFT 0 //hack to keep the mouse over the graph box
 	UI_State_t returnVal = GRAPH_STATE_READY;
+	sf::FloatRect graphRec = frame.getLocalBounds();
+
 	
 		if (isMouseOverRect(mousePosition)) {
 			returnVal |= GRAPH_STATE_HOVER;
@@ -138,7 +140,7 @@ UI_State_t Graph::getState(sf::Vector2i mousePosition) {
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 				
 				frame.setPosition(sf::Vector2f(mousePosition.x - MOUSESHIFT, mousePosition.y - MOUSESHIFT));
-				text.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y));
+				text.setPosition(sf::Vector2f(graphRec.left, graphRec.top));
 				axis_x.setPosition(sf::Vector2f(frame.getPosition().x-frame.getSize().x/2, frame.getPosition().y));
 					
 				// Update Graph Lines

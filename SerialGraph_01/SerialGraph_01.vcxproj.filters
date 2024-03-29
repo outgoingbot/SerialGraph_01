@@ -77,9 +77,6 @@
     <ClInclude Include="CheckBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mutex_Obj.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UIElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -19,7 +19,7 @@ Have a Binary or ASCII mode
 
 Currenly Generating single float vlaue with /r/n terminating ASCXII string
 expected data format: "%f,%f,%f\n"
-115200 Baud (set in RS232Comm.cpp line 46)
+2000000 Baud (set in RS232Comm.cpp line 46)
 
 next change will allow CSV strings with \r\n terminating
 
@@ -99,7 +99,7 @@ int main()
 	}
 
 	//set FPS
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(60); //seriously reduces the CPU/GPU utilization
 	//window.setVerticalSyncEnabled(true);
 	window.setActive(true);
 
@@ -109,8 +109,11 @@ int main()
 	//Create Gui Objects
 	//Button( Size, Position, Text)
 
-	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1340, 150),sf::Color::Green,"Chungus", &handleButton_1);
+	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1340, 150),sf::Color::Green,"Connect", &handleButton_1);
 	elements.push_back(&Button_1);
+
+	Buttons Button_2(sf::Vector2f(200, 100), sf::Vector2f(1540, 150), sf::Color::Red, "Disconnect", &handleButton_1);
+	elements.push_back(&Button_2);
 
 	std::vector<Graph*> Graph_Vector;
 	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(650, 1500), "Graph_1", NUMFLOATS));
@@ -129,7 +132,7 @@ int main()
 	elements.push_back(&Graph_loopTime);
 	
 	char loopText[64]="";
-	Label loopTimeText(50, sf::Vector2f(2250, 300), sf::Color::Magenta, loopText);
+	Label loopTimeText(50, sf::Vector2f(2100, 100), sf::Color::Magenta, loopText);
 	elements.push_back(&loopTimeText);
 	
 	//give me the mouse postion to help with layout
@@ -139,7 +142,7 @@ int main()
 
 	//To Display the serial data received
 	char charArraySerialData[256] = "Empty";
-	Label serialText(50, sf::Vector2f(0, WINDOW_HEIGHT-50), sf::Color::Yellow, charArraySerialData);
+	Label serialText(50, sf::Vector2f(100, 300), sf::Color::Yellow, charArraySerialData);
 	elements.push_back(&serialText);
 	
 	// DEBUG CODE
