@@ -27,14 +27,13 @@ public:
 	void setPos(sf::Vector2f position);
 
 	UI_State_t getState(sf::Vector2i mousePosition);
-
+	void draw(sf::RenderWindow& window);
+	sf::Vector2f getSize();
+	sf::Vector2f getPosition();
+	
+private:
 	bool isMouseOverRect(sf::Vector2i mousePosition);
 
-	void draw(sf::RenderWindow& window);
-
-
-
-private:
 
 	sf::Text text;
 

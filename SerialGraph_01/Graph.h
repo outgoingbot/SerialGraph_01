@@ -6,6 +6,7 @@
 #include <SFML/System.hpp>
 #include "UtilFuncs.h"
 #include <stdio.h>
+#include <vector>
 #define NUMFLOATS 3
 
 //typedef enum {
@@ -22,41 +23,52 @@ public:
 	Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars);
 	~Graph();
 
-	bool isMouseOverRect(sf::Vector2i mousePosition);
-	
 	UI_State_t getState(sf::Vector2i mousePosition) override;
 
 	void setScale(float scl);
 	void autoScale(bool);
+
+
+
 	void update(sf::RenderWindow& window, float *dataPoint=nullptr);
 	void draw(sf::RenderWindow& window);
+	sf::Vector2f getSize();
+	sf::Vector2f getPosition();
+
+private:
+	bool isMouseOverRect(sf::Vector2i mousePosition);
 
 	float scaler = 1.0f;
 
 	sf::RectangleShape frame; //create button with wideth,height
 
 	sf::RectangleShape axis_x; //create button with wideth,height
+	
+	sf::Vertex* lineInterpol[NUMFLOATS]; //should make this dynamic at some point
 	sf::Color lineColor[NUMFLOATS];
-	sf::Vertex* lineInterpol[NUMFLOATS];// = nullptr;
 
 	sf::Text textLabel; //just holds the graph title
-	sf::Text textAxis_y; //just holds the graph title
+	sf::Text textAxis_y; //holds the max value of Y axis scale
+
+	sf::RectangleShape xMouseCross;//x mouse crosshair
+	sf::RectangleShape yMouseCross; //y mouse crosshair
+	sf::Text textyMouse; //mouse position related to graph scale
+	
+	
 
 	char textBuff[64];
 	//will want to to add some color blocks to inidcate the 3 variables color
 
-
-private:
 	uint32_t frameSamples; //number of samples per frame (based on frame width)
 	float* dataArray[NUMFLOATS];
 	int _len; //number of floats per graph
 
 	float maxVal=10;
 	float minVal=0;
-
-	sf::RectangleShape xMouseCross;//x mouse crosshair
-	sf::RectangleShape yMouseCross; //y mouse crosshair
-	sf::Text textyMouse; //mouse position related to graph scale
+	
+	std::vector <sf::Drawable*> _drawables;
+	std::vector <sf::Drawable*> _interactive;
+	//std::vector<UIElement*> _elements;
 
 	bool drawCrosshair = false;
 	

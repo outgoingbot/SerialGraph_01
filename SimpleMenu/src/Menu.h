@@ -2,6 +2,7 @@
 
 #include "Config.h"
 #include "UIElement.h"
+#include "Buttons.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -11,16 +12,7 @@
 class Menu : public UIElement {
 
 public:
-	std::vector<const sf::Text*> Text_Array;
-	std::vector< sf::RectangleShape*> Text_Array_Outline;
-	
-	sf::Text text;
-	sf::RectangleShape textOutline;
-
-	Menu();
-
-	// Add other constructors? #improve
-
+	Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)()=nullptr);
 	~Menu();
 
 	bool setDockingPosition(sf::Vector2f pos);
@@ -40,6 +32,8 @@ public:
 
 	void draw(sf::RenderWindow& win);
 	UI_State_t getState(sf::Vector2i mousePosf);
+	sf::Vector2f getSize();
+	sf::Vector2f getPosition();
 
 private:
 	// ------------------------------------------------------
@@ -51,7 +45,7 @@ private:
 	const sf::Vector2f DEFAULT_TEXT_ORIGIN_POINT = { 0,0 };
 	const sf::Vector2f DEFAULT_PADDING = { 25, 25 };
 	const int DEFAULT_COMPONENT_BUFFER = 10;
-	const int DEFAULT_CHAR_SIZE = 60;
+	const int DEFAULT_CHAR_SIZE = 40;
 	const float DEFAULT_COMP_OUTLINE_PADDING = 1;	//percentage relative to component height
 
 
@@ -60,7 +54,7 @@ private:
 	bool menuBoundsShown;	//draws an outline around the whole menu
 
 	// formatting
-	sf::Vector2f dockingPosition;	//where to start drawing elements relative to the window
+	sf::Vector2f dockPosition;	//where to start drawing elements relative to the window
 	sf::Vector2f textOriginPoint;	//which corner to start drawing text objects at.
 	sf::Vector2f bounds;	//width and height of the menu
 	float paddingX;	//amount of space between edge of menu and start of UI
@@ -69,17 +63,10 @@ private:
 	float compOutlinePadding;	//space between menu components and their outline objects
 	int numElements;	//number of total menu items
 	
-	sf::RectangleShape background; //the object for drawing the menu's background
-	sf::RectangleShape outline;	//the object for drawing the bounds of the menu
+	sf::RectangleShape _dock; //the object for drawing the menu's background
+	sf::Color _dockColor;	//set to transparent by default
+	
+	//std::vector <sf::Drawable*> _drawable;
+	std::vector <UIElement*> _elements;
 
-	// misc
-	sf::Color backgroundColor;	//set to transparent by default
-	sf::Color textOutlineColor;	//set to transparent by default
-	sf::Color textColor;	//set to transparent by default
-
-
-	// ------------------------------------------------------
-	// Functions
-
-	bool isMouseOverRect(sf::Vector2i mousePosition,  sf::RectangleShape *rect);
 };

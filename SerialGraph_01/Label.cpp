@@ -82,3 +82,15 @@ bool Label::isMouseOverRect(sf::Vector2i mousePosition) {
 void Label::draw(sf::RenderWindow& window) {
 	window.draw(text);
 }
+
+
+
+sf::Vector2f Label::getSize() {
+	sf::FloatRect fr = text.getGlobalBounds();
+
+	return sf::Vector2f(fr.width, fr.height);
+}
+
+sf::Vector2f Label::getPosition() {
+	return text.getPosition();
+}

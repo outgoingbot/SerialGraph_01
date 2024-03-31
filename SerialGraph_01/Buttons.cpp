@@ -1,22 +1,25 @@
 #include "Buttons.h"
 
-//extern sf::RenderWindow window;
-extern sf::Font font;
-//extern mutex_t gui_mutex;
 
 //set size, position, text
 Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t (*callback)()) {
+	//Load Font
+	if (!_font.loadFromFile("../res/arial.ttf")) {
+		printf("Error loading Font");
+		system("pause");
+	}
+
 	_color = color;
-	Button.setSize(size);
+	buttonRectangle.setSize(size);
 
-	sf::FloatRect btn = Button.getLocalBounds();
-	Button.setOrigin(btn.width / 2, btn.height / 2);
-	Button.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
-	Button.setFillColor(sf::Color::Blue);
+	sf::FloatRect btn = buttonRectangle.getLocalBounds();
+	buttonRectangle.setOrigin(btn.width / 2, btn.height / 2);
+	buttonRectangle.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
+	buttonRectangle.setFillColor(sf::Color::Blue);
 
-	text.setFont(font);
+	text.setFont(_font);
 	text.setString(string);
-	text.setCharacterSize(40);
+	text.setCharacterSize(DEFAULT_TEXT_SIZE);
 	sf::FloatRect rc = text.getLocalBounds();
 	text.setOrigin(rc.width / 2, rc.height / 2);
 	text.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
@@ -37,14 +40,14 @@ UI_State_t Buttons::getState(sf::Vector2i mousePosition) {
 		if (isMouseOverRect(mousePosition)) {
 			returnVal |= BUTTON_STATE_HOVER;
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-				Button.setFillColor(sf::Color(255, 0, 255));
+				buttonRectangle.setFillColor(sf::Color(255, 0, 255));
 				returnVal |= BUTTON_STATE_CLICK_LEFT;
 				if(buttonCallback != nullptr) buttonCallback();
 			}
 
 		//	//move the object
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-				Button.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
+				buttonRectangle.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
 				text.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
 				returnVal |= BUTTON_STATE_CLICK_RIGHT;
 				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
@@ -57,19 +60,45 @@ UI_State_t Buttons::getState(sf::Vector2i mousePosition) {
 
 
 bool Buttons::isMouseOverRect(sf::Vector2i mousePosition) {
-	if (mousePosition.x > Button.getPosition().x - (Button.getSize().x / 2) && mousePosition.x < Button.getPosition().x + (Button.getSize().x / 2)) {
-		if (mousePosition.y > Button.getPosition().y - (Button.getSize().y / 2) && mousePosition.y < Button.getPosition().y + (Button.getSize().y / 2)) {
-			Button.setFillColor(sf::Color::Yellow);
+	if (mousePosition.x > buttonRectangle.getPosition().x - (buttonRectangle.getSize().x / 2) && mousePosition.x < buttonRectangle.getPosition().x + (buttonRectangle.getSize().x / 2)) {
+		if (mousePosition.y > buttonRectangle.getPosition().y - (buttonRectangle.getSize().y / 2) && mousePosition.y < buttonRectangle.getPosition().y + (buttonRectangle.getSize().y / 2)) {
+			buttonRectangle.setFillColor(sf::Color::Yellow);
 			return true;
 		}
 	}
-	Button.setFillColor(_color);
+	buttonRectangle.setFillColor(_color);
 	return false;
 }
 
 
 
 void Buttons::draw(sf::RenderWindow& window) {
-	window.draw(Button);
+	window.draw(buttonRectangle);
 	window.draw(text);
+}
+
+
+void Buttons::setTextSize(unsigned int size) {
+	text.setCharacterSize(size);
+}
+
+void Buttons::setPosition(sf::Vector2f pos) {
+	text.setPosition(pos);
+	buttonRectangle.setPosition(pos);
+}
+
+void Buttons::setText(const std::string s) {
+	text.setString(s);
+}
+
+void Buttons::setSize(sf::Vector2f size) {
+	buttonRectangle.setSize(size);
+}
+
+sf::Vector2f Buttons::getSize() {
+	return buttonRectangle.getSize();
+}
+
+sf::Vector2f Buttons::getPosition() {
+	return buttonRectangle.getPosition();
 }

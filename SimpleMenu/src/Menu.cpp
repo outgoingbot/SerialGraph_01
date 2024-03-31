@@ -2,38 +2,21 @@
 
 
 
-Menu::Menu() {
-
-	//Load Font
-	if (!font.loadFromFile("../res/arial.ttf")) {
-		printf("Error loading Font");
-		system("pause");
-	}
+Menu::Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)()){
+	// setup the dock (large rectangle that borders the entire menu. grows with addItems pushback
+	_dockColor = color;
+	_dock.setPosition(position);
+	_dock.setFillColor(_dockColor);
+	_dock.setSize(sf::Vector2f(size.x + 20, size.y + 20)); //setting the dock a bit bigger so I can see it for now
 	
-	// formatting
-	setDockingPosition(DEFAULT_DOCKING_POSITION);
-	textOriginPoint = DEFAULT_TEXT_ORIGIN_POINT;
-	numElements = 0;
+	//title of drop down menu. will activate on state= hover.
+	//will set menu show to true
+	Buttons* titleItem = new Buttons(size, position, sf::Color::Magenta, string);
+	_elements.push_back(titleItem);
 
-	text.setCharacterSize(DEFAULT_CHAR_SIZE);
-	text.setFont(font);
-
-	textColor = sf::Color::Red;
-
-	textOutlineColor = sf::Color::Green;
-	textOutline.setFillColor(textOutlineColor); // #check
-	
-	//background.setFillColor(sf::Color::Transparent);
-
-	outline.setFillColor(sf::Color::Green);
-	outline.setOutlineThickness(1);
-	outline.setOutlineColor(sf::Color::White);
-
-	// miscellaneous
+	//will change this to false when i get titleItem = hover working
 	menuShown = true;
 	componentOutlinesShown = true;
-	menuBoundsShown = true;
-	setBackgroundColor(sf::Color::Magenta);
 
 }
 
@@ -44,70 +27,40 @@ Menu::~Menu()
 
 bool Menu::addMenuItem(sf::RenderWindow& win, const std::string text) {	
 #define SPACING 20
-	// set added item properties
-	sf::Text* newItem = new sf::Text;
-	newItem->setCharacterSize(DEFAULT_CHAR_SIZE);
-	newItem->setFont(font);
-	newItem->setFillColor(textColor);
 	
-	newItem->setString(text);
-	int newItemHeight = newItem->getCharacterSize();
-	newItem->setOrigin(textOriginPoint);
+	//I dont like this constructor. need to think about either a default constructor. will need my call back functions
+	Buttons* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(1340, 150), sf::Color::Magenta, "Empty");
 	
-	sf::RectangleShape* newItemOutline = new sf::RectangleShape;
-	newItemOutline->setOrigin(textOriginPoint);
-	newItemOutline->setFillColor(textOutlineColor);
+	_elements.push_back(newItem);
 
-	
-	Text_Array.push_back(newItem);
-	Text_Array_Outline.push_back(newItemOutline);
+	newItem->setTextSize(DEFAULT_CHAR_SIZE);
+	newItem->setText(text);
+	//need to get the Button text bounding box (based off the setText) to then set the button size;
+	float newItemHeight = 30; //newItem->getTextBounds()
+	float newItemWidth = 100;
 
-	if (Text_Array.size() >= 2)
-	{
-		//if there already exists at least on Item them place the newItem below that
-		newItem->setPosition( sf::Vector2f(Text_Array[Text_Array.size() - 2]->getPosition().x, Text_Array[Text_Array.size()-2]->getPosition().y+newItemHeight+SPACING));
-	}
-	else
-	{
-		//else if this is the first item
-		newItem->setPosition(sf::Vector2f(background.getPosition().x, background.getPosition().y + newItemHeight+SPACING));
-	}
-
-	sf::FloatRect textRect = newItem->getGlobalBounds();
-	newItemOutline->setSize(sf::Vector2f(textRect.width*1.5, textRect.height*1.5));
-	newItemOutline->setPosition(sf::Vector2f(newItem->getPosition().x, newItem->getPosition().y));
+	newItem->setSize(sf::Vector2f(newItemWidth, newItemHeight));
+	//index element [0] on first pass to po
+	newItem->setPosition(sf::Vector2f(_elements[_elements.size() - 2]->getPosition().x, _elements[_elements.size() - 2]->getPosition().y + newItemHeight + SPACING));
 
 	//this needs to dynamicaly change based on the text in the vector
-	background.setSize(sf::Vector2f(100,100)); 
-		return true;
+	//_dock.setSize(sf::Vector2f(100,100)); 
+	
+	return true;
 
 }
 
 
 
-
-
-bool Menu::isMouseOverRect(sf::Vector2i mousePosition,   sf::RectangleShape *rect) {
-	sf::FloatRect textRect = rect->getGlobalBounds();
-	if (mousePosition.x > textRect.left && mousePosition.x < textRect.left + textRect.width) {
-		if (mousePosition.y > textRect.top && mousePosition.y < textRect.top + textRect.height) {
-			rect->setFillColor(sf::Color::Yellow);
-			return true;
-		}
-	}
-	rect->setFillColor(textOutlineColor);
-	return false;
-}
 
 UI_State_t Menu::getState(sf::Vector2i mousePosf){
 	UI_State_t returnVal = UI_STATE_READY;
 		
+	//Not implemented yet
 	if (menuShown) {
-		if (componentOutlinesShown) {
-			for(auto Item : Text_Array_Outline) isMouseOverRect(mousePosf, Item);
-		}
-	
+		//for(auto Item : _elements) isMouseOverRect(mousePosf, Item);
 	}
+	
 	return returnVal;
 }
 
@@ -115,22 +68,23 @@ void Menu::draw(sf::RenderWindow& win)
 {
 
 	if (menuShown) {
-		//win.draw(background);
+		//win.draw(_dock);
 		if (componentOutlinesShown) {
-			//for (int i = 0; i < Text_Array_Outline.size(); i++) isMouseOverRect(mousePosf, Text_Array_Outline[i]);
-			
-			//copy.setOrigin(rectOrigin);
-			//copy.setPosition(itemPos);
-
-			//draw shape
-			//win.draw(copy);
-			//win.draw(textOutline);
+			for (auto Items : _elements) Items->draw(win);
 		}
-		for (auto Items : Text_Array_Outline) win.draw(*Items);
-		for (auto Item : Text_Array) win.draw(*Item);
 	}
 
 }
+
+
+sf::Vector2f Menu::getSize() {
+	return _dock.getSize();
+}
+
+sf::Vector2f Menu::getPosition() {
+	return _dock.getPosition();
+}
+
 
 
 void Menu::toggleMenuShown() {
@@ -143,13 +97,13 @@ void Menu::toggleMenuShown() {
 
 bool Menu::setDockingPosition(sf::Vector2f pos)
 {
-	background.setPosition(pos);
+	_dock.setPosition(pos);
 	return true;
 }
 
 bool Menu::setTextOriginPoint(sf::Vector2f pos)
 {
-	text.setPosition(pos);
+	//text.setPosition(pos);
 	return true;
 }
 
@@ -159,8 +113,8 @@ bool Menu::setTextOriginPoint(sf::Vector2f pos)
 
 void Menu::setBackgroundColor(sf::Color color)
 {
-	backgroundColor = color;
-	background.setFillColor(backgroundColor);
+	_dockColor = color;
+	_dock.setFillColor(_dockColor);
 }
 
 void Menu::showMenu()

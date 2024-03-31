@@ -176,10 +176,7 @@ int main()
 	elements.push_back(&serialText);
 	
 	// create menu object
-	Menu mainMenu;
-	// set some of its properties
-	mainMenu.setDockingPosition(sf::Vector2f(400, WINDOW_HEIGHT - 400));
-	mainMenu.setBackgroundColor(sf::Color::Magenta);
+	Menu mainMenu(sf::Vector2f(100, 50), sf::Vector2f(100, WINDOW_HEIGHT - 50), sf::Color::Blue, "FILE..." );
 	elements.push_back(&mainMenu);
 
 	// add menu items. list of available com ports
@@ -272,8 +269,8 @@ int main()
 		//window.clear(sf::Color::Black);
 		sprite.rotate(2);
 		window.draw(sprite);
-
-		for (auto element : elements) element->draw(window);
+		mainMenu.draw(window);
+		//for (auto element : elements) element->draw(window);
 
 		//mainMenu.showComponentOutlines();
 		//mainMenu.draw(window, (sf::Vector2i)mousePosf);

@@ -15,28 +15,34 @@ typedef enum {
 	BUTTON_STATE_CLICK_RIGHT = 0x04U
 } Button_Flags_t;
 
+#define DEFAULT_TEXT_SIZE 10
 
 class Buttons : public UIElement
 {
 public:
 
 	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)() = nullptr);
+
 	~Buttons();
 
 	UI_State_t getState(sf::Vector2i mousePosition);
 
-	bool isMouseOverRect(sf::Vector2i mousePosition);
-
 	void draw(sf::RenderWindow& window);
 
-	sf::RectangleShape Button; //create button with wideth,height
+	void setTextSize(unsigned int size);
+	void setText(const std::string s);
+	void setPosition(sf::Vector2f pos);
+	void setSize(sf::Vector2f size);
+
+	sf::Vector2f getSize();
+	sf::Vector2f getPosition();
+	
+private:
+	
+	bool isMouseOverRect(sf::Vector2i mousePosition);
+	sf::RectangleShape buttonRectangle; //create button with wideth,height
 	sf::Text text;
 	sf::Color _color;
-
-
-private:
-
+	sf::Font _font;
 	uint8_t(*buttonCallback)() = nullptr;
-
 };
-

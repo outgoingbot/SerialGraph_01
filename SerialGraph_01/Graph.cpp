@@ -93,6 +93,22 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	textyMouse.setPosition(sf::Vector2f(graphRec.left + (graphRec.width / 2), graphRec.top + (graphRec.height / 2)));
 
 
+	_drawables.push_back(&frame);
+	_drawables.push_back(&axis_x);
+
+	//sf::VertexArray
+	sf::Vertex* lineInterpol[NUMFLOATS]; //should make this dynamic at some point
+	sf::Color lineColor[NUMFLOATS];
+	//_drawables.push_back(lineInterpol);
+
+	_drawables.push_back(&textLabel);
+	_drawables.push_back(&textAxis_y);
+	
+	_interactive.push_back(&xMouseCross);
+	_interactive.push_back(&yMouseCross);
+	_interactive.push_back(&textyMouse);
+
+
 }
 
 Graph::~Graph() {
@@ -144,16 +160,15 @@ void Graph::update(sf::RenderWindow& window , float *dataPoint) {
 
 
 void Graph::draw(sf::RenderWindow& window) {
-	window.draw(frame);
-	window.draw(textLabel);
-	window.draw(textAxis_y);
-	window.draw(axis_x);
+	// parent.draw();
+	//Order Matters. FIFO is Back-to-Front of display
+	for (auto Item : _drawables) window.draw(*Item);
 	for (int j = 0; j < _len; j++) window.draw(lineInterpol[j], frameSamples - 1, sf::LineStrip);
+
 	if (drawCrosshair) {
-		window.draw(yMouseCross);
-		window.draw(xMouseCross);
-		window.draw(textyMouse);
+		for (auto Item : _interactive) window.draw(*Item);
 	}
+	
 }
 
 
@@ -236,4 +251,13 @@ bool Graph::isMouseOverRect(sf::Vector2i mousePosition) {
 	}
 	frame.setFillColor(sf::Color(0, 0, 0));
 	return false;
+}
+
+
+sf::Vector2f Graph::getSize() {
+	return frame.getSize();
+}
+
+sf::Vector2f Graph::getPosition() {
+	return frame.getPosition();
 }
