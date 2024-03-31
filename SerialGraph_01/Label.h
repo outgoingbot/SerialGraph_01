@@ -30,7 +30,7 @@ public:
 
 	bool isMouseOverRect(sf::Vector2i mousePosition);
 
-	void draw();
+	void draw(sf::RenderWindow& window);
 
 
 

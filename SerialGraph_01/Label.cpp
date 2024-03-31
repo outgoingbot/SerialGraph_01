@@ -1,5 +1,5 @@
 #include "Label.h"
-extern sf::RenderWindow window;
+//extern sf::RenderWindow window;
 extern sf::Font font;
 
 
@@ -79,6 +79,6 @@ bool Label::isMouseOverRect(sf::Vector2i mousePosition) {
 
 
 
-void Label::draw() {
+void Label::draw(sf::RenderWindow& window) {
 	window.draw(text);
 }

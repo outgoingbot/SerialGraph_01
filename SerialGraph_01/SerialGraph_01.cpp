@@ -17,7 +17,7 @@ possbily make a single shot to trigger on derivative (slope) of certain value or
 
 Have a Binary or ASCII mode
 
-Currenly Generating single float vlaue with /r/n terminating ASCXII string
+Currenly Generating 3 float vlaue with /n terminating ASCXII string
 expected data format: "%f,%f,%f\n"
 2000000 Baud (set in RS232Comm.cpp line 46)
 
@@ -27,7 +27,7 @@ next change will allow CSV strings with \r\n terminating
 
 #include "SerialGraph_01.h"
 #include <iostream>
-
+#include <list>
 #include <string>
 #include <thread>
 #include <chrono>
@@ -50,6 +50,7 @@ next change will allow CSV strings with \r\n terminating
 #include "Label.h"
 #include "CircularQueue.h"
 
+#include "SimpleMenu/Src/Menu.h"
 
 //Debug vars
 char charArrayDebug[256] = "Empty";
@@ -63,10 +64,12 @@ int bytesReceived = 0;
 //SFML Globals (dont change or remove)
 
 //loop control
+std::thread *serial_thread = nullptr;
 bool killThread = false; //rename to killSerialThread
 uint8_t gui_ID = 0;
 //graphics
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded", sf::Style::Default, sf::ContextSettings(32));
+//sf::RenderWindow windowSettings(sf::VideoMode(800, 600), "Settings", sf::Style::Default, sf::ContextSettings(32));
 sf::Font font;
 sf::Vector2f mousePosf;
 //SFML Globals (dont change or remove)
@@ -75,6 +78,7 @@ uint8_t handleButton_1() {
 	printf("Clicked!!!!");
 	return 0;
 }
+
 
 int main()
 {	
@@ -88,7 +92,11 @@ int main()
 	window.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
 
 	//create the Comm port class object
-	Serial SP(COMM_PORT);    // adjust in config.h
+	
+	
+	Serial SP;    // adjust in config.h
+	SP.ListComPorts();
+	
 	if (SP.IsConnected()) printf("We're connected\r\n");
 
 
@@ -98,10 +106,32 @@ int main()
 		system("pause");
 	}
 
+	//Load Texture
+	sf::Texture texture;
+	if (!texture.loadFromFile("../res/logo.png")) {
+		std::cout << "Could not load enemy texture" << std::endl;
+		return 0;
+	}
+	texture.setSmooth(true);
+
+	sf::Sprite sprite;
+	sprite.setTexture(texture);
+	sprite.setScale(sf::Vector2f(.1, .1));
+	sf::FloatRect rc2 = sprite.getLocalBounds();
+	sprite.setOrigin(rc2.width / 2, rc2.height / 2);
+	sprite.setPosition(sf::Vector2f(100, WINDOW_HEIGHT - 100));
+
+
 	//set FPS
 	window.setFramerateLimit(60); //seriously reduces the CPU/GPU utilization
 	//window.setVerticalSyncEnabled(true);
 	window.setActive(true);
+
+
+
+
+
+
 
 	// Hold all UI elements in vector
 	std::vector<UIElement*> elements;
@@ -136,7 +166,7 @@ int main()
 	elements.push_back(&loopTimeText);
 	
 	//give me the mouse postion to help with layout
-	char charArrayMousePos[256] = "Empty";
+	char charArrayMousePos[256] = "";
 	Label mousePosText(25, sf::Vector2f(100, 100), sf::Color::Green, charArrayMousePos);
 	elements.push_back(&mousePosText);
 
@@ -145,18 +175,26 @@ int main()
 	Label serialText(50, sf::Vector2f(100, 300), sf::Color::Yellow, charArraySerialData);
 	elements.push_back(&serialText);
 	
-	// DEBUG CODE
-	sf::RectangleShape xMouseCross(sf::Vector2f(WINDOW_WIDTH, 2)); //x mouse crosshair
-	xMouseCross.setPosition(sf::Vector2f(0, (window.getSize().y / 2) - 1));
-	xMouseCross.setFillColor(sf::Color::Magenta);
+	// create menu object
+	Menu mainMenu;
+	// set some of its properties
+	mainMenu.setDockingPosition(sf::Vector2f(400, WINDOW_HEIGHT - 400));
+	mainMenu.setBackgroundColor(sf::Color::Magenta);
+	elements.push_back(&mainMenu);
 
-	sf::RectangleShape yMouseCross(sf::Vector2f(2, WINDOW_HEIGHT)); //y mouse crosshair
-	yMouseCross.setPosition(sf::Vector2f((window.getSize().x / 2) - 1, 0));
-	yMouseCross.setFillColor(sf::Color::Magenta);
+	// add menu items. list of available com ports
+	for (auto ComPortName : SP.ComPortNames) {
+		mainMenu.addMenuItem(window, ComPortName);
+	}
 	
+
+	//this is gonna need to be moved into Connect Button to start the thread
 	//getting around 1mS without using threads
-	std::thread serial_thread(&Serial::ReadData, &SP, incomingData, dataLength, &bytesReceived); ///retrieve buffer
-//-----------------------------------------MAIN LOOP------------------------------------------------------------
+	SP.Connect(COMM_PORT);
+	if (SP.IsConnected()) {
+		serial_thread = new std::thread(&Serial::ReadData, &SP, incomingData, dataLength, &bytesReceived); ///retrieve buffer
+	}
+																								 //-----------------------------------------MAIN LOOP------------------------------------------------------------
 	bool running = true;
 	UIElement* movingElement = nullptr;
 
@@ -232,12 +270,14 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 		//window.clear(sf::Color::Black);
+		sprite.rotate(2);
+		window.draw(sprite);
 
-		for (auto element : elements) element->draw();
+		for (auto element : elements) element->draw(window);
 
-		//window.draw(xMouseCross);
-		//window.draw(yMouseCross);
-
+		//mainMenu.showComponentOutlines();
+		//mainMenu.draw(window, (sf::Vector2i)mousePosf);
+	
 		window.display(); //show drawn objects to the display buffer
 
 
@@ -249,7 +289,7 @@ int main()
 			sprintf_s(charArraySerialData, "Serial Data: %f, %f, %f", SP.myData[0], SP.myData[1], SP.myData[2]);
 			serialText.setText(charArraySerialData);
 
-			if(SP.payloadIdx) Graph_Vector[SP.payloadIdx-1]->update(SP.myData);
+			if(SP.payloadIdx) Graph_Vector[SP.payloadIdx-1]->update(window, SP.myData);
 		}
 			
 
@@ -260,12 +300,12 @@ int main()
 		float loopTimeDuration = (float)duration.count()/1000.f;
 		sprintf_s(loopText, "Loop Time: %f", loopTimeDuration);
 		loopTimeText.setText(loopText);
-		Graph_loopTime.update(&loopTimeDuration);		
+		Graph_loopTime.update(window, &loopTimeDuration);		
 
 	}//end update loop
 
 	window.close();
 	killThread = true;
-	serial_thread.join();
+	if(serial_thread != nullptr) serial_thread->join();
 	return 0;
 }

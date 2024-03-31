@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\SimpleMenu">
+      <UniqueIdentifier>{adfac6ad-f324-4336-98de-946caefa263b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SimpleMenu">
+      <UniqueIdentifier>{58d55202-112c-45a7-a075-7b36de189d45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SerialGraph_01.cpp">
@@ -44,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="UIElement.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SimpleMenu\src\Menu.cpp">
+      <Filter>Source Files\SimpleMenu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="UIElement.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SimpleMenu\src\Menu.h">
+      <Filter>Header Files\SimpleMenu</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

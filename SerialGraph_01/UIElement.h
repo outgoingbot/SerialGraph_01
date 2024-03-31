@@ -20,6 +20,6 @@ typedef uint8_t UI_State_t;
 class UIElement {
 public:
 	virtual UI_State_t getState(sf::Vector2i mousePosition) = 0;
-	virtual void draw() = 0;
+	virtual void draw(sf::RenderWindow& window) = 0;
 };
 

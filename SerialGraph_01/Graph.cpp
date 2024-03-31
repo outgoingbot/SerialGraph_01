@@ -1,10 +1,10 @@
 #include "Graph.h"
 
-extern sf::RenderWindow window;
+//extern sf::RenderWindow window;
 extern sf::Font font;
 
 
-#define XSCALE 10 //testing 1,10,100
+#define XSCALE 1 //testing 1,10,100
 
 //size, position
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
@@ -38,13 +38,13 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	frame.setOutlineColor(sf::Color::White);
 	frame.setFillColor(sf::Color::Black);
 
-	axis_x.setSize(sf::Vector2f(size.x, 2)); //x axis
-	axis_x.setPosition(sf::Vector2f(frame.getPosition().x - (size.x/2), frame.getPosition().y));
+	axis_x.setSize(sf::Vector2f(frame.getSize().x, 2)); //x axis
+	axis_x.setPosition(sf::Vector2f(frame.getPosition().x - (frame.getSize().x / 2), frame.getPosition().y));
+	
+
 	axis_x.setFillColor(sf::Color::White);
 	
 
-	
-	
 	//change this to memSet
 	for (int j = 0; j < numVars; j++) {
 		for (uint32_t i = 0; i < frameSamples; i++) { //initialize the dataArray
@@ -107,7 +107,7 @@ void Graph::autoScale(bool) {
 
 }
 
-void Graph::update(float *dataPoint) {
+void Graph::update(sf::RenderWindow& window , float *dataPoint) {
 	sf::FloatRect graphRec = frame.getGlobalBounds();
 	sf::Vector2f mousePosf = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 	if (dataPoint == nullptr) return;
@@ -127,7 +127,7 @@ void Graph::update(float *dataPoint) {
 		sprintf_s(textBuff, "%.3f", UtilFuncs::mapFloat(mousePosf.y,graphRec.top+graphRec.height,graphRec.top,minVal,maxVal));
 		textyMouse.setString(textBuff);
 		//Set the scaler to multiply the data by. this auto scales the data to fit in the graph window (top edge)
-		scaler = frame.getSize().y / (maxVal+1);
+		scaler = frame.getSize().y / (maxVal*1.1f); //give 10% extra room at top of graph
 		
 		//Trying to Set the X axis position to so the Min Value is close graph window edge (bottom edge)		
 		axis_x.setPosition(frame.getPosition().x-(frame.getSize().x/2), frame.getPosition().y + (frame.getSize().y/2) - (minVal));
@@ -143,7 +143,7 @@ void Graph::update(float *dataPoint) {
 }
 
 
-void Graph::draw(void) {
+void Graph::draw(sf::RenderWindow& window) {
 	window.draw(frame);
 	window.draw(textLabel);
 	window.draw(textAxis_y);

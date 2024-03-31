@@ -28,8 +28,8 @@ public:
 
 	void setScale(float scl);
 	void autoScale(bool);
-	void update(float *dataPoint=nullptr);
-	void draw(void);
+	void update(sf::RenderWindow& window, float *dataPoint=nullptr);
+	void draw(sf::RenderWindow& window);
 
 	float scaler = 1.0f;
 

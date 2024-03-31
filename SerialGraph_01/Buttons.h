@@ -27,7 +27,7 @@ public:
 
 	bool isMouseOverRect(sf::Vector2i mousePosition);
 
-	void draw();
+	void draw(sf::RenderWindow& window);
 
 	sf::RectangleShape Button; //create button with wideth,height
 	sf::Text text;

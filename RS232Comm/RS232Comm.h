@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <thread>
 #include <iostream>
+#include <string>
 #include "CircularQueue.h"
 
 class Serial
@@ -24,7 +25,7 @@ private:
 
 public:
 	//Initialize Serial communication with the given COM port
-	Serial(const char *portName);
+	Serial();
 	//Close the connection
 	~Serial();
 	//Read data in a buffer, if nbChar is greater than the
@@ -35,8 +36,19 @@ public:
 	//Writes data from a buffer through the Serial connection
 	//return true on success.
 	bool WriteData(const char *buffer, unsigned int nbChar);
+
+	
+	//get the availve com ports on the windows machine
+	bool ListComPorts();
+	std::vector<std::string> ComPortNames;
+
+	bool Connect(const char* portName, DCB dcbSerialParams = { 0 });
+
+	bool Disconnect();
+
 	//Check if we are actually connected
 	bool IsConnected();
+
 	CircularQueue *rxBuffer;
 
 	bool mutexLock = false;

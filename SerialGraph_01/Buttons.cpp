@@ -1,6 +1,6 @@
 #include "Buttons.h"
 
-extern sf::RenderWindow window;
+//extern sf::RenderWindow window;
 extern sf::Font font;
 //extern mutex_t gui_mutex;
 
@@ -69,7 +69,7 @@ bool Buttons::isMouseOverRect(sf::Vector2i mousePosition) {
 
 
 
-void Buttons::draw() {
+void Buttons::draw(sf::RenderWindow& window) {
 	window.draw(Button);
 	window.draw(text);
 }
