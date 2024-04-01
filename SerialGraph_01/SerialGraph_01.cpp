@@ -88,11 +88,20 @@ mouseState_t mouseState;
 
 
 
-uint8_t handleButton_1() {
+uint8_t handleButton_1(uint8_t val) {
 	printf("Clicked!!!!");
 	return 0;
 }
 
+uint8_t handleMenu_1(uint8_t val) {
+	printf("Menu_1 Button: %i\r\n", val);
+	return 0;
+}
+
+uint8_t handleMenu_2(uint8_t val) {
+	printf("Menu_2 Button: %i\r\n", val);
+	return 0;
+}
 
 int main()
 {	
@@ -110,6 +119,7 @@ int main()
 	
 	Serial SP;    // adjust in config.h
 	SP.ListComPorts();
+	SP.ListBaudRates();
 	
 	if (SP.IsConnected()) printf("We're connected\r\n");
 
@@ -181,16 +191,24 @@ int main()
 
 	//To Display the serial data received
 	char charArraySerialData[256] = "Empty";
-	Label serialText(50, sf::Vector2f(200, 100), sf::Color::Yellow, charArraySerialData);
+	Label serialText(50, sf::Vector2f(300, 100), sf::Color::Yellow, charArraySerialData);
 	elements.push_back(&serialText);
 	
 	// create menu object
-	Menu mainMenu(sf::Vector2f(300, 200), sf::Vector2f(200, 0), sf::Color::Blue, "FILE..." );
-	elements.push_back(&mainMenu);
+	Menu Menu_1(sf::Vector2f(300, 50), sf::Vector2f(0, 0), sf::Color(10, 10, 10), "Comm Port", handleMenu_1);
+	elements.push_back(&Menu_1);
 
 	// add menu items. list of available com ports
 	for (auto ComPortName : SP.ComPortNames) {
-		mainMenu.addMenuItem(window, ComPortName);
+		Menu_1.addMenuItem(window, ComPortName);
+	}
+
+	Menu Menu_2(sf::Vector2f(300, 50), sf::Vector2f(310, 0), sf::Color(10, 10, 10), "Baud Rate", handleMenu_2);
+	elements.push_back(&Menu_2);
+
+	// add menu items. list of available com ports
+	for (auto ComPortBaud : SP.ComPortBauds) {
+		Menu_2.addMenuItem(window, ComPortBaud);
 	}
 	
 
@@ -216,10 +234,12 @@ int main()
 
 		
 		//Get Keyboard inputs
-		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) posText.move(10,0);
-		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) posText.move(-10, 0);
-		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) posText.move(0, -10);
-		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) posText.move(0, 10);
+		
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) sprite.move(10, 0);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) sprite.move(-10, 0);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) sprite.move(0, -10);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) sprite.move(0, 10);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) sprite.scale(sf::Vector2f(sprite.getScale().x+1.0f, sprite.getScale().y + 1.0f));
 
 		sf::Event event;
 		while (window.pollEvent(event)) {
@@ -245,10 +265,6 @@ int main()
 
 			}
 		}
-
-		// Assess mouse click rising edge
-		static bool lastMouseStateLeftClick = mouseState.mouseLeftClick;
-		static bool lastMouseStateRightClick = mouseState.mouseRightClick;
 
 		///////Mouse State Update
 		//Mouse Position Even after Windows Resizing
@@ -317,23 +333,17 @@ int main()
 				}
 			}		
 
-
 		}
 
 		//SerialGraph::draw()
 		//---------------------------------------------------display-------------------------------------------------
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-		//window.clear(sf::Color::Black);
 		sprite.rotate(2);
 		window.draw(sprite);
-		//mainMenu.draw(window);
-		
+
 		for (auto element : elements) element->draw(window);
-		if (mainMenu.mouseOverElement((sf::Vector2i)mouseState.mousePosf, sf::Vector2i(0, 0))) printf("Mouse over\r\n");
-		//mainMenu.showComponentOutlines();
-		//mainMenu.draw(window, (sf::Vector2i)mousePosf);
-	
+		
 		window.display(); //show drawn objects to the display buffer
 
 

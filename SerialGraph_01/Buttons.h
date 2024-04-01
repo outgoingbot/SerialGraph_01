@@ -21,7 +21,7 @@ class Buttons : public UIElement
 {
 public:
 
-	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)() = nullptr);
+	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
 
 	~Buttons();
 
@@ -46,5 +46,6 @@ private:
 	
 	sf::Color _color;
 	sf::Font _font;
-	uint8_t(*buttonCallback)() = nullptr;
+	uint8_t(*buttonCallback)(uint8_t) = nullptr;
+	uint8_t _id; // keep track of multiple buttons in callback within common parent
 };

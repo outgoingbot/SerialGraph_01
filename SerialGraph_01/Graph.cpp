@@ -198,11 +198,11 @@ UI_State_t Graph::updateInteractiveState(sf::Vector2i mousePosition) {
 	
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 				
-				frame.setPosition(sf::Vector2f(mousePosition.x - MOUSESHIFT, mousePosition.y - MOUSESHIFT));
+				frame.setPosition(sf::Vector2f(mousePosition.x - (frame.getSize().x/2), mousePosition.y -(frame.getSize().y / 2)));
 				textLabel.setPosition(sf::Vector2f(graphRec.left, graphRec.top - graphtextRec2.height-5));
 				textAxis_y.setPosition(sf::Vector2f(graphRec.left - graphtextRec.width, graphRec.top + graphtextRec.height));
 
-				axis_x.setPosition(sf::Vector2f(frame.getPosition().x-frame.getSize().x/2, frame.getPosition().y));
+				axis_x.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y + frame.getSize().y));
 					
 				// Update Graph Lines while dragging (hacky)
 				//draw linear interpolated lines by shifting all the data points Left

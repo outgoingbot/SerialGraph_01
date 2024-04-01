@@ -149,6 +149,10 @@ bool Serial::WriteData(const char *buffer, unsigned int nbChar)
 		return true;
 }
 
+bool Serial::ListBaudRates() {
+	for (auto i = 0; i < SERIAL_NUM_BAUDS; i++) ComPortBauds.push_back(baudlist[i]);
+	return 0;
+}
 
 
 bool Serial::ListComPorts() //added function to find the present serial 

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 #include "CircularQueue.h"
-
+#define SERIAL_NUM_BAUDS 5
 class Serial
 {
 private:
@@ -22,6 +22,10 @@ private:
 	COMSTAT status;
 	//Keep track of last error
 	DWORD errors;
+
+	
+	std::string baudlist[SERIAL_NUM_BAUDS] = { "9600","57600","115200","1000000", "2000000" };
+	
 
 public:
 	//Initialize Serial communication with the given COM port
@@ -41,6 +45,9 @@ public:
 	//get the availve com ports on the windows machine
 	bool ListComPorts();
 	std::vector<std::string> ComPortNames;
+
+	bool ListBaudRates();
+	std::vector<std::string> ComPortBauds;
 
 	bool Connect(const char* portName, DCB dcbSerialParams = { 0 });
 

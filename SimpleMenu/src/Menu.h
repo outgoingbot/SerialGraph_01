@@ -12,7 +12,7 @@
 class Menu : public UIElement {
 
 public:
-	Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)()=nullptr);
+	Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)(uint8_t)=nullptr);
 	~Menu();
 
 	bool setDockingPosition(sf::Vector2f pos);
@@ -45,7 +45,8 @@ private:
 	const sf::Vector2f DEFAULT_TEXT_ORIGIN_POINT = { 0,0 };
 	const sf::Vector2f DEFAULT_PADDING = { 25, 25 };
 	const int DEFAULT_COMPONENT_BUFFER = 10;
-	const int DEFAULT_CHAR_SIZE = 40;
+	const int DEFAULT_CHAR_SIZE_TITLE = 40;
+	const int DEFAULT_CHAR_SIZE_ITEM = 20;
 	const float DEFAULT_COMP_OUTLINE_PADDING = 1;	//percentage relative to component height
 
 
@@ -63,10 +64,12 @@ private:
 	int componentBuffer;	//space between menu components
 	float compOutlinePadding;	//space between menu components and their outline objects
 	int numElements;	//number of total menu items
+	uint8_t(*menuCallback)(uint8_t) = nullptr;
 	
 	sf::RectangleShape _dock; //the object for drawing the menu's background
 	sf::Color _dockColor;	//set to transparent by default
-	
+	sf::Vector2f _dockOpenSize;
+	sf::Vector2f _dockClosedSize;
 	//std::vector <sf::Drawable*> _drawable;
 	std::vector <UIElement*> _elements;
 

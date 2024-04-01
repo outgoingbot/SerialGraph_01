@@ -2,7 +2,7 @@
 
 
 //set size, position, text
-Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t (*callback)()) {
+Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t (*callback)(uint8_t), uint8_t id) {
 	//Load Font
 	if (!_font.loadFromFile("../res/arial.ttf")) {
 		printf("Error loading Font");
@@ -25,6 +25,7 @@ Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, cons
 	text.setPosition(position);
 	text.setFillColor(sf::Color::White);
 	buttonCallback = callback;
+	_id = id;
 }
 
 
@@ -42,7 +43,7 @@ UI_State_t Buttons::updateInteractiveState(sf::Vector2i mousePosition) {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		buttonRectangle.setFillColor(sf::Color(255, 0, 255));
 		returnVal |= BUTTON_STATE_CLICK_LEFT;
-		if(buttonCallback != nullptr) buttonCallback();
+		if(buttonCallback != nullptr) buttonCallback(_id);
 	}
 
 	//move the object
@@ -55,9 +56,14 @@ UI_State_t Buttons::updateInteractiveState(sf::Vector2i mousePosition) {
 	else {
 	}
 
-	if (this->isMouseOverRect(mousePosition)) buttonRectangle.setFillColor(sf::Color::Yellow); // highlight
-	else buttonRectangle.setFillColor(_color); // constructor color
-
+	if (this->isMouseOverRect(mousePosition)) {
+		text.setFillColor(sf::Color::Black);
+		buttonRectangle.setFillColor(sf::Color::Yellow); // highlight
+	}
+	else {
+		text.setFillColor(sf::Color::White);
+		buttonRectangle.setFillColor(_color); // constructor color
+	}
 	return returnVal;
 }
 
