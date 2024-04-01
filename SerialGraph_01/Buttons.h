@@ -15,7 +15,7 @@ typedef enum {
 	BUTTON_STATE_CLICK_RIGHT = 0x04U
 } Button_Flags_t;
 
-#define DEFAULT_TEXT_SIZE 10
+#define DEFAULT_TEXT_SIZE 40
 
 class Buttons : public UIElement
 {
@@ -25,7 +25,7 @@ public:
 
 	~Buttons();
 
-	UI_State_t getState(sf::Vector2i mousePosition);
+	UI_State_t updateInteractiveState(sf::Vector2i mousePosition);
 
 	void draw(sf::RenderWindow& window);
 
@@ -36,12 +36,14 @@ public:
 
 	sf::Vector2f getSize();
 	sf::Vector2f getPosition();
+
+	sf::Text text; //move back to private after i solve the menu item button size issue
 	
 private:
 	
 	bool isMouseOverRect(sf::Vector2i mousePosition);
 	sf::RectangleShape buttonRectangle; //create button with wideth,height
-	sf::Text text;
+	
 	sf::Color _color;
 	sf::Font _font;
 	uint8_t(*buttonCallback)() = nullptr;

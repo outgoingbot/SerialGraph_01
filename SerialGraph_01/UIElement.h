@@ -19,7 +19,7 @@ typedef uint8_t UI_State_t;
 
 class UIElement {
 public:
-	virtual UI_State_t getState(sf::Vector2i mousePosition) = 0;
+	virtual UI_State_t updateInteractiveState(sf::Vector2i mousePosition) = 0;
 	virtual void draw(sf::RenderWindow& window) = 0;
 
 	virtual sf::Vector2f getSize() = 0;
@@ -28,14 +28,13 @@ public:
 	sf::Vector2f getTextBounds(sf::Text t) {
 			sf::FloatRect fr = t.getGlobalBounds();
 			return sf::Vector2f(fr.left, fr.top);
-		}
+	}
 
 	// void addElement(UIElement element);
+	bool mouseOverElement(sf::Vector2i mousePosition, sf::Vector2i origin);
 /*
 private:
 	std::vector<UIElement*> elements;
-	uint32_t xPos;
-	uint32_t yPos;
 */
 };
 

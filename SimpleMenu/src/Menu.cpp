@@ -5,13 +5,14 @@
 Menu::Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)()){
 	// setup the dock (large rectangle that borders the entire menu. grows with addItems pushback
 	_dockColor = color;
+	_dockSize = size;
 	_dock.setPosition(position);
 	_dock.setFillColor(_dockColor);
-	_dock.setSize(sf::Vector2f(size.x + 20, size.y + 20)); //setting the dock a bit bigger so I can see it for now
+	_dock.setSize(sf::Vector2f(_dockSize.x, _dockSize.y)); //setting the dock a bit bigger so I can see it for now
 	
 	//title of drop down menu. will activate on state= hover.
 	//will set menu show to true
-	Buttons* titleItem = new Buttons(size, position, sf::Color::Magenta, string);
+	Buttons* titleItem = new Buttons(sf::Vector2f(_dockSize.x, 50), position, sf::Color::Magenta, string);
 	_elements.push_back(titleItem);
 
 	//will change this to false when i get titleItem = hover working
@@ -26,7 +27,7 @@ Menu::~Menu()
 
 
 bool Menu::addMenuItem(sf::RenderWindow& win, const std::string text) {	
-#define SPACING 20
+#define SPACING 60
 	
 	//I dont like this constructor. need to think about either a default constructor. will need my call back functions
 	Buttons* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(1340, 150), sf::Color::Magenta, "Empty");
@@ -35,17 +36,18 @@ bool Menu::addMenuItem(sf::RenderWindow& win, const std::string text) {
 
 	newItem->setTextSize(DEFAULT_CHAR_SIZE);
 	newItem->setText(text);
+	
+	//sf::FloatRect fr =  newItem->text.getGlobalBounds();
 	//need to get the Button text bounding box (based off the setText) to then set the button size;
-	float newItemHeight = 30; //newItem->getTextBounds()
-	float newItemWidth = 100;
-
+	float newItemHeight = 50; //newItem->getTextBounds()
+	float newItemWidth = _dockSize.x;
 	newItem->setSize(sf::Vector2f(newItemWidth, newItemHeight));
+	
+	
 	//index element [0] on first pass to po
 	newItem->setPosition(sf::Vector2f(_elements[_elements.size() - 2]->getPosition().x, _elements[_elements.size() - 2]->getPosition().y + newItemHeight + SPACING));
 
-	//this needs to dynamicaly change based on the text in the vector
-	//_dock.setSize(sf::Vector2f(100,100)); 
-	
+	_dock.setSize(sf::Vector2f(_dock.getSize().x, _elements[_elements.size() - 1]->getPosition().y + _elements[_elements.size() - 1]->getSize().y));
 	return true;
 
 }
@@ -53,7 +55,7 @@ bool Menu::addMenuItem(sf::RenderWindow& win, const std::string text) {
 
 
 
-UI_State_t Menu::getState(sf::Vector2i mousePosf){
+UI_State_t Menu::updateInteractiveState(sf::Vector2i mousePosf){
 	UI_State_t returnVal = UI_STATE_READY;
 		
 	//Not implemented yet
@@ -68,7 +70,7 @@ void Menu::draw(sf::RenderWindow& win)
 {
 
 	if (menuShown) {
-		//win.draw(_dock);
+		win.draw(_dock);
 		if (componentOutlinesShown) {
 			for (auto Items : _elements) Items->draw(win);
 		}

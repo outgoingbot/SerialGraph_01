@@ -23,7 +23,7 @@ public:
 	Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars);
 	~Graph();
 
-	UI_State_t getState(sf::Vector2i mousePosition) override;
+	UI_State_t updateInteractiveState(sf::Vector2i mousePosition) override;
 
 	void setScale(float scl);
 	void autoScale(bool);

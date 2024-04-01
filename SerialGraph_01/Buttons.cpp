@@ -12,17 +12,17 @@ Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, cons
 	_color = color;
 	buttonRectangle.setSize(size);
 
-	sf::FloatRect btn = buttonRectangle.getLocalBounds();
-	buttonRectangle.setOrigin(btn.width / 2, btn.height / 2);
-	buttonRectangle.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
-	buttonRectangle.setFillColor(sf::Color::Blue);
+	//sf::FloatRect btn = buttonRectangle.getLocalBounds();
+	//buttonRectangle.setOrigin(btn.width / 2, btn.height / 2);
+	buttonRectangle.setPosition(sf::Vector2f(position.x, position.y));
+	buttonRectangle.setFillColor(_color);
 
 	text.setFont(_font);
 	text.setString(string);
 	text.setCharacterSize(DEFAULT_TEXT_SIZE);
-	sf::FloatRect rc = text.getLocalBounds();
-	text.setOrigin(rc.width / 2, rc.height / 2);
-	text.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
+	//sf::FloatRect rc = text.getLocalBounds();
+	//text.setOrigin(rc.width / 2, rc.height / 2);
+	text.setPosition(position);
 	text.setFillColor(sf::Color::White);
 	buttonCallback = callback;
 }
@@ -34,39 +34,41 @@ Buttons::~Buttons() {
 
 
 
-UI_State_t Buttons::getState(sf::Vector2i mousePosition) {
+UI_State_t Buttons::updateInteractiveState(sf::Vector2i mousePosition) {
 	UI_State_t returnVal = BUTTON_STATE_READY;
+	buttonRectangle.setFillColor(sf::Color::Yellow);
 
-		if (isMouseOverRect(mousePosition)) {
-			returnVal |= BUTTON_STATE_HOVER;
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-				buttonRectangle.setFillColor(sf::Color(255, 0, 255));
-				returnVal |= BUTTON_STATE_CLICK_LEFT;
-				if(buttonCallback != nullptr) buttonCallback();
-			}
+	returnVal |= BUTTON_STATE_HOVER;
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		buttonRectangle.setFillColor(sf::Color(255, 0, 255));
+		returnVal |= BUTTON_STATE_CLICK_LEFT;
+		if(buttonCallback != nullptr) buttonCallback();
+	}
 
-		//	//move the object
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-				buttonRectangle.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
-				text.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
-				returnVal |= BUTTON_STATE_CLICK_RIGHT;
-				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
-			}
-			else {
-			}
-		}
+	//move the object
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+		buttonRectangle.setPosition(sf::Vector2f(mousePosition.x - buttonRectangle.getSize().x/2, mousePosition.y - buttonRectangle.getSize().y / 2));
+		text.setPosition(buttonRectangle.getPosition());
+		returnVal |= BUTTON_STATE_CLICK_RIGHT;
+		//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+	}
+	else {
+	}
+
+	if (this->isMouseOverRect(mousePosition)) buttonRectangle.setFillColor(sf::Color::Yellow); // highlight
+	else buttonRectangle.setFillColor(_color); // constructor color
+
 	return returnVal;
 }
 
 
 bool Buttons::isMouseOverRect(sf::Vector2i mousePosition) {
-	if (mousePosition.x > buttonRectangle.getPosition().x - (buttonRectangle.getSize().x / 2) && mousePosition.x < buttonRectangle.getPosition().x + (buttonRectangle.getSize().x / 2)) {
-		if (mousePosition.y > buttonRectangle.getPosition().y - (buttonRectangle.getSize().y / 2) && mousePosition.y < buttonRectangle.getPosition().y + (buttonRectangle.getSize().y / 2)) {
-			buttonRectangle.setFillColor(sf::Color::Yellow);
+	if (mousePosition.x > buttonRectangle.getPosition().x && mousePosition.x < buttonRectangle.getPosition().x + (buttonRectangle.getSize().x)) {
+		if (mousePosition.y > buttonRectangle.getPosition().y 
+			&& mousePosition.y < buttonRectangle.getPosition().y + (buttonRectangle.getSize().y)) {
 			return true;
 		}
 	}
-	buttonRectangle.setFillColor(_color);
 	return false;
 }
 

@@ -71,8 +71,22 @@ uint8_t gui_ID = 0;
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded", sf::Style::Default, sf::ContextSettings(32));
 //sf::RenderWindow windowSettings(sf::VideoMode(800, 600), "Settings", sf::Style::Default, sf::ContextSettings(32));
 sf::Font font;
-sf::Vector2f mousePosf;
+
+
+
 //SFML Globals (dont change or remove)
+
+typedef struct {
+	bool mouseLeftClick = false;
+	bool mouseRightClick = false;
+	sf::Vector2f mousePosf;
+} mouseState_t;
+
+mouseState_t mouseState;
+//sf::Vector2f mousePosf;
+
+
+
 
 uint8_t handleButton_1() {
 	printf("Clicked!!!!");
@@ -127,33 +141,28 @@ int main()
 	//window.setVerticalSyncEnabled(true);
 	window.setActive(true);
 
-
-
-
-
-
-
 	// Hold all UI elements in vector
 	std::vector<UIElement*> elements;
 
 	//Create Gui Objects
 	//Button( Size, Position, Text)
 
-	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1340, 150),sf::Color::Green,"Connect", &handleButton_1);
+	Buttons Button_1(sf::Vector2f(200, 100), sf::Vector2f(1400, 1500),sf::Color::Green,"Connect", &handleButton_1);
 	elements.push_back(&Button_1);
 
-	Buttons Button_2(sf::Vector2f(200, 100), sf::Vector2f(1540, 150), sf::Color::Red, "Disconnect", &handleButton_1);
+	Buttons Button_2(sf::Vector2f(200, 100), sf::Vector2f(1650, 1500), sf::Color::Red, "Disconnect", &handleButton_1);
 	elements.push_back(&Button_2);
 
 	std::vector<Graph*> Graph_Vector;
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(750, 1400), "Graph_1", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(750, 1100), "Graph_2", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(750, 800), "Graph_3", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(750, 500), "Graph_4", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2100, 1400), "Graph_5", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2100, 1100), "Graph_6", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2100, 800), "Graph_7", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 8), sf::Vector2f(2100, 500), "Graph_8", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 700), "Graph_1", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 900), "Graph_2", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 1100), "Graph_3", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 1300), "Graph_4", NUMFLOATS));
+
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(1500, 700), "Graph_5", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(1500, 900), "Graph_6", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(1500, 1100), "Graph_7", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(1500, 1300), "Graph_8", NUMFLOATS));
 
 	// stuff elements vector with Graph_Vector
 	for (auto vector : Graph_Vector) elements.push_back(vector);
@@ -172,11 +181,11 @@ int main()
 
 	//To Display the serial data received
 	char charArraySerialData[256] = "Empty";
-	Label serialText(50, sf::Vector2f(100, 300), sf::Color::Yellow, charArraySerialData);
+	Label serialText(50, sf::Vector2f(200, 100), sf::Color::Yellow, charArraySerialData);
 	elements.push_back(&serialText);
 	
 	// create menu object
-	Menu mainMenu(sf::Vector2f(100, 50), sf::Vector2f(100, WINDOW_HEIGHT - 50), sf::Color::Blue, "FILE..." );
+	Menu mainMenu(sf::Vector2f(300, 200), sf::Vector2f(200, 0), sf::Color::Blue, "FILE..." );
 	elements.push_back(&mainMenu);
 
 	// add menu items. list of available com ports
@@ -186,18 +195,25 @@ int main()
 	
 
 	//this is gonna need to be moved into Connect Button to start the thread
-	//getting around 1mS without using threads
 	SP.Connect(COMM_PORT);
 	if (SP.IsConnected()) {
 		serial_thread = new std::thread(&Serial::ReadData, &SP, incomingData, dataLength, &bytesReceived); ///retrieve buffer
 	}
 																								 //-----------------------------------------MAIN LOOP------------------------------------------------------------
 	bool running = true;
-	UIElement* movingElement = nullptr;
+	UIElement* interactedElement = nullptr;
+	UIElement* lastUpdatedElement = nullptr;
 
+
+
+
+
+	
 	while (running)
 	{
+		// SerialGraph::updateInteractiveState()
 		auto startTime = std::chrono::high_resolution_clock::now();
+
 		
 		//Get Keyboard inputs
 		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) posText.move(10,0);
@@ -229,49 +245,92 @@ int main()
 
 			}
 		}
-		
+
+		// Assess mouse click rising edge
+		static bool lastMouseStateLeftClick = mouseState.mouseLeftClick;
+		static bool lastMouseStateRightClick = mouseState.mouseRightClick;
+
+		///////Mouse State Update
 		//Mouse Position Even after Windows Resizing
-		mousePosf = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+		mouseState.mousePosf = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+		mouseState.mouseLeftClick = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+		mouseState.mouseRightClick = sf::Mouse::isButtonPressed(sf::Mouse::Right);
 
-		//xMouseCross.setPosition(sf::Vector2f(0, mousePosf.y));
-		//yMouseCross.setPosition(sf::Vector2f(mousePosf.x,0));
-		//
-		//sprintf_s(charArrayMousePos, "(%f  %f)", (float)(sf::Mouse::getPosition(window).x), (float)(WINDOW_HEIGHT - sf::Mouse::getPosition(window).y));
-		//mousePosText.setText(charArrayMousePos);
-		//mousePosText.setPos(sf::Vector2f(mousePosf.x + 50, mousePosf.y + 50)); //set text
+		// If we are locked into an interaction...
+			// If the mouse is still down, continue interaction
+			// Else, mouse is up, release lock (Falling Edge)
 
-		if (movingElement != nullptr) {
-			// Keep track of which element we are dragging 
-			UI_State_t elementState = movingElement->getState((sf::Vector2i)mousePosf);
-			// If the right mouse button is depressed, release movingElement
-			if (!(elementState&BUTTON_STATE_CLICK_RIGHT)) movingElement = nullptr;
+		// Else, not locked into interaction
+			// If mouse is over element
+			// Update Interactive State
+			// If mouse is down over element
+				// lock interaction
+
+		if (interactedElement != nullptr) { // If we are locked into an interaction...
+			// If the mouse is still down, continue interaction
+			if (mouseState.mouseLeftClick || mouseState.mouseRightClick) {
+				interactedElement->updateInteractiveState((sf::Vector2i)mouseState.mousePosf);
+			}
+			else { // Else, mouse is up, release lock (Falling Edge)
+				interactedElement->updateInteractiveState((sf::Vector2i)mouseState.mousePosf);
+				interactedElement = nullptr;
+			}
 			
 		}
-		else 
-		{
-			// Handle Element Clicked event
+		else { // Else, not locked into interaction
+			
+			// for every element...
 			for (auto element : elements) {
-				if (element->getState((sf::Vector2i)mousePosf)) {
-					// If we are draging an element, point movingElement at it and break
-					if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-						movingElement = element;
-						std::iter_swap(elements.end() - 1, std::find(elements.begin(), elements.end(), element)); // Move dragged element to front
-						break;
+				// If mouse is over element
+				if (element->mouseOverElement((sf::Vector2i)mouseState.mousePosf, sf::Vector2i(0, 0))) {
+					// Update Interactive State
+					element->updateInteractiveState((sf::Vector2i)mouseState.mousePosf);
+
+					// If we skip to here from another element that we haven't executed out exit update from,
+					// updated the interacted state. If an edge case where mouse immediatly goes down, treat as interacted element.
+					if (lastUpdatedElement != nullptr && lastUpdatedElement != element) {
+						lastUpdatedElement->updateInteractiveState((sf::Vector2i)mouseState.mousePosf);
+						if ((mouseState.mouseLeftClick || mouseState.mouseRightClick) && interactedElement == nullptr) {
+							sf::Mouse::setPosition((sf::Vector2i)lastUpdatedElement->getPosition()); // force mouse over lastUpdatedElement
+							lastUpdatedElement->updateInteractiveState((sf::Vector2i)mouseState.mousePosf);
+							// lock interaction and break
+							interactedElement = lastUpdatedElement;
+							std::iter_swap(elements.end() - 1, std::find(elements.begin(), elements.end(), lastUpdatedElement)); // Move dragged element to front
+							break;
+						}
 					}
+
+					lastUpdatedElement = element; // update last updated element
+					// If mouse is down over element
+					if ((mouseState.mouseLeftClick || mouseState.mouseRightClick) && interactedElement == nullptr) {
+						// lock interaction and break
+						interactedElement = element;
+						std::iter_swap(elements.end() - 1, std::find(elements.begin(), elements.end(), element)); // Move dragged element to front
+						//break;
+					}
+
 				}
-			}
+				else if (lastUpdatedElement == element) { // update element after mouse leaves
+					lastUpdatedElement->updateInteractiveState((sf::Vector2i)mouseState.mousePosf);
+					lastUpdatedElement = nullptr;
+
+				}
+			}		
+
 
 		}
 
+		//SerialGraph::draw()
 		//---------------------------------------------------display-------------------------------------------------
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 		//window.clear(sf::Color::Black);
 		sprite.rotate(2);
 		window.draw(sprite);
-		mainMenu.draw(window);
-		//for (auto element : elements) element->draw(window);
-
+		//mainMenu.draw(window);
+		
+		for (auto element : elements) element->draw(window);
+		if (mainMenu.mouseOverElement((sf::Vector2i)mouseState.mousePosf, sf::Vector2i(0, 0))) printf("Mouse over\r\n");
 		//mainMenu.showComponentOutlines();
 		//mainMenu.draw(window, (sf::Vector2i)mousePosf);
 	
@@ -279,7 +338,7 @@ int main()
 
 
 		//---------------------------------------------------Process Serial Packet-------------------------------------------------
-
+		//SerialGraph::update()
 		if (SP.payloadComplete) { // ascii to bin
 			SP.payloadComplete = false;
 			//printf("Data: %f, %f, %f Qs:%i pIdx:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize, SP.payloadIdx);
@@ -289,8 +348,6 @@ int main()
 			if(SP.payloadIdx) Graph_Vector[SP.payloadIdx-1]->update(window, SP.myData);
 		}
 			
-
-
 		//---------------------------------------------------Loop Timing Info-------------------------------------------------
 		auto stopTime = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);

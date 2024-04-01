@@ -26,7 +26,7 @@ public:
 
 	void setPos(sf::Vector2f position);
 
-	UI_State_t getState(sf::Vector2i mousePosition);
+	UI_State_t updateInteractiveState(sf::Vector2i mousePosition);
 	void draw(sf::RenderWindow& window);
 	sf::Vector2f getSize();
 	sf::Vector2f getPosition();

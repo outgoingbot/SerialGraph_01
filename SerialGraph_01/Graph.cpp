@@ -31,15 +31,15 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	frame.setSize(size);
 	
 	sf::FloatRect graphRec = frame.getLocalBounds();
-	frame.setOrigin(graphRec.width / 2, graphRec.height / 2);
+	//frame.setOrigin(graphRec.width / 2, graphRec.height / 2);
 
-	frame.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
+	frame.setPosition(sf::Vector2f(position.x, position.y));
 	frame.setOutlineThickness(2);
 	frame.setOutlineColor(sf::Color::White);
 	frame.setFillColor(sf::Color::Black);
 
 	axis_x.setSize(sf::Vector2f(frame.getSize().x, 2)); //x axis
-	axis_x.setPosition(sf::Vector2f(frame.getPosition().x - (frame.getSize().x / 2), frame.getPosition().y));
+	axis_x.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y + (frame.getSize().y/2)));
 	
 
 	axis_x.setFillColor(sf::Color::White);
@@ -146,7 +146,7 @@ void Graph::update(sf::RenderWindow& window , float *dataPoint) {
 		scaler = frame.getSize().y / (maxVal*1.1f); //give 10% extra room at top of graph
 		
 		//Trying to Set the X axis position to so the Min Value is close graph window edge (bottom edge)		
-		axis_x.setPosition(frame.getPosition().x-(frame.getSize().x/2), frame.getPosition().y + (frame.getSize().y/2) - (minVal));
+		axis_x.setPosition(frame.getPosition().x, frame.getPosition().y + (frame.getSize().y) - (minVal));
 		
 		//Store the new Data float value in the Rightmost data point
 		dataArray[j][frameSamples - 1] = dataPoint[j];
@@ -172,7 +172,7 @@ void Graph::draw(sf::RenderWindow& window) {
 }
 
 
-UI_State_t Graph::getState(sf::Vector2i mousePosition) {
+UI_State_t Graph::updateInteractiveState(sf::Vector2i mousePosition) {
 #define MOUSESHIFT 0 //hack to keep the mouse over the graph box
 	UI_State_t returnVal = UI_STATE_READY;
 	sf::FloatRect graphRec = frame.getGlobalBounds();
@@ -181,10 +181,9 @@ UI_State_t Graph::getState(sf::Vector2i mousePosition) {
 
 
 	
-		if (isMouseOverRect(mousePosition)) 
-		{
+	
 			returnVal |= UI_STATE_HOVER;
-			drawCrosshair = true;
+			//drawCrosshair = true;
 			xMouseCross.setPosition(sf::Vector2f(graphRec.left, mousePosition.y));
 			yMouseCross.setPosition(sf::Vector2f(mousePosition.x, graphRec.top));
 			textyMouse.setPosition(sf::Vector2f(mousePosition.x+20,mousePosition.y-30));
@@ -205,7 +204,7 @@ UI_State_t Graph::getState(sf::Vector2i mousePosition) {
 
 				axis_x.setPosition(sf::Vector2f(frame.getPosition().x-frame.getSize().x/2, frame.getPosition().y));
 					
-				// Update Graph Lines
+				// Update Graph Lines while dragging (hacky)
 				//draw linear interpolated lines by shifting all the data points Left
 				for (int j = 0; j < _len; j++) {
 					for (uint32_t i = 0; i < frameSamples - 1; i++) {
@@ -216,26 +215,15 @@ UI_State_t Graph::getState(sf::Vector2i mousePosition) {
 				returnVal |= UI_STATE_CLICK_RIGHT;
 				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
 			}
-			else {
-			
+	
+			if (this->isMouseOverRect(mousePosition)) {
+				drawCrosshair = true;
+				frame.setFillColor(sf::Color(20, 20, 20)); // highlight gray
 			}
-
-			//sf::Event event;
-			//while (window.pollEvent(event)) {
-			//	if (event.type == sf::Event::MouseWheelMoved) {
-			//		// display number of ticks mouse wheel has moved
-			//		if (event.mouseWheel.delta > 0) this->scaler += 1.0f;
-			//		if (event.mouseWheel.delta < 0) this->scaler -= 1.0f;
-
-			//		//this method below doesnt work because it scales the already scaled value
-			//		//for (int i = 0; i < WINDOW_WIDTH-1; i++) dot[i].setPosition(sf::Vector2f(i, (float) ( ( (dot[i].getPosition().y - (window.getSize().y / 2)) * scaler ) + (window.getSize().y / 2))) );
-			//	}
-			//}
-		//}
-		}
-		else {
-			drawCrosshair = false;
-		}
+			else {
+				frame.setFillColor(sf::Color::Black); // black color
+				drawCrosshair = false;
+			}
 		
 	return returnVal;
 }
@@ -243,13 +231,11 @@ UI_State_t Graph::getState(sf::Vector2i mousePosition) {
 
 
 bool Graph::isMouseOverRect(sf::Vector2i mousePosition) {
-	if (mousePosition.x > frame.getPosition().x - (frame.getSize().x / 2) && mousePosition.x < frame.getPosition().x + (frame.getSize().x / 2)) {
-		if (mousePosition.y > frame.getPosition().y - (frame.getSize().y / 2) && mousePosition.y < frame.getPosition().y + (frame.getSize().y / 2)) {
-			frame.setFillColor(sf::Color(20, 20, 20));
+	if (mousePosition.x > frame.getPosition().x && mousePosition.x < frame.getPosition().x + (frame.getSize().x)) {
+		if (mousePosition.y > frame.getPosition().y && mousePosition.y < frame.getPosition().y + (frame.getSize().y)) {
 			return true;
 		}
 	}
-	frame.setFillColor(sf::Color(0, 0, 0));
 	return false;
 }
 

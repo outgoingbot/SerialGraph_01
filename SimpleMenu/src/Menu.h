@@ -31,7 +31,7 @@ public:
 
 
 	void draw(sf::RenderWindow& win);
-	UI_State_t getState(sf::Vector2i mousePosf);
+	UI_State_t updateInteractiveState(sf::Vector2i mousePosf);
 	sf::Vector2f getSize();
 	sf::Vector2f getPosition();
 
@@ -55,6 +55,7 @@ private:
 
 	// formatting
 	sf::Vector2f dockPosition;	//where to start drawing elements relative to the window
+	sf::Vector2f _dockSize;
 	sf::Vector2f textOriginPoint;	//which corner to start drawing text objects at.
 	sf::Vector2f bounds;	//width and height of the menu
 	float paddingX;	//amount of space between edge of menu and start of UI

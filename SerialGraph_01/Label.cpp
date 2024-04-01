@@ -36,7 +36,7 @@ void Label::setText(const float f) {
 	text.setString(string);
 }
 
-UI_State_t Label::getState(sf::Vector2i mousePosition) {
+UI_State_t Label::updateInteractiveState(sf::Vector2i mousePosition) {
 	UI_State_t returnVal = LABEL_STATE_READY;
 
 	//store the global into a private var
@@ -52,7 +52,7 @@ UI_State_t Label::getState(sf::Vector2i mousePosition) {
 
 			//move the object
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-				text.setPosition(sf::Vector2f(mousePosition.x - 20, mousePosition.y - 20));
+				text.setPosition(sf::Vector2f(mousePosition.x - 50, mousePosition.y - 10));
 				returnVal |= LABEL_STATE_CLICK_RIGHT;
 				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
 			}
