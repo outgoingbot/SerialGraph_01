@@ -21,7 +21,7 @@ class Buttons : public UIElement
 {
 public:
 
-	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
+	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, bool isDraggable = false, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
 
 	~Buttons();
 
@@ -48,4 +48,6 @@ private:
 	sf::Font _font;
 	uint8_t(*buttonCallback)(uint8_t) = nullptr;
 	uint8_t _id; // keep track of multiple buttons in callback within common parent
+	bool _mouseLeftHandled = false;
+	bool _isDragable = false;
 };

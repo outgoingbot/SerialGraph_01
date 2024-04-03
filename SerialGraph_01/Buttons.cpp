@@ -2,7 +2,7 @@
 
 
 //set size, position, text
-Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t (*callback)(uint8_t), uint8_t id) {
+Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, bool isDragable, uint8_t (*callback)(uint8_t), uint8_t id) {
 	//Load Font
 	if (!_font.loadFromFile("../res/arial.ttf")) {
 		printf("Error loading Font");
@@ -26,6 +26,7 @@ Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, cons
 	text.setFillColor(sf::Color::White);
 	buttonCallback = callback;
 	_id = id;
+	_isDragable = isDragable;
 }
 
 
@@ -34,20 +35,23 @@ Buttons::~Buttons() {
 }
 
 
-
 UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
 	UI_State_t returnVal = BUTTON_STATE_READY;
 	buttonRectangle.setFillColor(sf::Color::Yellow);
 
 	returnVal |= BUTTON_STATE_HOVER;
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_mouseLeftHandled) {
 		buttonRectangle.setFillColor(sf::Color(255, 0, 255));
 		returnVal |= BUTTON_STATE_CLICK_LEFT;
 		if(buttonCallback != nullptr) buttonCallback(_id);
+		_mouseLeftHandled = true; // Prevents button from being spammed when mouse is held down
+	}
+	else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && _mouseLeftHandled == true) {
+		_mouseLeftHandled = false;
 	}
 
 	//move the object
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && _isDragable) {
 		buttonRectangle.setPosition(sf::Vector2f(userInput.m.mousePosf.x - buttonRectangle.getSize().x/2, userInput.m.mousePosf.y - buttonRectangle.getSize().y / 2));
 		text.setPosition(buttonRectangle.getPosition());
 		returnVal |= BUTTON_STATE_CLICK_RIGHT;

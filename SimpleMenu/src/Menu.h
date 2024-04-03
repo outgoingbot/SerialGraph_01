@@ -70,6 +70,7 @@ private:
 	sf::Color _dockColor;	//set to transparent by default
 	sf::Vector2f _dockOpenSize;
 	sf::Vector2f _dockClosedSize;
+	Buttons* titleItem = nullptr;
 	//std::vector <sf::Drawable*> _drawable;
 
 };

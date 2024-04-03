@@ -55,10 +55,10 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	////window.setVerticalSyncEnabled(true);
 	//window.setActive(true);
 
-	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 100), sf::Vector2f(1400, 1500), sf::Color::Green, "Connect", &handleButton_1);
+	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 100), sf::Vector2f(1400, 1500), sf::Color::Green, "Connect", true, &handleButton_1);
 	_elements.push_back(Button_1);
 
-	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 100), sf::Vector2f(1650, 1500), sf::Color::Red, "Disconnect", &handleButton_1);
+	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 100), sf::Vector2f(1650, 1500), sf::Color::Red, "Disconnect", true, &handleButton_1);
 	_elements.push_back(Button_2);
 
 	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 700), "Graph_1", NUMFLOATS));
