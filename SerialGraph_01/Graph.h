@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <vector>
 #include "Label.h"
+#include <iostream>
 #define NUMFLOATS 3
 
 //typedef enum {
@@ -40,8 +41,8 @@ private:
 	bool isMouseOverRect(sf::Vector2f mousePosition);
 	
 	bool drawCrosshair = false;
-	float scaler = 1.0f; //WIP the Y axis scale value
-
+	float _Yscaler = 1.0f; //bigger is taller peaks
+	uint32_t _Xscaler = 1; //bigger is more zoomed in
 	sf::Font _font;
 
 	sf::RectangleShape _dock; //create button with wideth,height
@@ -54,7 +55,10 @@ private:
 
 	Label *_graphName; //The graph title
 	Label *_textAxis_y;
-	//sf::Text _textAxis_y; //holds the max value of Y axis scale
+	
+	Label *_textAxis_x_start;
+	Label *_textAxis_x_stop;
+
 	Label *_textyMouse; //mouse position related to graph scale
 	
 	char textBuff[64];
@@ -64,6 +68,7 @@ private:
 	float* dataArray[NUMFLOATS];
 	int _len; //number of floats per graph
 
+	float _size;
 	float maxVal=10;
 	float minVal=0;
 	

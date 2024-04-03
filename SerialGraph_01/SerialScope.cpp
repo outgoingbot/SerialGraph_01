@@ -58,7 +58,7 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, &handleButton_disconnect);
 	_elements.push_back(Button_2);
 
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 700), "Graph_1", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 600), "Graph_1", NUMFLOATS));
 	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 900), "Graph_2", NUMFLOATS));
 	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 1100), "Graph_3", NUMFLOATS));
 	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 1300), "Graph_4", NUMFLOATS));

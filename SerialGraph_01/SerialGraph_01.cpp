@@ -182,7 +182,7 @@ int main()
 			else if(event.type == sf::Event::EventType::KeyPressed){
 				//event type is keyboard button was press. set the char.
 				userInput.k.key = (char)event.key.code;
-				printf("%i - %c", (int)userInput.k.key, userInput.k.key);
+				//printf("%i - %c", (int)userInput.k.key, userInput.k.key);
 			}
 			else {
 				userInput.k.key = sf::Keyboard::Unknown; // set key to -1
