@@ -54,7 +54,7 @@ private:
 	sf::RectangleShape yMouseCross; //y mouse crosshair
 	sf::Text textyMouse; //mouse position related to graph scale
 	
-	
+	sf::Font _font;
 
 	char textBuff[64];
 	//will want to to add some color blocks to inidcate the 3 variables color

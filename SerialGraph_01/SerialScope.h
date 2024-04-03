@@ -25,7 +25,6 @@
 #include "SimpleMenu/Src/Menu.h" // Fix later
 
 
-
 typedef enum {
 	NOTDRAGABLE = 0,
 	DRAGABLE = 1
@@ -59,6 +58,7 @@ private:
 	Serial* SP;
 	sf::Sprite* sprite;
 	std::vector<Graph*> Graph_Vector;
+	Label* serialText;
 	int _bytesReceived;
 
 };

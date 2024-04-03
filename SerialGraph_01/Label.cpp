@@ -1,18 +1,26 @@
 #include "Label.h"
-//extern sf::RenderWindow window;
-extern sf::Font font;
-
 
 //set size, position, text
 Label::Label(unsigned int size, sf::Vector2f position, sf::Color color, const char* string) {
+	//load private font
+	if (!_font.loadFromFile("../res/arial.ttf")) {
+		printf("Error loading Font");
+		system("pause");
+	}
+
 	_color = color;
-	text.setFont(font);
-	text.setCharacterSize(size);
-	text.setString(string);
-	sf::FloatRect rc = text.getLocalBounds();
-	text.setOrigin(rc.width / 2, rc.height / 2);
-	text.setPosition(sf::Vector2f(position.x, WINDOW_HEIGHT - position.y));
-	text.setFillColor(_color);
+	_text.setFont(_font);
+	_text.setCharacterSize(size);
+	_text.setString(string);
+	
+	_text.setPosition(position);
+	_text.setFillColor(_color);
+
+	//setColor of the rectangle behind the text
+	_dock.setFillColor(sf::Color::Transparent);
+	sf::FloatRect rc = _text.getGlobalBounds();
+	_dock.setSize(sf::Vector2f(rc.width, rc.height));
+	_dock.setPosition(position);	
 }
 
 
@@ -22,44 +30,47 @@ Label::~Label() {
 
 
 void Label::setPos(sf::Vector2f position) {
-	text.setPosition(sf::Vector2f(position.x, position.y));
+	_text.setPosition(position);
+	_dock.setPosition(position);
 }
 
 void Label::setText(const char* string) {
-
-	text.setString(string);
+	_text.setString(string);
+	sf::FloatRect rc = _text.getGlobalBounds();
+	_dock.setSize(sf::Vector2f(rc.width, rc.height));
 }
 
 void Label::setText(const float f) {
 	char string[64];
 	sprintf_s(string, "%f", f);
-	text.setString(string);
+	_text.setString(string);
+	sf::FloatRect rc = _text.getGlobalBounds();
+	_dock.setSize(sf::Vector2f(rc.width, rc.height));
 }
 
 UI_State_t Label::updateInteractiveState(inputState_t userInput) {
 	UI_State_t returnVal = LABEL_STATE_READY;
+	_text.setFillColor(sf::Color::Yellow); //mouse over highlight color
+		
+	returnVal |= LABEL_STATE_HOVER;
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		_text.setFillColor(sf::Color(255, 0, 255));
+		returnVal |= LABEL_STATE_CLICK_LEFT;
+	}
 
-	//store the global into a private var
+	//move the object
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+		_dock.setPosition(sf::Vector2f(userInput.m.mousePosf.x-(_dock.getSize().x/2), userInput.m.mousePosf.y-(_dock.getSize().y / 2)));
+		_text.setPosition(_dock.getPosition());
+		returnVal |= LABEL_STATE_CLICK_RIGHT;
 
-	if (isMouseOverRect(userInput.m.mousePosf)) {
-
-		if (isMouseOverRect(userInput.m.mousePosf)) {
-			returnVal |= LABEL_STATE_HOVER;
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-				text.setFillColor(sf::Color(255, 0, 255));
-				returnVal |= LABEL_STATE_CLICK_LEFT;
-			}
-
-			//move the object
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-				text.setPosition(sf::Vector2f(userInput.m.mousePosf.x - 50, userInput.m.mousePosf.y - 10));
-				returnVal |= LABEL_STATE_CLICK_RIGHT;
-				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
-			}
-			else {
-
-			}
-		}
+	}
+			
+	if (this->isMouseOverRect(userInput.m.mousePosf)) {
+		_text.setFillColor(sf::Color::Yellow);
+	}
+	else {
+		_text.setFillColor(_color);
 	}
 
 	// Call parent updateInteractiveState to evaluate children states
@@ -69,32 +80,30 @@ UI_State_t Label::updateInteractiveState(inputState_t userInput) {
 }
 
 
-bool Label::isMouseOverRect(sf::Vector2f mousePosition) {
-	sf::FloatRect textRect = text.getGlobalBounds();
-	if (mousePosition.x > textRect.left && mousePosition.x < textRect.left + textRect.width) {
-		if (mousePosition.y > textRect.top && mousePosition.y < textRect.top+textRect.height) {
-			text.setFillColor(sf::Color(0, 0, 255));
+bool Label::isMouseOverRect(sf::Vector2f mousePosition) {	
+	if (mousePosition.x > _dock.getPosition().x && mousePosition.x < _dock.getPosition().x + _dock.getSize().x) {
+		if (mousePosition.y > _dock.getPosition().y && mousePosition.y < _dock.getPosition().y + _dock.getSize().y) {
 			return true;
 		}
 	}
-	text.setFillColor(_color);
 	return false;
 }
 
 
 
 void Label::draw(sf::RenderWindow& window) {
-	window.draw(text);
+	window.draw(_dock);
+	window.draw(_text);
 }
 
 
 
 sf::Vector2f Label::getSize() {
-	sf::FloatRect fr = text.getGlobalBounds();
+	//sf::FloatRect fr = _text.getGlobalBounds();
 
-	return sf::Vector2f(fr.width, fr.height);
+	return _dock.getSize();
 }
 
 sf::Vector2f Label::getPosition() {
-	return text.getPosition();
+	return _dock.getPosition();
 }

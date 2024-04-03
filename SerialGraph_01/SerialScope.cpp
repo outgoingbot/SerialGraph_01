@@ -1,7 +1,5 @@
 #include "SerialScope.h"
 
-extern sf::Font font;
-
 /* Element Handler Callbacks */
 static uint8_t handleButton_connect(uint8_t val) {
 	printf("Clicked Connect %d\r\n", val);
@@ -33,13 +31,6 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	SP->ListBaudRates();
 
 	if (SP->IsConnected()) printf("We're connected\r\n");
-
-
-	//Load Font
-	if (!font.loadFromFile("../res/Pumpkin_Pancakes.ttf")) {
-		printf("Error loading Font");
-		system("pause");
-	}
 
 	//Load Texture
 	sprite = new sf::Sprite();
@@ -80,21 +71,14 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	// stuff elements vector with Graph_Vector
 	for (auto vector : Graph_Vector) _elements.push_back(vector);
 
-	//Graph* Graph_loopTime = new Graph(sf::Vector2f(600, WINDOW_HEIGHT / 12), sf::Vector2f(2250, 200), "LoopTime", 1);
-	//_elements.push_back(Graph_loopTime);
-
-	//char loopText[64] = "";
-	//Label* loopTimeText = new Label(50, sf::Vector2f(2100, 100), sf::Color::Magenta, loopText);
-	//_elements.push_back(loopTimeText);
-
+	
 	//give me the mouse postion to help with layout
-	char charArrayMousePos[256] = "";
-	Label* mousePosText = new Label(25, sf::Vector2f(100, 100), sf::Color::Green, charArrayMousePos);
-	_elements.push_back(mousePosText);
+	//char charArrayMousePos[256] = "";
+	//Label* mousePosText = new Label(25, sf::Vector2f(100, 700), sf::Color::Green, charArrayMousePos);
+	//_elements.push_back(mousePosText);
 
 	//To Display the serial data received
-	char charArraySerialData[256] = "Empty";
-	Label* serialText = new Label(50, sf::Vector2f(300, 100), sf::Color::Yellow, charArraySerialData);
+	serialText = new Label(50, sf::Vector2f(900, 1500), sf::Color::White, "Empty");
 	_elements.push_back(serialText);
 
 	// create menu object
@@ -191,8 +175,9 @@ void SerialScope::draw(sf::RenderWindow& win) {
 	if (SP->payloadComplete) { // ascii to bin
 		SP->payloadComplete = false;
 		//printf("Data: %f, %f, %f Qs:%i pIdx:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize, SP.payloadIdx);
-		//sprintf_s(charArraySerialData, "Serial Data: %f, %f, %f", SP->myData[0], SP->myData[1], SP->myData[2]);
-		//serialText.setText(charArraySerialData);
+		char charArraySerialData[256];
+		sprintf_s(charArraySerialData, "Serial Data: %f, %f, %f", SP->myData[0], SP->myData[1], SP->myData[2]);
+		serialText->setText(charArraySerialData);
 
 		if (SP->payloadIdx) Graph_Vector[SP->payloadIdx - 1]->update(win, SP->myData);
 	}

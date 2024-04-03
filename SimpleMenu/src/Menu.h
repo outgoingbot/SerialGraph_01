@@ -40,7 +40,7 @@ private:
 	// Constants
 	// formatting
 	
-	 sf::Font font;
+	 sf::Font _font;
 	const sf::Vector2f DEFAULT_DOCKING_POSITION = { 0,0 };
 	const sf::Vector2f DEFAULT_TEXT_ORIGIN_POINT = { 0,0 };
 	const sf::Vector2f DEFAULT_PADDING = { 25, 25 };

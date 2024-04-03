@@ -1,13 +1,15 @@
 #include "Graph.h"
 
-//extern sf::RenderWindow window;
-extern sf::Font font;
-
-
 #define XSCALE 10 //testing 1,10,100
 
 //size, position
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
+	//load private font
+	if (!_font.loadFromFile("../res/arial.ttf")) {
+		printf("Error loading Font");
+		system("pause");
+	}
+
 	_len = (int)numVars;
 	frameSamples = (uint32_t)(size.x/ XSCALE);
 	for (int j = 0; j < numVars; j++) {
@@ -59,7 +61,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 			lineInterpol[j][i] = sf::Vertex((sf::Vector2f(frame.getPosition().x + (i*XSCALE), axis_x.getPosition().y))); //place all dots on the x axis
 		}
 	}
-	textLabel.setFont(font);
+	textLabel.setFont(_font);
 	textLabel.setCharacterSize(40);
 	textLabel.setString(title);
 	sf::FloatRect graphtextRec = textLabel.getLocalBounds();
@@ -67,7 +69,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	textLabel.setPosition(sf::Vector2f(graphRec.left, graphRec.top- graphtextRec.height-5));
 	textLabel.setFillColor(sf::Color::White);
 
-	textAxis_y.setFont(font);
+	textAxis_y.setFont(_font);
 	textAxis_y.setCharacterSize(20);
 	textAxis_y.setString("100.00");
 	graphtextRec = textAxis_y.getLocalBounds();
@@ -86,7 +88,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	yMouseCross.setFillColor(sf::Color::Magenta);
 
 	
-	textyMouse.setFont(font);
+	textyMouse.setFont(_font);
 	textyMouse.setCharacterSize(20);
 	textyMouse.setString("Empty");
 	textyMouse.setFillColor(sf::Color::Magenta);

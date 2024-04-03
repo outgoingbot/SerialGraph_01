@@ -6,7 +6,6 @@
 #include "UIElement.h"
 
 
-
 typedef enum {
 	LABEL_STATE_READY = 0x00U,
 	LABEL_STATE_HOVER = 0x01U,
@@ -33,9 +32,11 @@ public:
 	
 private:
 	bool isMouseOverRect(sf::Vector2f mousePosition);
-
-
-	sf::Text text;
-
 	sf::Color _color;
+	sf::Font _font;
+	sf::Text _text;
+
+	sf::RectangleShape _dock;
+
+	
 };

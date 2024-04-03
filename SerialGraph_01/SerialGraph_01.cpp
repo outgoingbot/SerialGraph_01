@@ -53,6 +53,7 @@ next change will allow CSV strings with \r\n terminating
 
 #include "SimpleMenu/Src/Menu.h"
 
+
 //Debug vars
 char charArrayDebug[256] = "Empty";
 
@@ -62,23 +63,15 @@ char charArrayDebug[256] = "Empty";
 //unsigned int dataLength = 1;
 //int bytesReceived = 0;
 
-//SFML Globals (dont change or remove)
-
-//loop control
-//std::thread *serial_thread = nullptr;
-
-//bool killThread = false; //rename to killSerialThread
 uint8_t gui_ID = 0;
+
 //graphics
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Serial O-Scope _sweeded", sf::Style::Default, sf::ContextSettings(32));
 //sf::RenderWindow windowSettings(sf::VideoMode(800, 600), "Settings", sf::Style::Default, sf::ContextSettings(32));
-sf::Font font;
 
-//SFML Globals (dont change or remove)
 
-//mouseState_t mouseState;
-//sf::Vector2f mousePosf;
 
+//Our Callback Handlers
 uint8_t handleButton_1(uint8_t val) {
 	printf("Button1 Clicked \r\n");
 	return 0;
@@ -94,7 +87,7 @@ uint8_t handleMenu_2(uint8_t val) {
 	return 0;
 }
 
-sf::Event event; //Do we only need one event ?
+sf::Event event; //Do we only need one event ? (think yes)
 
 int main()
 {	
@@ -107,18 +100,26 @@ int main()
 		system("pause");
 	}
 	window.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
+	
+	//Load Font
+	sf::Font font;
+	if (!font.loadFromFile("../res/Pumpkin_Pancakes.ttf")) {
+		printf("Error loading Font");
+		system("pause");
+	}
 
 	//set FPS
 	window.setFramerateLimit(60); //seriously reduces the CPU/GPU utilization
 	//window.setVerticalSyncEnabled(true);
 	window.setActive(true);
 
+	//create our UI Elements
 	SerialScope serialScope(255, 0);
 
-	//debug
-	Graph Graph_loopTime(sf::Vector2f(200, 100), sf::Vector2f(WINDOW_WIDTH - 210, 100), "Loop Time", NUMFLOATS);
-
-	
+	//debug UI Items (non UIelements)
+	Graph D_Graph_loopTime(sf::Vector2f(200, 100), sf::Vector2f(WINDOW_WIDTH - 210, 50), "Loop Time", NUMFLOATS);
+	Label D_MousePosition(20, sf::Vector2f(100, 500), sf::Color::White, "MousePosition");
+		
 	
 	// SerialGraph::updateInteractiveState()
 	//-----------------------------------------MAIN LOOP------------------------------------------------------------
@@ -150,7 +151,8 @@ int main()
 		serialScope.clear();
 		serialScope.draw(window);
 
-		Graph_loopTime.draw(window); //DEBUG OUTSIDE UIELEMENTS
+		D_Graph_loopTime.draw(window); //DEBUG OUTSIDE UIELEMENTS
+		D_MousePosition.draw(window);
 
 		window.display(); //show drawn objects to the display buffer
 
@@ -193,7 +195,11 @@ int main()
 		float loopTimeDuration = (float)duration.count()/1000.f;
 		//sprintf_s(loopText, "Loop Time: %f", loopTimeDuration);
 		//loopTimeText.setText(loopText);
-		Graph_loopTime.update(window, &loopTimeDuration);	//DEBUG OUTSIDE UIELEMENTS	
+		char mouseString[64];
+		sprintf_s(mouseString, "\t\t%f , %f", userInput.m.mousePosf.x, userInput.m.mousePosf.y);
+		D_MousePosition.setPos(userInput.m.mousePosf);
+		D_MousePosition.setText(mouseString);
+		D_Graph_loopTime.update(window, &loopTimeDuration);	//DEBUG OUTSIDE UIELEMENTS	
 
 	}//end update loop
 
