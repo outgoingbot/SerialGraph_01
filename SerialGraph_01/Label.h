@@ -23,7 +23,7 @@ public:
 	void setText(const char* string);
 	void setText(const float f);
 
-	void setPos(sf::Vector2f position);
+	void setPosition(sf::Vector2f position);
 
 	UI_State_t updateInteractiveState(inputState_t userInput);
 	void draw(sf::RenderWindow& window);

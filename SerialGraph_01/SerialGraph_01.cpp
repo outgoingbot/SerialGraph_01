@@ -197,7 +197,7 @@ int main()
 		//loopTimeText.setText(loopText);
 		char mouseString[64];
 		sprintf_s(mouseString, "\t\t%f , %f", userInput.m.mousePosf.x, userInput.m.mousePosf.y);
-		D_MousePosition.setPos(userInput.m.mousePosf);
+		D_MousePosition.setPosition(userInput.m.mousePosf);
 		D_MousePosition.setText(mouseString);
 		D_Graph_loopTime.update(window, &loopTimeDuration);	//DEBUG OUTSIDE UIELEMENTS	
 

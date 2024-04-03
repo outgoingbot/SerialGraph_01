@@ -7,6 +7,7 @@
 #include "UtilFuncs.h"
 #include <stdio.h>
 #include <vector>
+#include "Label.h"
 #define NUMFLOATS 3
 
 //typedef enum {
@@ -37,29 +38,29 @@ public:
 
 private:
 	bool isMouseOverRect(sf::Vector2f mousePosition);
-
-	float scaler = 1.0f;
-
-	sf::RectangleShape frame; //create button with wideth,height
-
-	sf::RectangleShape axis_x; //create button with wideth,height
 	
-	sf::Vertex* lineInterpol[NUMFLOATS]; //should make this dynamic at some point
-	sf::Color lineColor[NUMFLOATS];
+	bool drawCrosshair = false;
+	float scaler = 1.0f; //WIP the Y axis scale value
 
-	sf::Text textLabel; //just holds the graph title
-	sf::Text textAxis_y; //holds the max value of Y axis scale
-
-	sf::RectangleShape xMouseCross;//x mouse crosshair
-	sf::RectangleShape yMouseCross; //y mouse crosshair
-	sf::Text textyMouse; //mouse position related to graph scale
-	
 	sf::Font _font;
 
+	sf::RectangleShape _dock; //create button with wideth,height
+	sf::RectangleShape _axis_x; //create button with wideth,height
+	sf::RectangleShape _xMouseCross;//x mouse crosshair
+	sf::RectangleShape _yMouseCross; //y mouse crosshair
+
+	sf::Vertex* _lineInterpol[NUMFLOATS]; //should make this dynamic at some point
+	sf::Color _lineColor[NUMFLOATS];
+
+	Label *_graphName; //The graph title
+	Label *_textAxis_y;
+	//sf::Text _textAxis_y; //holds the max value of Y axis scale
+	Label *_textyMouse; //mouse position related to graph scale
+	
 	char textBuff[64];
 	//will want to to add some color blocks to inidcate the 3 variables color
 
-	uint32_t frameSamples; //number of samples per frame (based on frame width)
+	uint32_t frameSamples; //number of samples per _dock (based on _dock width)
 	float* dataArray[NUMFLOATS];
 	int _len; //number of floats per graph
 
@@ -68,9 +69,7 @@ private:
 	
 	std::vector <sf::Drawable*> _drawables;
 	std::vector <sf::Drawable*> _interactive;
+	std::vector<UIElement*> _elements;
 
-	bool drawCrosshair = false;
 	
-
-
 };

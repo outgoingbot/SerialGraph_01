@@ -29,7 +29,7 @@ Label::~Label() {
 }
 
 
-void Label::setPos(sf::Vector2f position) {
+void Label::setPosition(sf::Vector2f position) {
 	_text.setPosition(position);
 	_dock.setPosition(position);
 }
