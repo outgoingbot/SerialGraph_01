@@ -32,14 +32,15 @@ public:
 	bool xAxisMode = false; //true = sample,, false = time
 
 
-	void update(sf::RenderWindow& window, float *dataPoint=nullptr);
+	void update(inputState_t userInput, bool withNewData, float *dataPoint=nullptr);
 	void draw(sf::RenderWindow& window);
 	sf::Vector2f getSize();
 	sf::Vector2f getPosition();
 
 private:
 	bool isMouseOverRect(sf::Vector2f mousePosition);
-	
+	//void drawFromInteract(bool withShift);
+
 	bool drawCrosshair = false;
 	float _Yscaler = 1.0f; //bigger is taller peaks
 	uint32_t _Xscaler = 1; //bigger is more zoomed in
@@ -54,12 +55,12 @@ private:
 	sf::Color _lineColor[NUMFLOATS];
 
 	Label *_graphName; //The graph title
-	Label *_textAxis_y;
+	Label *_textYaxisScale;
 	
-	Label *_textAxis_x_start;
-	Label *_textAxis_x_stop;
+	Label *_textXaxisScale_start;
+	Label *_textXaxisScale_stop;
 
-	Label *_textyMouse; //mouse position related to graph scale
+	Label *_textCrossHairData; //mouse position related to graph scale
 	
 	char textBuff[64];
 	//will want to to add some color blocks to inidcate the 3 variables color

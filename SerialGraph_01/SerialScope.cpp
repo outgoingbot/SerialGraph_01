@@ -161,16 +161,7 @@ UI_State_t SerialScope::updateInteractiveState(inputState_t userInput) {
 	return returnVal;
 }
 
-
-void SerialScope::draw(sf::RenderWindow& win) {
-
-	sprite->rotate(2);
-	win.draw(*sprite);
-
-	for (auto element : _elements) element->draw(win);
-
-	//win.display(); //show drawn objects to the display buffer
-
+void SerialScope::update(inputState_t userInput){
 	// MOVE TO UPDATE()!!!!
 	if (SP->payloadComplete) { // ascii to bin
 		SP->payloadComplete = false;
@@ -179,6 +170,16 @@ void SerialScope::draw(sf::RenderWindow& win) {
 		sprintf_s(charArraySerialData, "Serial Data: %f, %f, %f", SP->myData[0], SP->myData[1], SP->myData[2]);
 		serialText->setText(charArraySerialData);
 
-		if (SP->payloadIdx) Graph_Vector[SP->payloadIdx - 1]->update(win, SP->myData);
+		if (SP->payloadIdx) Graph_Vector[SP->payloadIdx - 1]->update(userInput, true, SP->myData);
 	}
+
+}
+void SerialScope::draw(sf::RenderWindow& win) {
+
+	sprite->rotate(2);
+	win.draw(*sprite);
+
+	for (auto element : _elements) element->draw(win);
+
+	//win.display(); //show drawn objects to the display buffer
 }

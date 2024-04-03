@@ -39,6 +39,8 @@ class SerialScope : public UIElement {
 public:
 	SerialScope(uint16_t rxBufferSz, int bytesReceived);
 	~SerialScope();
+	void update(inputState_t userInput);
+	
 	UI_State_t updateInteractiveState(inputState_t userInput);
 	void draw(sf::RenderWindow& win);
 

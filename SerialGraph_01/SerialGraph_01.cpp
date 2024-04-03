@@ -148,6 +148,7 @@ int main()
 		userInput.m.mouseLeftClick = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 		userInput.m.mouseRightClick = sf::Mouse::isButtonPressed(sf::Mouse::Right);
 
+		serialScope.update(userInput);
 		serialScope.clear();
 		serialScope.draw(window);
 
@@ -199,7 +200,7 @@ int main()
 		sprintf_s(mouseString, "\t\t%f , %f", userInput.m.mousePosf.x, userInput.m.mousePosf.y);
 		D_MousePosition.setPosition(userInput.m.mousePosf);
 		D_MousePosition.setText(mouseString);
-		D_Graph_loopTime.update(window, &loopTimeDuration);	//DEBUG OUTSIDE UIELEMENTS	
+		//D_Graph_loopTime.update(userInput, true, &loopTimeDuration);	//DEBUG OUTSIDE UIELEMENTS	
 
 	}//end update loop
 
