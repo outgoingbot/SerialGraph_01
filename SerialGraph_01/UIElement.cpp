@@ -74,7 +74,7 @@ UI_State_t UIElement::updateInteractiveState(inputState_t userInput) {
 					// lock interaction and break
 					interactedElement = element;
 					std::iter_swap(_elements.end() - 1, std::find(_elements.begin(), _elements.end(), element)); // Move dragged element to front
-					break;
+					//break;
 				}
 
 			}

@@ -19,7 +19,7 @@ Menu::Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char
 	menuCallback = callback;
 	//title of drop down menu. will activate on state= hover.
 
-	titleItem = new Buttons(sf::Vector2f(_dockSize.x, 50), position, sf::Color(MENU_DEFUALT_COLOR), string, false, menuCallback, 0);
+	titleItem = new Buttons(sf::Vector2f(_dockSize.x, 50), position, sf::Color(MENU_DEFUALT_COLOR), string, false, false, menuCallback, 0);
 	_elements.push_back(titleItem);
 
 	//will change this to false when i get titleItem = hover working
@@ -37,7 +37,7 @@ bool Menu::addMenuItem(const std::string text) {
 #define SPACING 10
 	
 	//I dont like this constructor. need to think about either a default constructor. will need my call back functions
-	Buttons* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(1340, 150), sf::Color(MENU_DEFUALT_COLOR), "Empty", false, menuCallback, _elements.size());
+	Buttons* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(1340, 150), sf::Color(MENU_DEFUALT_COLOR), "Empty", false, true, menuCallback, _elements.size());
 	
 	_elements.push_back(newItem);
 

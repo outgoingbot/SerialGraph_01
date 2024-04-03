@@ -2,7 +2,7 @@
 
 
 //set size, position, text
-Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, bool isDragable, uint8_t (*callback)(uint8_t), uint8_t id) {
+Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, uint8_t (*callback)(uint8_t), uint8_t id) {
 	//Load Font
 	if (!_font.loadFromFile("../res/arial.ttf")) {
 		printf("Error loading Font");
@@ -27,6 +27,7 @@ Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, cons
 	buttonCallback = callback;
 	_id = id;
 	_isDragable = isDragable;
+	_isToggle = isToggle;
 }
 
 
@@ -41,6 +42,9 @@ UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
 
 	returnVal |= BUTTON_STATE_HOVER;
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_mouseLeftHandled) {
+		if (_isToggle) _toggleState = !_toggleState;
+		//std::cout << _toggleState << std::endl;
+
 		buttonRectangle.setFillColor(sf::Color(255, 0, 255));
 		returnVal |= BUTTON_STATE_CLICK_LEFT;
 		if(buttonCallback != nullptr) buttonCallback(_id);
@@ -65,8 +69,14 @@ UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
 		buttonRectangle.setFillColor(sf::Color::Yellow); // highlight
 	}
 	else {
-		text.setFillColor(sf::Color::White);
-		buttonRectangle.setFillColor(_color); // constructor color
+		if (_isToggle && !_toggleState) {
+			text.setFillColor(sf::Color::White);
+			buttonRectangle.setFillColor(_color); // constructor color
+		}
+		else if(!_isToggle){
+			text.setFillColor(sf::Color::White);
+			buttonRectangle.setFillColor(_color); // constructor color
+		}
 	}
 
 	// Call parent updateInteractiveState to evaluate children states

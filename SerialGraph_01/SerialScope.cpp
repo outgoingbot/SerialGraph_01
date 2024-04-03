@@ -3,10 +3,16 @@
 extern sf::Font font;
 
 /* Element Handler Callbacks */
-static uint8_t handleButton_1(uint8_t val) {
-	printf("Button1 Clicked \r\n");
+static uint8_t handleButton_connect(uint8_t val) {
+	printf("Clicked Connect %d\r\n", val);
 	return 0;
 }
+
+static uint8_t handleButton_disconnect(uint8_t val) {
+	printf("Clicked Disconnect %d\r\n", val);
+	return 0;
+}
+
 
 static uint8_t handleMenu_1(uint8_t val) {
 	printf("Menu_1 Button: %i\r\n", val);
@@ -55,10 +61,10 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	////window.setVerticalSyncEnabled(true);
 	//window.setActive(true);
 
-	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 100), sf::Vector2f(1400, 1500), sf::Color::Green, "Connect", true, &handleButton_1);
+	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, &handleButton_connect);
 	_elements.push_back(Button_1);
 
-	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 100), sf::Vector2f(1650, 1500), sf::Color::Red, "Disconnect", true, &handleButton_1);
+	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, &handleButton_disconnect);
 	_elements.push_back(Button_2);
 
 	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 700), "Graph_1", NUMFLOATS));
@@ -131,11 +137,16 @@ UI_State_t SerialScope::updateInteractiveState(inputState_t userInput) {
 
 	//Get Keyboard inputs
 	// HANDLE IN MAIN
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) sprite.move(10, 0);
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) sprite.move(-10, 0);
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) sprite.move(0, -10);
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) sprite.move(0, 10);
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) sprite.scale(sf::Vector2f(sprite.getScale().x + 1.0f, sprite.getScale().y + 1.0f));
+	//if (userInput.k.key == sf::Keyboard::Right) sprite->move(10, 0);
+	//if (userInput.k.key == sf::Keyboard::Left) sprite->move(-10, 0);
+
+	//if (userInput.k.key == sf::Keyboard::Right) sprite->move(10, 0);
+	//if (userInput.k.key == sf::Keyboard::Left) sprite->move(-10, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) sprite->move(10, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) sprite->move(-10, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) sprite->move(0, -10);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) sprite->move(0, 10);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) sprite->scale(sf::Vector2f(sprite->getScale().x + 1.0f, sprite->getScale().y + 1.0f));
 
 	//sf::Event event;
 	//while (window.pollEvent(event)) {

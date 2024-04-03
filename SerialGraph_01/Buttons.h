@@ -4,8 +4,12 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
+#include <iostream>
 
 
+typedef bool isDragable_t;
+
+typedef bool isToggle_t;
 
 
 typedef enum {
@@ -21,7 +25,7 @@ class Buttons : public UIElement
 {
 public:
 
-	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, bool isDraggable = false, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
+	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDraggable = false, isToggle_t isToggle = false, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
 
 	~Buttons();
 
@@ -50,4 +54,6 @@ private:
 	uint8_t _id; // keep track of multiple buttons in callback within common parent
 	bool _mouseLeftHandled = false;
 	bool _isDragable = false;
+	bool _isToggle = false;
+	bool _toggleState = false;
 };

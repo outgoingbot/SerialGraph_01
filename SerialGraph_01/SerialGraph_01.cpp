@@ -66,6 +66,7 @@ char charArrayDebug[256] = "Empty";
 
 //loop control
 //std::thread *serial_thread = nullptr;
+
 //bool killThread = false; //rename to killSerialThread
 uint8_t gui_ID = 0;
 //graphics
@@ -98,6 +99,14 @@ sf::Event event; //Do we only need one event ?
 int main()
 {	
 
+	//set the Program Window Icon
+	auto image = sf::Image{};
+	if (!image.loadFromFile("../res/icon.png"))
+	{
+		printf("Error loading Icon");
+		system("pause");
+	}
+	window.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
 
 	//set FPS
 	window.setFramerateLimit(60); //seriously reduces the CPU/GPU utilization
@@ -105,6 +114,11 @@ int main()
 	window.setActive(true);
 
 	SerialScope serialScope(255, 0);
+
+	//debug
+	Graph Graph_loopTime(sf::Vector2f(200, 100), sf::Vector2f(WINDOW_WIDTH - 210, 100), "Loop Time", NUMFLOATS);
+
+	
 	
 	// SerialGraph::updateInteractiveState()
 	//-----------------------------------------MAIN LOOP------------------------------------------------------------
@@ -136,6 +150,8 @@ int main()
 		serialScope.clear();
 		serialScope.draw(window);
 
+		Graph_loopTime.draw(window); //DEBUG OUTSIDE UIELEMENTS
+
 		window.display(); //show drawn objects to the display buffer
 
 		
@@ -163,18 +179,21 @@ int main()
 			}
 			else if(event.type == sf::Event::EventType::KeyPressed){
 				//event type is keyboard button was press. set the char.
-				userInput.k.key = (char)event.key.code + 97;
-				printf("%c", userInput.k.key);
+				userInput.k.key = (char)event.key.code;
+				printf("%i - %c", (int)userInput.k.key, userInput.k.key);
+			}
+			else {
+				userInput.k.key = sf::Keyboard::Unknown; // set key to -1
 			}
 		}
 
 		////---------------------------------------------------Loop Timing Info-------------------------------------------------
-		//auto stopTime = std::chrono::high_resolution_clock::now();
-		//auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);
-		//float loopTimeDuration = (float)duration.count()/1000.f;
+		auto stopTime = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);
+		float loopTimeDuration = (float)duration.count()/1000.f;
 		//sprintf_s(loopText, "Loop Time: %f", loopTimeDuration);
 		//loopTimeText.setText(loopText);
-		//Graph_loopTime.update(window, &loopTimeDuration);		
+		Graph_loopTime.update(window, &loopTimeDuration);	//DEBUG OUTSIDE UIELEMENTS	
 
 	}//end update loop
 

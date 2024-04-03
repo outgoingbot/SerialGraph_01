@@ -24,6 +24,18 @@
 #include <algorithm>
 #include "SimpleMenu/Src/Menu.h" // Fix later
 
+
+
+typedef enum {
+	NOTDRAGABLE = 0,
+	DRAGABLE = 1
+} dragableFlag_t;
+
+typedef enum {
+	NOTTOGGLE = 0,
+	TOGGLE = 1
+} toggleFlag_t;
+
 class SerialScope : public UIElement {
 public:
 	SerialScope(uint16_t rxBufferSz, int bytesReceived);
