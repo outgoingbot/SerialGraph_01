@@ -25,7 +25,7 @@ public:
 
 	~Buttons();
 
-	UI_State_t updateInteractiveState(sf::Vector2i mousePosition);
+	UI_State_t updateInteractiveState(inputState_t userInput);
 
 	void draw(sf::RenderWindow& window);
 
@@ -41,7 +41,7 @@ public:
 	
 private:
 	
-	bool isMouseOverRect(sf::Vector2i mousePosition);
+	bool isMouseOverRect(sf::Vector2f mousePosition);
 	sf::RectangleShape buttonRectangle; //create button with wideth,height
 	
 	sf::Color _color;

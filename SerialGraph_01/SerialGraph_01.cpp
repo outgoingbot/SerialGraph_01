@@ -75,7 +75,7 @@ sf::Font font;
 
 //SFML Globals (dont change or remove)
 
-mouseState_t mouseState;
+//mouseState_t mouseState;
 //sf::Vector2f mousePosf;
 
 uint8_t handleButton_1(uint8_t val) {
@@ -112,11 +112,13 @@ int main()
 	UIElement* interactedElement = nullptr;
 	UIElement* lastUpdatedElement = nullptr;
 
+	inputState_t userInput;
+
 	while (running)
 	{
 		auto startTime = std::chrono::high_resolution_clock::now();
 
-		serialScope.updateInteractiveState((sf::Vector2i)mouseState.mousePosf);
+		serialScope.updateInteractiveState(userInput);
 		//Get Keyboard inputs
 		
 		//if (sf::Keybord::isKeyPressed(sf::Keyboard::Right)) sprite.move(10, 0);
@@ -125,11 +127,11 @@ int main()
 		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) sprite.move(0, 10);
 		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) sprite.scale(sf::Vector2f(sprite.getScale().x+1.0f, sprite.getScale().y + 1.0f));
 
-		///////Mouse State Update
-		//Mouse Position Even after Windows Resizing
-		mouseState.mousePosf = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-		mouseState.mouseLeftClick = sf::Mouse::isButtonPressed(sf::Mouse::Left);
-		mouseState.mouseRightClick = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+		
+		//Update Mouse Position Even after Windows Resizing
+		userInput.m.mousePosf = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+		userInput.m.mouseLeftClick = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+		userInput.m.mouseRightClick = sf::Mouse::isButtonPressed(sf::Mouse::Right);
 
 		serialScope.clear();
 		serialScope.draw(window);
@@ -160,8 +162,9 @@ int main()
 
 			}
 			else if(event.type == sf::Event::EventType::KeyPressed){
-				//pun
-				printf("%c", (char)event.key.code+97);
+				//event type is keyboard button was press. set the char.
+				userInput.k.key = (char)event.key.code + 97;
+				printf("%c", userInput.k.key);
 			}
 		}
 

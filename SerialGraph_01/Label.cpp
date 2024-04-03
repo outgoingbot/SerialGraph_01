@@ -36,14 +36,14 @@ void Label::setText(const float f) {
 	text.setString(string);
 }
 
-UI_State_t Label::updateInteractiveState(sf::Vector2i mousePosition) {
+UI_State_t Label::updateInteractiveState(inputState_t userInput) {
 	UI_State_t returnVal = LABEL_STATE_READY;
 
 	//store the global into a private var
 
-	if (isMouseOverRect(mousePosition)) {
+	if (isMouseOverRect(userInput.m.mousePosf)) {
 
-		if (isMouseOverRect(mousePosition)) {
+		if (isMouseOverRect(userInput.m.mousePosf)) {
 			returnVal |= LABEL_STATE_HOVER;
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 				text.setFillColor(sf::Color(255, 0, 255));
@@ -52,7 +52,7 @@ UI_State_t Label::updateInteractiveState(sf::Vector2i mousePosition) {
 
 			//move the object
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-				text.setPosition(sf::Vector2f(mousePosition.x - 50, mousePosition.y - 10));
+				text.setPosition(sf::Vector2f(userInput.m.mousePosf.x - 50, userInput.m.mousePosf.y - 10));
 				returnVal |= LABEL_STATE_CLICK_RIGHT;
 				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
 			}
@@ -63,13 +63,13 @@ UI_State_t Label::updateInteractiveState(sf::Vector2i mousePosition) {
 	}
 
 	// Call parent updateInteractiveState to evaluate children states
-	returnVal |= UIElement::updateInteractiveState(mousePosition);
+	returnVal |= UIElement::updateInteractiveState(userInput);
 
 	return returnVal;
 }
 
 
-bool Label::isMouseOverRect(sf::Vector2i mousePosition) {
+bool Label::isMouseOverRect(sf::Vector2f mousePosition) {
 	sf::FloatRect textRect = text.getGlobalBounds();
 	if (mousePosition.x > textRect.left && mousePosition.x < textRect.left + textRect.width) {
 		if (mousePosition.y > textRect.top && mousePosition.y < textRect.top+textRect.height) {

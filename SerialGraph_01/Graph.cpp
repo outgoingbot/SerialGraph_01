@@ -172,7 +172,7 @@ void Graph::draw(sf::RenderWindow& window) {
 }
 
 
-UI_State_t Graph::updateInteractiveState(sf::Vector2i mousePosition) {
+UI_State_t Graph::updateInteractiveState(inputState_t userInput) {
 #define MOUSESHIFT 0 //hack to keep the mouse over the graph box
 	UI_State_t returnVal = UI_STATE_READY;
 	sf::FloatRect graphRec = frame.getGlobalBounds();
@@ -181,9 +181,9 @@ UI_State_t Graph::updateInteractiveState(sf::Vector2i mousePosition) {
 	
 	returnVal |= UI_STATE_HOVER;
 	//drawCrosshair = true;
-	xMouseCross.setPosition(sf::Vector2f(graphRec.left, mousePosition.y));
-	yMouseCross.setPosition(sf::Vector2f(mousePosition.x, graphRec.top));
-	textyMouse.setPosition(sf::Vector2f(mousePosition.x+20,mousePosition.y-30));
+	xMouseCross.setPosition(sf::Vector2f(graphRec.left, userInput.m.mousePosf.y));
+	yMouseCross.setPosition(sf::Vector2f(userInput.m.mousePosf.x, graphRec.top));
+	textyMouse.setPosition(sf::Vector2f(userInput.m.mousePosf.x+20, userInput.m.mousePosf.y-30));
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		frame.setFillColor(sf::Color(255, 0, 255));
@@ -195,7 +195,7 @@ UI_State_t Graph::updateInteractiveState(sf::Vector2i mousePosition) {
 	
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 				
-		frame.setPosition(sf::Vector2f(mousePosition.x - (frame.getSize().x/2), mousePosition.y -(frame.getSize().y / 2)));
+		frame.setPosition(sf::Vector2f(userInput.m.mousePosf.x - (frame.getSize().x/2), userInput.m.mousePosf.y -(frame.getSize().y / 2)));
 		textLabel.setPosition(sf::Vector2f(graphRec.left, graphRec.top - graphtextRec2.height-5));
 		textAxis_y.setPosition(sf::Vector2f(graphRec.left - graphtextRec.width, graphRec.top + graphtextRec.height));
 
@@ -214,7 +214,7 @@ UI_State_t Graph::updateInteractiveState(sf::Vector2i mousePosition) {
 		//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
 	}
 	
-	if (this->isMouseOverRect(mousePosition)) {
+	if (this->isMouseOverRect(userInput.m.mousePosf)) {
 		drawCrosshair = true;
 		frame.setFillColor(sf::Color(20, 20, 20)); // highlight gray
 	}
@@ -224,14 +224,14 @@ UI_State_t Graph::updateInteractiveState(sf::Vector2i mousePosition) {
 	}
 
 	// Call parent updateInteractiveState to evaluate children states
-	returnVal |= UIElement::updateInteractiveState(mousePosition);
+	returnVal |= UIElement::updateInteractiveState(userInput);
 		
 	return returnVal;
 }
 
 
 
-bool Graph::isMouseOverRect(sf::Vector2i mousePosition) {
+bool Graph::isMouseOverRect(sf::Vector2f mousePosition) {
 	if (mousePosition.x > frame.getPosition().x && mousePosition.x < frame.getPosition().x + (frame.getSize().x)) {
 		if (mousePosition.y > frame.getPosition().y && mousePosition.y < frame.getPosition().y + (frame.getSize().y)) {
 			return true;

@@ -26,13 +26,13 @@ public:
 
 	void setPos(sf::Vector2f position);
 
-	UI_State_t updateInteractiveState(sf::Vector2i mousePosition);
+	UI_State_t updateInteractiveState(inputState_t userInput);
 	void draw(sf::RenderWindow& window);
 	sf::Vector2f getSize();
 	sf::Vector2f getPosition();
 	
 private:
-	bool isMouseOverRect(sf::Vector2i mousePosition);
+	bool isMouseOverRect(sf::Vector2f mousePosition);
 
 
 	sf::Text text;

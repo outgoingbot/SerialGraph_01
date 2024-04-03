@@ -64,11 +64,11 @@ bool Menu::addMenuItem(const std::string text) {
 
 
 
-UI_State_t Menu::updateInteractiveState(sf::Vector2i mousePosf){
+UI_State_t Menu::updateInteractiveState(inputState_t userInput){
 	UI_State_t returnVal = UI_STATE_READY;
 
 	// Expand menu when mouse hovers
-	if(this->mouseOverElement(mousePosf, sf::Vector2i(0,0))) componentOutlinesShown = true;
+	if(this->mouseOverElement(userInput.m.mousePosf, sf::Vector2f(0,0))) componentOutlinesShown = true;
 	else componentOutlinesShown = false;
 
 	if (componentOutlinesShown) {
@@ -79,7 +79,7 @@ UI_State_t Menu::updateInteractiveState(sf::Vector2i mousePosf){
 	}
 
 	// Call parent updateInteractiveState to evaluate children states
-	returnVal |= UIElement::updateInteractiveState(mousePosf);
+	returnVal |= UIElement::updateInteractiveState(userInput);
 
 	return returnVal;
 }

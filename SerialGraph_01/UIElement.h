@@ -1,5 +1,5 @@
 #pragma once
-// Chungus
+// Chungus is hungry
 #include <stdint.h>
 #include "Config.h"
 #include <SFML/Graphics.hpp>
@@ -22,11 +22,22 @@ typedef struct {
 	sf::Vector2f mousePosf;
 } mouseState_t;
 
+typedef struct {
+	char key;
+}	keyboardState_t;
+
+
+typedef struct {
+	mouseState_t m;
+	keyboardState_t k;
+} inputState_t;
+
+
 typedef uint8_t UI_State_t;
 
 class UIElement {
 public:
-	virtual UI_State_t updateInteractiveState(sf::Vector2i mousePosition);
+	virtual UI_State_t updateInteractiveState(inputState_t userInput);
 	virtual void draw(sf::RenderWindow& window) = 0;
 	void clear() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -41,7 +52,7 @@ public:
 	}
 
 	// void addElement(UIElement element);
-	bool mouseOverElement(sf::Vector2i mousePosition, sf::Vector2i origin);
+	bool mouseOverElement(sf::Vector2f mousePosition, sf::Vector2f origin);
 
 protected:
 	std::vector<UIElement*> _elements;

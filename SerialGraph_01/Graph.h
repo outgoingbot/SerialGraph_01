@@ -23,7 +23,7 @@ public:
 	Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars);
 	~Graph();
 
-	UI_State_t updateInteractiveState(sf::Vector2i mousePosition) override;
+	UI_State_t updateInteractiveState(inputState_t userInput) override;
 
 	void setScale(float scl);
 	void autoScale(bool);
@@ -36,7 +36,7 @@ public:
 	sf::Vector2f getPosition();
 
 private:
-	bool isMouseOverRect(sf::Vector2i mousePosition);
+	bool isMouseOverRect(sf::Vector2f mousePosition);
 
 	float scaler = 1.0f;
 
