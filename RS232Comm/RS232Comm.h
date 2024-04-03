@@ -26,6 +26,7 @@ private:
 	
 	std::string baudlist[SERIAL_NUM_BAUDS] = { "9600","57600","115200","1000000", "2000000" };
 	
+	bool _killThreadFlag = false;
 
 public:
 	//Initialize Serial communication with the given COM port
@@ -40,6 +41,8 @@ public:
 	//Writes data from a buffer through the Serial connection
 	//return true on success.
 	bool WriteData(const char *buffer, unsigned int nbChar);
+
+	void killThread() { _killThreadFlag = true; }
 
 	
 	//get the availve com ports on the windows machine

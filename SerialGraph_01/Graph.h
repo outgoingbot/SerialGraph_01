@@ -27,7 +27,7 @@ public:
 
 	void setScale(float scl);
 	void autoScale(bool);
-
+	bool xAxisMode = false; //true = sample,, false = time
 
 
 	void update(sf::RenderWindow& window, float *dataPoint=nullptr);
@@ -68,7 +68,6 @@ private:
 	
 	std::vector <sf::Drawable*> _drawables;
 	std::vector <sf::Drawable*> _interactive;
-	//std::vector<UIElement*> _elements;
 
 	bool drawCrosshair = false;
 	

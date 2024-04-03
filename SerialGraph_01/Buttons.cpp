@@ -64,6 +64,10 @@ UI_State_t Buttons::updateInteractiveState(sf::Vector2i mousePosition) {
 		text.setFillColor(sf::Color::White);
 		buttonRectangle.setFillColor(_color); // constructor color
 	}
+
+	// Call parent updateInteractiveState to evaluate children states
+	returnVal |= UIElement::updateInteractiveState(mousePosition);
+
 	return returnVal;
 }
 

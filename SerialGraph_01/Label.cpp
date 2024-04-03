@@ -61,6 +61,10 @@ UI_State_t Label::updateInteractiveState(sf::Vector2i mousePosition) {
 			}
 		}
 	}
+
+	// Call parent updateInteractiveState to evaluate children states
+	returnVal |= UIElement::updateInteractiveState(mousePosition);
+
 	return returnVal;
 }
 

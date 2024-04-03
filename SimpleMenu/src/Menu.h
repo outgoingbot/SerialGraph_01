@@ -27,7 +27,7 @@ public:
 	void showComponentOutlines();
 	void hideComponentOutlines();
 	void toggleComponentOutlines();
-	bool addMenuItem(sf::RenderWindow& win, const std::string text);
+	bool addMenuItem(const std::string text);
 
 
 	void draw(sf::RenderWindow& win);
@@ -71,6 +71,5 @@ private:
 	sf::Vector2f _dockOpenSize;
 	sf::Vector2f _dockClosedSize;
 	//std::vector <sf::Drawable*> _drawable;
-	std::vector <UIElement*> _elements;
 
 };

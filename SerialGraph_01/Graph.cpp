@@ -4,7 +4,7 @@
 extern sf::Font font;
 
 
-#define XSCALE 1 //testing 1,10,100
+#define XSCALE 10 //testing 1,10,100
 
 //size, position
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
@@ -178,52 +178,53 @@ UI_State_t Graph::updateInteractiveState(sf::Vector2i mousePosition) {
 	sf::FloatRect graphRec = frame.getGlobalBounds();
 	sf::FloatRect graphtextRec = textAxis_y.getGlobalBounds();
 	sf::FloatRect graphtextRec2 = textLabel.getGlobalBounds();
-
-
 	
-	
-			returnVal |= UI_STATE_HOVER;
-			//drawCrosshair = true;
-			xMouseCross.setPosition(sf::Vector2f(graphRec.left, mousePosition.y));
-			yMouseCross.setPosition(sf::Vector2f(mousePosition.x, graphRec.top));
-			textyMouse.setPosition(sf::Vector2f(mousePosition.x+20,mousePosition.y-30));
+	returnVal |= UI_STATE_HOVER;
+	//drawCrosshair = true;
+	xMouseCross.setPosition(sf::Vector2f(graphRec.left, mousePosition.y));
+	yMouseCross.setPosition(sf::Vector2f(mousePosition.x, graphRec.top));
+	textyMouse.setPosition(sf::Vector2f(mousePosition.x+20,mousePosition.y-30));
 
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-				frame.setFillColor(sf::Color(255, 0, 255));
-				returnVal |= UI_STATE_CLICK_LEFT;
-				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
-			}
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		frame.setFillColor(sf::Color(255, 0, 255));
+		returnVal |= UI_STATE_CLICK_LEFT;
+		//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+	}
 
-			//move the object
+	//move the object
 	
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 				
-				frame.setPosition(sf::Vector2f(mousePosition.x - (frame.getSize().x/2), mousePosition.y -(frame.getSize().y / 2)));
-				textLabel.setPosition(sf::Vector2f(graphRec.left, graphRec.top - graphtextRec2.height-5));
-				textAxis_y.setPosition(sf::Vector2f(graphRec.left - graphtextRec.width, graphRec.top + graphtextRec.height));
+		frame.setPosition(sf::Vector2f(mousePosition.x - (frame.getSize().x/2), mousePosition.y -(frame.getSize().y / 2)));
+		textLabel.setPosition(sf::Vector2f(graphRec.left, graphRec.top - graphtextRec2.height-5));
+		textAxis_y.setPosition(sf::Vector2f(graphRec.left - graphtextRec.width, graphRec.top + graphtextRec.height));
 
-				axis_x.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y + frame.getSize().y));
+		axis_x.setPosition(sf::Vector2f(frame.getPosition().x, frame.getPosition().y + frame.getSize().y));
 					
-				// Update Graph Lines while dragging (hacky)
-				//draw linear interpolated lines by shifting all the data points Left
-				for (int j = 0; j < _len; j++) {
-					for (uint32_t i = 0; i < frameSamples - 1; i++) {
-						lineInterpol[j][i] = sf::Vertex(sf::Vector2f(axis_x.getPosition().x + (i*XSCALE), (float)((-dataArray[j][i] * scaler) + axis_x.getPosition().y)), lineColor[j]);
-					}
-				}
+		// Update Graph Lines while dragging (hacky)
+		//draw linear interpolated lines by shifting all the data points Left
+		for (int j = 0; j < _len; j++) {
+			for (uint32_t i = 0; i < frameSamples - 1; i++) {
+				lineInterpol[j][i] = sf::Vertex(sf::Vector2f(axis_x.getPosition().x + (i*XSCALE), (float)((-dataArray[j][i] * scaler) + axis_x.getPosition().y)), lineColor[j]);
+			}
+		}
+		
 
-				returnVal |= UI_STATE_CLICK_RIGHT;
-				//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
-			}
+		returnVal |= UI_STATE_CLICK_RIGHT;
+		//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
+	}
 	
-			if (this->isMouseOverRect(mousePosition)) {
-				drawCrosshair = true;
-				frame.setFillColor(sf::Color(20, 20, 20)); // highlight gray
-			}
-			else {
-				frame.setFillColor(sf::Color::Black); // black color
-				drawCrosshair = false;
-			}
+	if (this->isMouseOverRect(mousePosition)) {
+		drawCrosshair = true;
+		frame.setFillColor(sf::Color(20, 20, 20)); // highlight gray
+	}
+	else {
+		frame.setFillColor(sf::Color::Black); // black color
+		drawCrosshair = false;
+	}
+
+	// Call parent updateInteractiveState to evaluate children states
+	returnVal |= UIElement::updateInteractiveState(mousePosition);
 		
 	return returnVal;
 }

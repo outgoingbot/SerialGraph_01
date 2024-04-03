@@ -1,6 +1,6 @@
 #include "RS232Comm.h"
-extern std::thread serial_thread;
-extern bool killThread;
+//extern std::thread serial_thread;
+//extern bool killThread;
 
 Serial::Serial()
 {
@@ -26,7 +26,7 @@ Serial::~Serial()
 
 void Serial::ReadData(char* buffer, unsigned int nbChar, int* returnVal)
 {
-	while (!killThread) {
+	while (!(_killThreadFlag)) {
 		//std::this_thread::sleep_for(std::chrono::milliseconds(2));
 		
 		static char c;
