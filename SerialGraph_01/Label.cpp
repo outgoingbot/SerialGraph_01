@@ -27,8 +27,6 @@ Label::Label(unsigned int size, sf::Vector2f position, sf::Color color, const ch
 Label::~Label() {
 	//delete text
 }
-
-
 void Label::setPosition(sf::Vector2f position) {
 	_text.setPosition(position);
 	_dock.setPosition(position);

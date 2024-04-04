@@ -54,6 +54,10 @@ public:
 		return sf::Vector2f(0, 0);
 	}
 
+	void setPosition(sf::Vector2f) {
+		//return something?
+	}
+
 private:
 	std::thread *serial_thread = nullptr;
 	char* rxBuffer;

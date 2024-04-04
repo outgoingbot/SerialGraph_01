@@ -7,6 +7,7 @@
 //size, position
 Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars) {
 	_size = size.x;
+
 	//load private font
 	if (!_font.loadFromFile("../res/arial.ttf")) {
 		printf("Error loading Font");
@@ -80,6 +81,15 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	_interactive.push_back(&_xMouseCross);
 	_interactive.push_back(&_yMouseCross);
 
+
+	_menu = new Menu(sf::Vector2f(300, 50), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", handleMenu_1);
+	_elements.push_back(_menu);
+	// add menu items. list of available com ports	
+	_menu->addMenuItem((std::string)"AutoScale");
+	_menu->addMenuItem("Pause");
+	_menu->addMenuItem("Percent");
+	//end UI elements
+	
 	//these could both be vectors
 	for (int j = 0; j < numVars; j++) {
 		for (uint32_t i = 0; i < frameSamples; i++) { //initialize the dataArray (//change this to memSet)
@@ -110,7 +120,7 @@ void Graph::autoScale(bool) {
 }
 
 
-
+//CHEACK THAT WE ARE INDEXING THE DATA ARRAY CORRECTLY
 //going to need this to draw from right to left so that graph resizing works
 void Graph::update(inputState_t userInput, bool withNewData, float *dataPoint) {
 	sf::FloatRect graphRec = _dock.getGlobalBounds();
@@ -258,6 +268,7 @@ UI_State_t Graph::updateInteractiveState(inputState_t userInput) {
 		_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y- GRAPH_NAME_PADDING));
 		_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x- GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
 		_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + _dock.getSize().y));
+		_menu->setPosition(_dock.getPosition());
 		this->update(userInput, false); //call this to keep the graph visually updated with user input changes
 		returnVal |= UI_STATE_CLICK_RIGHT;
 	}
@@ -295,4 +306,10 @@ sf::Vector2f Graph::getSize() {
 
 sf::Vector2f Graph::getPosition() {
 	return _dock.getPosition();
+}
+
+void Graph::setPosition(sf::Vector2f pos) {
+	_dock.setPosition(pos);
+	for (auto element : _elements) element->setPosition(pos);
+	
 }

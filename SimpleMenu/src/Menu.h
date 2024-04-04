@@ -15,7 +15,7 @@ public:
 	Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)(uint8_t)=nullptr);
 	~Menu();
 
-	bool setDockingPosition(sf::Vector2f pos);
+	//bool setDockingPosition(sf::Vector2f pos);
 	bool setTextOriginPoint(sf::Vector2f pos);
 	void setBackgroundColor(sf::Color color);
 	void showMenu();
@@ -34,6 +34,7 @@ public:
 	UI_State_t updateInteractiveState(inputState_t userInput);
 	sf::Vector2f getSize();
 	sf::Vector2f getPosition();
+	void setPosition(sf::Vector2f pos);
 
 private:
 	// ------------------------------------------------------
@@ -66,7 +67,7 @@ private:
 	int numElements;	//number of total menu items
 	uint8_t(*menuCallback)(uint8_t) = nullptr;
 	
-	sf::RectangleShape _dock; //the object for drawing the menu's background
+	sf::RectangleShape* _dock = nullptr; //the object for drawing the menu's background
 	sf::Color _dockColor;	//set to transparent by default
 	sf::Vector2f _dockOpenSize;
 	sf::Vector2f _dockClosedSize;

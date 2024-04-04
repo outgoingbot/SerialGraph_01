@@ -30,6 +30,7 @@ public:
 	sf::Vector2f getSize();
 	sf::Vector2f getPosition();
 	
+	
 private:
 	bool isMouseOverRect(sf::Vector2f mousePosition);
 	sf::Color _color;

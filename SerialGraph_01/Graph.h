@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <vector>
 #include "Label.h"
+#include "SimpleMenu/Src/Menu.h" // Fix later
+#include "Buttons.h"
 #include <iostream>
 #define NUMFLOATS 3
 
@@ -22,6 +24,12 @@
 class Graph : public UIElement
 {
 public:
+
+	static uint8_t handleMenu_1(uint8_t val) {
+		printf("Graph Menu_1 Button: %i\r\n", val);
+		return 0;
+	}
+
 	Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars);
 	~Graph();
 
@@ -36,6 +44,7 @@ public:
 	void draw(sf::RenderWindow& window);
 	sf::Vector2f getSize();
 	sf::Vector2f getPosition();
+	void setPosition(sf::Vector2f pos);
 
 private:
 	bool isMouseOverRect(sf::Vector2f mousePosition);
@@ -62,6 +71,8 @@ private:
 
 	Label *_textCrossHairData; //mouse position related to graph scale
 	
+	Menu *_menu;
+
 	char textBuff[64];
 	//will want to to add some color blocks to inidcate the 3 variables color
 
@@ -75,7 +86,7 @@ private:
 	
 	std::vector <sf::Drawable*> _drawables;
 	std::vector <sf::Drawable*> _interactive;
-	std::vector<UIElement*> _elements;
+	//std::vector<UIElement*> _elements;
 
 	
 };

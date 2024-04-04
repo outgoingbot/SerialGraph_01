@@ -4,16 +4,18 @@
 
 Menu::Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)(uint8_t)){
 	// setup the dock (large rectangle that borders the entire menu. grows with addItems pushback
+	_dock = new sf::RectangleShape();
 	_dockColor = color;
 	_dockSize = size;
-	_dock.setPosition(position);
-	_dock.setFillColor(_dockColor);
+	_dock->setSize(_dockSize);
+	_dock->setPosition(position);
+	_dock->setFillColor(_dockColor);
 	
 	_dockOpenSize.x = _dockSize.x;//setting the dock a bit bigger so I can see it for now
 	_dockOpenSize.y = _dockSize.y;
 	_dockClosedSize = _dockOpenSize;
 
-	_dock.setSize(_dockClosedSize); 
+	_dock->setSize(_dockClosedSize);
 	
 	
 	menuCallback = callback;
@@ -52,7 +54,7 @@ bool Menu::addMenuItem(const std::string text) {
 	
 	
 	//index element [0] on first pass to po
-	newItem->setPosition(sf::Vector2f(_dock.getPosition().x + MENU_ITEM_SHIFT, _elements[_elements.size() - 2]->getPosition().y + _elements[_elements.size() - 2]->getSize().y + SPACING));
+	newItem->setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _elements[_elements.size() - 2]->getPosition().y + _elements[_elements.size() - 2]->getSize().y + SPACING));
 
 	//_dockOpenSize.x = 
 	_dockOpenSize.y =  _elements[_elements.size() - 1]->getPosition().y + _elements[_elements.size() - 1]->getSize().y;
@@ -72,10 +74,10 @@ UI_State_t Menu::updateInteractiveState(inputState_t userInput){
 	else componentOutlinesShown = false;
 
 	if (componentOutlinesShown) {
-		_dock.setSize(_dockOpenSize);
+		_dock->setSize(_dockOpenSize);
 	}
 	else {
-		_dock.setSize(_dockClosedSize);
+		_dock->setSize(_dockClosedSize);
 	}
 
 	// Call parent updateInteractiveState to evaluate children states
@@ -88,7 +90,7 @@ void Menu::draw(sf::RenderWindow& win)
 {
 
 	if (menuShown = 1) {
-		win.draw(_dock);
+		win.draw(*_dock);
 		
 		if (componentOutlinesShown) { // List is exanded
 			for (auto Items : _elements) Items->draw(win);
@@ -102,13 +104,17 @@ void Menu::draw(sf::RenderWindow& win)
 
 
 sf::Vector2f Menu::getSize() {
-	return _dock.getSize();
+	return _dock->getSize();
 }
 
 sf::Vector2f Menu::getPosition() {
-	return _dock.getPosition();
+	return _dock->getPosition();
 }
 
+void Menu::setPosition(sf::Vector2f pos) {
+	_dock->setPosition(pos);
+	for (auto element : _elements) element->setPosition(pos);
+}
 
 
 void Menu::toggleMenuShown() {
@@ -119,11 +125,14 @@ void Menu::toggleMenuShown() {
 	}
 }
 
-bool Menu::setDockingPosition(sf::Vector2f pos)
-{
-	_dock.setPosition(pos);
-	return true;
-}
+//bool Menu::setDockingPosition(sf::Vector2f pos)
+//{
+//	_dock->setPosition(pos);
+//
+//	//for (auto element : _elements) element->getPosition;;.setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _elements[_elements.size() - 2]->getPosition().y + _elements[_elements.size() - 2]->getSize().y + SPACING));
+//
+//	return true;
+//}
 
 bool Menu::setTextOriginPoint(sf::Vector2f pos)
 {
@@ -138,7 +147,7 @@ bool Menu::setTextOriginPoint(sf::Vector2f pos)
 void Menu::setBackgroundColor(sf::Color color)
 {
 	_dockColor = color;
-	_dock.setFillColor(_dockColor);
+	_dock->setFillColor(_dockColor);
 }
 
 void Menu::showMenu()
