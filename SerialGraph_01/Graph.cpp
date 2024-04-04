@@ -82,7 +82,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	_interactive.push_back(&_yMouseCross);
 
 
-	_menu = new Menu(sf::Vector2f(300, 50), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", handleMenu_1);
+	_menu = new Menu(sf::Vector2f(200, 50), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", handleMenu_1);
 	_elements.push_back(_menu);
 	// add menu items. list of available com ports	
 	_menu->addMenuItem((std::string)"AutoScale");
@@ -219,6 +219,7 @@ UI_State_t Graph::updateInteractiveState(inputState_t userInput) {
 	_xMouseCross.setPosition(sf::Vector2f(_dock.getPosition().x, userInput.m.mousePosf.y));
 	_yMouseCross.setPosition(sf::Vector2f(userInput.m.mousePosf.x, _dock.getPosition().y));
 	_textCrossHairData->setPosition(sf::Vector2f(userInput.m.mousePosf.x, userInput.m.mousePosf.y - GRAPH_DATA_TEXT_MOUSE_SHIFT));
+	
 
 	//testing the x axis scaling (zooming)
 	static bool keyPressed = true;

@@ -28,7 +28,7 @@ public:
 	void hideComponentOutlines();
 	void toggleComponentOutlines();
 	bool addMenuItem(const std::string text);
-
+	//void setFontSize(int fontSize);
 
 	void draw(sf::RenderWindow& win);
 	UI_State_t updateInteractiveState(inputState_t userInput);

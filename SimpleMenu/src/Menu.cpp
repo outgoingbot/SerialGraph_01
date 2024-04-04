@@ -37,9 +37,10 @@ Menu::~Menu()
 
 bool Menu::addMenuItem(const std::string text) {	
 #define SPACING 10
+	numElements++;
 	
 	//I dont like this constructor. need to think about either a default constructor. will need my call back functions
-	Buttons* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(1340, 150), sf::Color(MENU_DEFUALT_COLOR), "Empty", false, true, menuCallback, _elements.size());
+	Buttons* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(20, 20), sf::Color(MENU_DEFUALT_COLOR), "Empty", false, true, menuCallback, _elements.size());
 	
 	_elements.push_back(newItem);
 
@@ -56,8 +57,10 @@ bool Menu::addMenuItem(const std::string text) {
 	//index element [0] on first pass to po
 	newItem->setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _elements[_elements.size() - 2]->getPosition().y + _elements[_elements.size() - 2]->getSize().y + SPACING));
 
-	//_dockOpenSize.x = 
-	_dockOpenSize.y =  _elements[_elements.size() - 1]->getPosition().y + _elements[_elements.size() - 1]->getSize().y;
+	//Some issue here indexing through _elements or its some algrbra
+	_dockOpenSize.y =  _elements[_elements.size() - 1]->getPosition().y + _elements[_elements.size() - 1]->getSize().y - this->getPosition().y;
+	//_dockOpenSize.y = _dock->getSize().y + (numElements * newItemHeight);
+	
 	//_dock.setSize(sf::Vector2f(_dock.getSize().x, _elements[_elements.size() - 1]->getPosition().y + _elements[_elements.size() - 1]->getSize().y));
 	return true;
 
@@ -113,7 +116,8 @@ sf::Vector2f Menu::getPosition() {
 
 void Menu::setPosition(sf::Vector2f pos) {
 	_dock->setPosition(pos);
-	for (auto element : _elements) element->setPosition(pos);
+	//titleItem->setPosition(pos)
+	for (auto element : _elements) element->setPosition(_dock->getPosition()+element->getPosition());
 }
 
 
