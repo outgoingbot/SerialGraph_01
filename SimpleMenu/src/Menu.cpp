@@ -23,11 +23,13 @@ Menu::Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char
 
 	titleItem = new Buttons(sf::Vector2f(_dockSize.x, 50), position, sf::Color(MENU_DEFUALT_COLOR), string, false, false, menuCallback, 0);
 	_elements.push_back(titleItem);
+	_menuItems.push_back(titleItem);
 
 	//will change this to false when i get titleItem = hover working
 	menuShown = true;
 	componentOutlinesShown = false;
 	menuCallback = callback;
+
 }
 
 Menu::~Menu()
@@ -43,6 +45,7 @@ bool Menu::addMenuItem(const std::string text) {
 	Buttons* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(20, 20), sf::Color(MENU_DEFUALT_COLOR), "Empty", false, true, menuCallback, _elements.size());
 	
 	_elements.push_back(newItem);
+	_menuItems.push_back(newItem);
 
 	newItem->setTextSize(DEFAULT_CHAR_SIZE_ITEM);
 	newItem->setText(text);
@@ -117,7 +120,17 @@ sf::Vector2f Menu::getPosition() {
 void Menu::setPosition(sf::Vector2f pos) {
 	_dock->setPosition(pos);
 	//titleItem->setPosition(pos)
-	for (auto element : _elements) element->setPosition(_dock->getPosition()+element->getPosition());
+	//for (auto element : _elements) element->setPosition(_dock->getPosition());
+	
+	_menuItems[0]->setPosition(pos); //_menuItems does not get swapped with handleinteravtiveUIState()
+
+//	for (auto item : _menuItems) item->setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _elements[_elements.size() - 2]->getPosition().y + _elements[_elements.size() - 2]->getSize().y + SPACING));
+	
+	for (int i = 1; i < _menuItems.size(); i++) {
+		_menuItems[i]->setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _menuItems[i-1]->getPosition().y + _menuItems[i-1]->getSize().y + SPACING));
+	}
+
+	//for (auto element : _elements) element->setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _elements[_elements.size() - 2]->getPosition().y + _elements[_elements.size() - 2]->getSize().y + SPACING));
 }
 
 

@@ -72,6 +72,6 @@ private:
 	sf::Vector2f _dockOpenSize;
 	sf::Vector2f _dockClosedSize;
 	Buttons* titleItem = nullptr;
-	//std::vector <sf::Drawable*> _drawable;
+	std::vector <UIElement*> _menuItems;
 
 };

@@ -115,6 +115,7 @@ int main()
 
 	//create our UI Elements
 	SerialScope serialScope(255, 0);
+	window.clear(sf::Color(55, 55, 55));
 
 	//debug UI Items (non UIelements)
 	Graph D_Graph_loopTime(sf::Vector2f(200, 100), sf::Vector2f(WINDOW_WIDTH - 210, 50), "Loop Time", NUMFLOATS);
