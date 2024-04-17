@@ -28,7 +28,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 		break;
 
 		case 2:
-			_lineColor[j] = sf::Color::Blue;
+			_lineColor[j] = sf::Color::Yellow;
 		break;
 		}
 	}
@@ -53,15 +53,15 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x-GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
 	_elements.push_back(_textYaxisScale);
 	
-	_textXaxisScale_start = new Label(20, _dock.getPosition(), sf::Color::White, "Start");
+	_textXaxisScale_start = new Label(20, _dock.getPosition(), sf::Color::White, "E");
 	_textXaxisScale_start->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_start->getSize().y - GRAPH_NAME_PADDING));
 	_elements.push_back(_textXaxisScale_start);
 
-	_textXaxisScale_stop = new Label(20, _dock.getPosition(), sf::Color::White, "Stop");
+	_textXaxisScale_stop = new Label(20, _dock.getPosition(), sf::Color::White, "E");
 	_textXaxisScale_stop->setPosition(sf::Vector2f(_dock.getPosition().x+ _dock.getSize().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_stop->getSize().y - GRAPH_NAME_PADDING));
 	_elements.push_back(_textXaxisScale_stop);
 
-	_textCrossHairData = new Label(20, _dock.getPosition(), sf::Color::Magenta, "Empty");
+	_textCrossHairData = new Label(20, _dock.getPosition(), sf::Color::Magenta, "E");
 	//_elements.push_back(_textCrossHairData); //dont push this oneto the vector
 
 
@@ -82,7 +82,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	_interactive.push_back(&_yMouseCross);
 
 
-	_menu = new Menu(sf::Vector2f(200, 50), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", handleMenu_1);
+	_menu = new Menu(sf::Vector2f(120, 30), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", handleMenu_1);
 	_elements.push_back(_menu);
 	// add menu items. list of available com ports	
 	_menu->addMenuItem((std::string)"AutoScale");
@@ -182,13 +182,15 @@ void Graph::update(inputState_t userInput, bool withNewData, float *dataPoint) {
 		}
 		//make sure to draw the last element on the rights side (makes cool effect if you comment this line)
 		_lineInterpol[j][frameSamples - 1] = sf::Vertex(sf::Vector2f(_axis_x.getPosition().x + _axis_x.getSize().x, (float)((-dataArray[j][frameSamples - 1] * _Yscaler) + _axis_x.getPosition().y)), _lineColor[j]);
-		
+
+		_textXaxisScale_start->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_start->getSize().y - GRAPH_NAME_PADDING));
+		_textXaxisScale_stop->setPosition(sf::Vector2f(_dock.getPosition().x + _dock.getSize().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_stop->getSize().y - GRAPH_NAME_PADDING));
+
 		sprintf_s(textBuff, "%i", startPos);
 		_textXaxisScale_start->setText(textBuff);
 		sprintf_s(textBuff, "%i", frameSamples);
 		_textXaxisScale_stop->setText(textBuff);
-		_textXaxisScale_start->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_start->getSize().y - GRAPH_NAME_PADDING));
-		_textXaxisScale_stop->setPosition(sf::Vector2f(_dock.getPosition().x + _dock.getSize().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_stop->getSize().y - GRAPH_NAME_PADDING));
+
 	}
 }
 

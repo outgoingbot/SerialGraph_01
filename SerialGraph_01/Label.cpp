@@ -17,10 +17,11 @@ Label::Label(unsigned int size, sf::Vector2f position, sf::Color color, const ch
 	_text.setFillColor(_color);
 
 	//setColor of the rectangle behind the text
-	_dock.setFillColor(sf::Color::Transparent);
+	//_dock.setFillColor(sf::Color::Transparent); //<-DEFAULT
+	_dock.setFillColor(sf::Color(20,20,20));
 	sf::FloatRect rc = _text.getGlobalBounds();
 	_dock.setSize(sf::Vector2f(rc.width, rc.height));
-	_dock.setPosition(position);	
+	_dock.setPosition(sf::Vector2f(rc.left, rc.top));	
 }
 
 
@@ -29,13 +30,17 @@ Label::~Label() {
 }
 void Label::setPosition(sf::Vector2f position) {
 	_text.setPosition(position);
-	_dock.setPosition(position);
+	sf::FloatRect rc = _text.getGlobalBounds();
+	_dock.setPosition(sf::Vector2f(rc.left, rc.top));
 }
+	
+
 
 void Label::setText(const char* string) {
 	_text.setString(string);
 	sf::FloatRect rc = _text.getGlobalBounds();
 	_dock.setSize(sf::Vector2f(rc.width, rc.height));
+	_dock.setPosition(sf::Vector2f(rc.left,rc.top));
 }
 
 void Label::setText(const float f) {
@@ -44,6 +49,7 @@ void Label::setText(const float f) {
 	_text.setString(string);
 	sf::FloatRect rc = _text.getGlobalBounds();
 	_dock.setSize(sf::Vector2f(rc.width, rc.height));
+	_dock.setPosition(sf::Vector2f(rc.left, rc.top));
 }
 
 UI_State_t Label::updateInteractiveState(inputState_t userInput) {

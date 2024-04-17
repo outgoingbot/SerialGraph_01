@@ -11,7 +11,6 @@ typedef bool isDragable_t;
 
 typedef bool isToggle_t;
 
-
 typedef enum {
 	BUTTON_STATE_READY = 0x00U,
 	BUTTON_STATE_HOVER = 0x01U,
@@ -19,7 +18,8 @@ typedef enum {
 	BUTTON_STATE_CLICK_RIGHT = 0x04U
 } Button_Flags_t;
 
-#define DEFAULT_TEXT_SIZE 40
+#define DEFAULT_TEXT_SIZE 20
+
 
 class Buttons : public UIElement
 {

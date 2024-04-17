@@ -14,14 +14,12 @@ Menu::Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char
 	_dockOpenSize.x = _dockSize.x;//setting the dock a bit bigger so I can see it for now
 	_dockOpenSize.y = _dockSize.y;
 	_dockClosedSize = _dockOpenSize;
-
 	_dock->setSize(_dockClosedSize);
-	
 	
 	menuCallback = callback;
 	//title of drop down menu. will activate on state= hover.
 
-	titleItem = new Buttons(sf::Vector2f(_dockSize.x, 50), position, sf::Color(MENU_DEFUALT_COLOR), string, false, false, menuCallback, 0);
+	titleItem = new Buttons(sf::Vector2f(_dockSize.x, _dockSize.y), position, sf::Color(MENU_DEFUALT_COLOR), string, false, false, menuCallback, 0);
 	_elements.push_back(titleItem);
 	_menuItems.push_back(titleItem);
 
@@ -29,7 +27,6 @@ Menu::Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char
 	menuShown = true;
 	componentOutlinesShown = false;
 	menuCallback = callback;
-
 }
 
 Menu::~Menu()
@@ -50,25 +47,20 @@ bool Menu::addMenuItem(const std::string text) {
 	newItem->setTextSize(DEFAULT_CHAR_SIZE_ITEM);
 	newItem->setText(text);
 	
-	//sf::FloatRect fr =  newItem->text.getGlobalBounds();
 	//need to get the Button text bounding box (based off the setText) to then set the button size;
-	float newItemHeight = 30; //newItem->getTextBounds()
+	sf::FloatRect fr =  newItem->text.getGlobalBounds();
+	float newItemHeight = fr.height + SPACING;
 	float newItemWidth = _dockSize.x- MENU_ITEM_SHIFT;
 	newItem->setSize(sf::Vector2f(newItemWidth, newItemHeight));
 	
-	
+
 	//index element [0] on first pass to po
 	newItem->setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _elements[_elements.size() - 2]->getPosition().y + _elements[_elements.size() - 2]->getSize().y + SPACING));
 
 	//Some issue here indexing through _elements or its some algrbra
 	_dockOpenSize.y =  _elements[_elements.size() - 1]->getPosition().y + _elements[_elements.size() - 1]->getSize().y - this->getPosition().y;
-	//_dockOpenSize.y = _dock->getSize().y + (numElements * newItemHeight);
-	
-	//_dock.setSize(sf::Vector2f(_dock.getSize().x, _elements[_elements.size() - 1]->getPosition().y + _elements[_elements.size() - 1]->getSize().y));
 	return true;
-
 }
-
 
 
 
@@ -91,6 +83,7 @@ UI_State_t Menu::updateInteractiveState(inputState_t userInput){
 
 	return returnVal;
 }
+
 
 void Menu::draw(sf::RenderWindow& win)
 {
@@ -119,18 +112,10 @@ sf::Vector2f Menu::getPosition() {
 
 void Menu::setPosition(sf::Vector2f pos) {
 	_dock->setPosition(pos);
-	//titleItem->setPosition(pos)
-	//for (auto element : _elements) element->setPosition(_dock->getPosition());
-	
 	_menuItems[0]->setPosition(pos); //_menuItems does not get swapped with handleinteravtiveUIState()
-
-//	for (auto item : _menuItems) item->setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _elements[_elements.size() - 2]->getPosition().y + _elements[_elements.size() - 2]->getSize().y + SPACING));
-	
 	for (int i = 1; i < _menuItems.size(); i++) {
 		_menuItems[i]->setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _menuItems[i-1]->getPosition().y + _menuItems[i-1]->getSize().y + SPACING));
 	}
-
-	//for (auto element : _elements) element->setPosition(sf::Vector2f(_dock->getPosition().x + MENU_ITEM_SHIFT, _elements[_elements.size() - 2]->getPosition().y + _elements[_elements.size() - 2]->getSize().y + SPACING));
 }
 
 
