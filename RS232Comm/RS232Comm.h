@@ -68,14 +68,19 @@ public:
 	int subStringCharIdx = 0;
 	bool payloadComplete = false;
 	bool firstPayload = true;
-	int payloadIdx = 0;
+	bool secondPayload = false; //will be used to auto spawn graph objects inside SerialScope.cpp
+	int graphIDX = 0; //indexes the all data for each graph. (chooses which graph the data goes to)
+	#define NUM_GRAPHS_HARDCODED 8
+	int floatsPerGraph[NUM_GRAPHS_HARDCODED];
+	uint32_t myDataIDX = 0;
 
-	#define TOTALFLOATS 3
+	#define TOTALFLOATS 24 //3 floats per graph * 8 graphs = 24
 	#define SUBSTRING_LEN 32
 	char asciiDataString[TOTALFLOATS][SUBSTRING_LEN]; //holds the substrings to be processed
 	float myData[TOTALFLOATS];
 
-
+	#define NUMFLOATS 3 //this define is simply to match the define in SerialScope.cpp. this will need to
+	//This will change MAX_NUMFLOATS. this will be thge max number of floats per graph (5?, 6?)
 };
 
 #endif // RS232COMM_H_INCLUDED

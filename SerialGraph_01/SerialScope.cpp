@@ -58,15 +58,15 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, &handleButton_disconnect);
 	_elements.push_back(Button_2);
 
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 400), "Graph_1", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 700), "Graph_2", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 1000), "Graph_3", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(150, 1300), "Graph_4", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(150, 300), "Graph_1", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(150, 600), "Graph_2", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(150, 900), "Graph_3", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(150, 1200), "Graph_4", NUMFLOATS));
 
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(1500, 400), "Graph_5", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(1500, 700), "Graph_6", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(1500, 1000), "Graph_7", NUMFLOATS));
-	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 10), sf::Vector2f(1500, 1300), "Graph_8", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(1500, 300), "Graph_5", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(1500, 600), "Graph_6", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(1500, 900), "Graph_7", NUMFLOATS));
+	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(1500, 1200), "Graph_8", NUMFLOATS));
 
 	// stuff elements vector with Graph_Vector
 	for (auto vector : Graph_Vector) _elements.push_back(vector);
@@ -78,7 +78,7 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	//_elements.push_back(mousePosText);
 
 	//To Display the serial data received
-	serialText = new Label(50, sf::Vector2f(900, 1500), sf::Color::White, "Empty");
+	serialText = new Label(40, sf::Vector2f(900, 1500), sf::Color::White, "Empty");
 	_elements.push_back(serialText);
 
 	// create menu object
@@ -165,12 +165,26 @@ void SerialScope::update(inputState_t userInput){
 	// MOVE TO UPDATE()!!!!
 	if (SP->payloadComplete) { // ascii to bin
 		SP->payloadComplete = false;
-		//printf("Data: %f, %f, %f Qs:%i pIdx:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize, SP.payloadIdx);
+		//printf("Data: %f, %f, %f Qs:%i pIdx:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize, SP.graphIDX);
+		
+		//label debug text. convert to terminal-ish side menu item
 		char charArraySerialData[256];
 		sprintf_s(charArraySerialData, "Serial Data: %f, %f, %f", SP->myData[0], SP->myData[1], SP->myData[2]);
 		serialText->setText(charArraySerialData);
 
-		if (SP->payloadIdx) Graph_Vector[SP->payloadIdx - 1]->update(userInput, true, SP->myData);
+		//if (SP->graphIDX) Graph_Vector[SP->graphIDX - 1]->update(userInput, true, SP->myData);
+
+		//for loop all the graphs
+		for (int i = 0; i < NUM_GRAPHS; i++) {
+			//this is from sending the correct number of floats to each graph
+			//that are stored in a 1-d array [24] length
+			int x = SP->graphIDX;
+			int y = SP->floatsPerGraph[i];
+			Graph_Vector[i]->update(userInput, true, (float*)(&(SP->myData[i*3]) )); //this sucks. use some datastructures or some vectors or some objects!!!!!!
+			//ToDo: optimize(everything) the way the serialdata is moved around and converted.
+			//this was for sending 3 at a time from a small buffer (3)
+			//Graph_Vector[i]->update(userInput, true, SP->myData); 
+		}
 	}
 
 }

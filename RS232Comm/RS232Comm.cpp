@@ -6,7 +6,15 @@ Serial::Serial()
 {
 	rxBuffer = new CircularQueue(256);
 	rxBuffer->zeroBuffer();
-	//We're not yet connected
+	
+	
+	//again, this shit should be in its own class!
+	for (int i = 0; i < NUM_GRAPHS_HARDCODED; i++) {
+		floatsPerGraph[i] = 1; //at least 1 data point per graph (this may be changed)
+	}
+	
+		
+		//We're not yet connected
 	this->connected = false;
 
 
@@ -75,38 +83,61 @@ void Serial::ReadData(char* buffer, unsigned int nbChar, int* returnVal)
 					c = this->rxBuffer->pop();
 
 
-
+					//ToDo: rather than tracking all these random primitives just make serial parsing class
 					if (!firstPayload) {
 						switch (c) {
 						case ',':
 							asciiDataString[subStringIdx][subStringCharIdx] = '\0';
 							subStringCharIdx = 0;
 							subStringIdx++;
+							floatsPerGraph[graphIDX]++; //increase the number of datapoint per graph
+							//constrain maximum nuber of floats to 3 (will change this to MAXNUMFLOATS)
+							if (floatsPerGraph[graphIDX] > NUMFLOATS) floatsPerGraph[graphIDX] = NUMFLOATS;
+
 							break;
 
-						case '\n':
+						case ';':
 							asciiDataString[subStringIdx][subStringCharIdx] = '\0';
-							//for (int i = 0; i < NUMFLOATS; i++) {
-							//	myData[i] = (float)atof(asciiDataString[i]);
-							//	memset(asciiDataString[i], '\0', SUBSTRING_LEN);
-							//}
-							//
-							myData[0] = (float)atof(asciiDataString[0]);
-							memset(asciiDataString[0], '\0', SUBSTRING_LEN);
+							subStringCharIdx = 0;
+							subStringIdx++;
+							
+							myDataIDX = 0;
+							for (int i = 0; i < graphIDX; i++) {
+								//sum the total count of floats per graph
+								myDataIDX += floatsPerGraph[i];
+							}
 
-							myData[1] = (float)atof(asciiDataString[1]);
-							memset(asciiDataString[1], '\0', SUBSTRING_LEN);
+							//copy n ascii floats into binary floats per graph
+							for (int i = 0; i < floatsPerGraph[graphIDX]; i++) {
+								myData[myDataIDX+i] = (float)atof(asciiDataString[myDataIDX+i]);
+							}
 
-							myData[2] = (float)atof(asciiDataString[2]);
-							memset(asciiDataString[2], '\0', SUBSTRING_LEN);
+							graphIDX++; //move to the next graph
+
+							//error checking. graphIDX is reset upon '\n'
+							if (graphIDX >= NUM_GRAPHS_HARDCODED) graphIDX = 0;
+							break;
+
+
+						case '\n':
+
+							asciiDataString[subStringIdx][subStringCharIdx] = '\0';
 
 							payloadComplete = true;
-							payloadIdx++;
-							if (payloadIdx > 8) payloadIdx = 1;
+							graphIDX = 0; //always go back to graph 0 when entire payload is finished
+							//wipe the entire asciiBuffer on '\n'
+							for (int i = 0; i < TOTALFLOATS; i++) {
+								memset(asciiDataString[i], '\0', SUBSTRING_LEN);
+							}
 							//printf("myData[0] = %f, myData[1] = %f, myData[2] = %f Qs:%i\r\n", myData[0], myData[1], myData[2], queueSize);
 
 							subStringCharIdx = 0;
 							subStringIdx = 0;
+
+							for (int i = 0; i < NUM_GRAPHS_HARDCODED; i++) {
+								floatsPerGraph[i] = 1;
+							}
+
 							break;
 
 						default:
@@ -117,6 +148,9 @@ void Serial::ReadData(char* buffer, unsigned int nbChar, int* returnVal)
 					}
 
 					if (c == '\n' && firstPayload == true) {
+						for (int i = 0; i < TOTALFLOATS; i++) {
+							memset(asciiDataString[i], '\0', SUBSTRING_LEN);
+						}
 						firstPayload = false; //dont process first payload
 					}
 

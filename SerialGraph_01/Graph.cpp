@@ -131,14 +131,18 @@ void Graph::update(inputState_t userInput, bool withNewData, float *dataPoint) {
 
 	float xRatio = (_dock.getSize().x / _size);
 	
+
+	maxVal = 0;
+	minVal = 100000;  //(this is ugly)
+
 	for (int j = 0; j < _len; j++) {
 		//Set the X axis scaling here
 		uint32_t startPos = frameSamples - (frameSamples / _Xscaler);
 		
 		//Search for Max and Min Values
-		maxVal = 0; 
-		minVal = 100000;  //(this is ugly)
-		for (uint32_t i = startPos; i < frameSamples - 1; i++) {
+		
+		//scan through all visible datapoints that a visible
+		for (uint32_t i = startPos; i < frameSamples - 0; i++) {
 			if (dataArray[j][i] > maxVal) maxVal = dataArray[j][i];
 			if (dataArray[j][i] < minVal) minVal = dataArray[j][i];
 		}
@@ -180,8 +184,9 @@ void Graph::update(inputState_t userInput, bool withNewData, float *dataPoint) {
 				_lineInterpol[j][i] = sf::Vertex(sf::Vector2f(_axis_x.getPosition().x + ((i - startPos)*_Xscaler*xRatio), (float)((-dataArray[j][i] * _Yscaler) + _axis_x.getPosition().y)), _lineColor[j]);
 			}
 		}
-		//make sure to draw the last element on the rights side (makes cool effect if you comment this line)
+		//make sure to draw the last element on the rights side (makes cool effect if you comment this line. also fixes a bug: newest data point can be outside the graph rectangle)
 		_lineInterpol[j][frameSamples - 1] = sf::Vertex(sf::Vector2f(_axis_x.getPosition().x + _axis_x.getSize().x, (float)((-dataArray[j][frameSamples - 1] * _Yscaler) + _axis_x.getPosition().y)), _lineColor[j]);
+		//_lineInterpol[j][frameSamples - 1] = sf::Vertex(sf::Vector2f(_axis_x.getPosition().x + _axis_x.getSize().x, (float)((-dataArray[j][frameSamples - 1] * 0) + _axis_x.getPosition().y)), _lineColor[j]);
 
 		_textXaxisScale_start->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_start->getSize().y - GRAPH_NAME_PADDING));
 		_textXaxisScale_stop->setPosition(sf::Vector2f(_dock.getPosition().x + _dock.getSize().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_stop->getSize().y - GRAPH_NAME_PADDING));

@@ -81,8 +81,8 @@ private:
 	int _len; //number of floats per graph
 
 	float _size;
-	float maxVal=10;
-	float minVal=0;
+	float maxVal=0;
+	float minVal=100000;
 	
 	std::vector <sf::Drawable*> _drawables;
 	std::vector <sf::Drawable*> _interactive;
