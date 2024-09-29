@@ -22,6 +22,15 @@ static uint8_t handleMenu_2(uint8_t val) {
 	return 0;
 }
 
+static uint8_t handleButton_minimize(uint8_t val) {
+	printf("Minimize all graphs: %i\r\n", val);
+	for (int i = 0; i < NUM_GRAPHS; i++) {
+		//Graph_Vector[i]->_dock.setSize(sf::Vector2f(1080, 100));
+		//SerialScope::Graph_Vector[i]->setPosition(sf::Vector2f(1800, (i * 150) + 150));
+	}
+	return 0;
+}
+
 SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	_bytesReceived = bytesReceived;
 
@@ -52,12 +61,6 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	////window.setVerticalSyncEnabled(true);
 	//window.setActive(true);
 
-	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, &handleButton_connect);
-	_elements.push_back(Button_1);
-
-	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, &handleButton_disconnect);
-	_elements.push_back(Button_2);
-
 	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(150, 300), "Graph_1", NUMFLOATS));
 	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(150, 600), "Graph_2", NUMFLOATS));
 	Graph_Vector.push_back(new Graph(sf::Vector2f(1200, WINDOW_HEIGHT / 7), sf::Vector2f(150, 900), "Graph_3", NUMFLOATS));
@@ -77,6 +80,12 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	//Label* mousePosText = new Label(25, sf::Vector2f(100, 700), sf::Color::Green, charArrayMousePos);
 	//_elements.push_back(mousePosText);
 
+	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, &handleButton_connect);
+	_elements.push_back(Button_1);
+
+	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, &handleButton_disconnect);
+	_elements.push_back(Button_2);
+
 	//To Display the serial data received
 	serialText = new Label(40, sf::Vector2f(900, 1500), sf::Color::White, "Empty");
 	_elements.push_back(serialText);
@@ -92,6 +101,13 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 
 	Menu* Menu_2 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(310, 0), sf::Color(10, 10, 10), "Baud Rate", handleMenu_2);
 	_elements.push_back(Menu_2);
+
+	console = new TextConsole(sf::Vector2f(780, 550), sf::Vector2f(100, 100)); //Testing Console
+	_elements.push_back(console);
+
+	//auto lambda = [](uint8_t a) { return (uint8_t)a; };
+	Buttons* Button_minimize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2000, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, &handleButton_minimize);
+	_elements.push_back(Button_minimize);
 
 	// add menu items. list of available com ports
 	for (auto ComPortBaud : SP->ComPortBauds) {
@@ -171,6 +187,8 @@ void SerialScope::update(inputState_t userInput){
 		char charArraySerialData[256];
 		sprintf_s(charArraySerialData, "Serial Data: %f, %f, %f", SP->myData[0], SP->myData[1], SP->myData[2]);
 		serialText->setText(charArraySerialData);
+
+		//console->handleInput(userInput.k.key);
 
 		//if (SP->graphIDX) Graph_Vector[SP->graphIDX - 1]->update(userInput, true, SP->myData);
 

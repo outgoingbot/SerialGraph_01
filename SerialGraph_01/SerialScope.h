@@ -5,12 +5,16 @@
 #include "Buttons.h"
 #include "Graph.h"
 #include "Label.h"
+#include "Console.h"
+
 #include "CircularQueue.h"
 #include "RS232Comm/RS232Comm.h"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
 #include <SFML/System.hpp>
+
 #include <Windows.h>  
 #include <stdlib.h>
 #include <stdio.h>
@@ -64,8 +68,11 @@ private:
 	Serial* SP;
 	sf::Sprite* sprite;
 	std::vector<Graph*> Graph_Vector;
+
+	TextConsole* console; //WIP
+
 	Label* serialText;
 	int _bytesReceived;
-
+	//uint8_t handleButton_minimize(uint8_t val);
 };
 

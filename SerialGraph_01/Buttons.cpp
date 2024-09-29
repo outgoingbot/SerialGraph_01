@@ -2,7 +2,7 @@
 
 
 //set size, position, text
-Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, uint8_t (*callback)(uint8_t), uint8_t id) {
+Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, uint8_t(*callback)(uint8_t), uint8_t id) {
 	//Load private Font
 	if (!_font.loadFromFile("../res/arial.ttf")) {
 		printf("Error loading Font");

@@ -57,6 +57,9 @@
     <ClCompile Include="SerialScope.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\RS232Comm\RS232Comm.h">
@@ -96,6 +99,9 @@
       <Filter>Header Files\SimpleMenu</Filter>
     </ClInclude>
     <ClInclude Include="SerialScope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
