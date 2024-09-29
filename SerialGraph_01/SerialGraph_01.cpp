@@ -53,6 +53,76 @@ next change will allow CSV strings with \r\n terminating
 
 #include "SimpleMenu/Src/Menu.h"
 
+class TextConsole {
+public:
+	TextConsole(float width, float height) {
+		if (!font.loadFromFile("../res/arial.ttf")) {
+			throw std::runtime_error("Could not load font");
+		}
+
+		console.setFillColor(sf::Color::Black);
+		console.setOutlineColor(sf::Color::White);
+		console.setOutlineThickness(2);
+		console.setSize(sf::Vector2f(width, height));
+		console.setPosition(10, 10);
+
+		inputText.setFont(font);
+		inputText.setFillColor(sf::Color::White);
+		inputText.setCharacterSize(24);
+		inputText.setPosition(15, 15);
+
+		displayText.setFont(font);
+		displayText.setFillColor(sf::Color::Green);
+		displayText.setCharacterSize(24);
+		displayText.setPosition(15, 55);
+	}
+
+	void handleInput(const sf::Event& event) {
+		if (event.type == sf::Event::TextEntered) {
+			printf_s("\r\nkey entered: %i", event.text.unicode);
+			if (event.text.unicode < 128 && event.text.unicode != '\b' && event.text.unicode != '\r') {
+				input += static_cast<char>(event.text.unicode);
+			}
+			else if (event.text.unicode == '\b') {
+				if (!input.empty()) {
+					input.pop_back();
+				}
+			}
+			else if (event.text.unicode == '\r') {
+				if (!input.empty()) {
+					messages.push_back(input);
+					input.clear();
+				}
+			}
+		}
+		updateDisplayText();
+	}
+
+	void draw(sf::RenderWindow& window) {
+		window.draw(console);
+		window.draw(inputText);
+		window.draw(displayText);
+	}
+
+	void updateDisplayText() {
+		std::string display = "";
+		for (const auto& msg : messages) {
+			display += msg + "\n";
+		}
+		display += input;
+		displayText.setString(display);
+		inputText.setString(input);
+	}
+
+private:
+	sf::Font font;
+	sf::RectangleShape console;
+	sf::Text inputText;
+	sf::Text displayText;
+	std::string input;
+	std::vector<std::string> messages;
+};
+
 
 //Debug vars
 char charArrayDebug[256] = "Empty";
@@ -89,6 +159,8 @@ uint8_t handleMenu_2(uint8_t val) {
 
 sf::Event event; //Do we only need one event ? (think yes)
 
+
+
 int main()
 {	
 
@@ -121,6 +193,7 @@ int main()
 	Graph D_Graph_loopTime(sf::Vector2f(200, 100), sf::Vector2f(WINDOW_WIDTH - 210, 50), "Loop Time", NUMFLOATS);
 	Label D_MousePosition(20, sf::Vector2f(100, 500), sf::Color::White, "MousePosition");
 	
+	TextConsole console(780, 550); //Testing Console
 		
 	
 	// SerialGraph::updateInteractiveState()
@@ -156,10 +229,11 @@ int main()
 
 		D_Graph_loopTime.draw(window); //DEBUG OUTSIDE UIELEMENTS
 		D_MousePosition.draw(window);
+		
+		console.draw(window); //Testing Console
 
 		window.display(); //show drawn objects to the display buffer
-
-		
+	
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
 				//window.close();
@@ -188,6 +262,7 @@ int main()
 				//printf("%i - %c", (int)userInput.k.key, userInput.k.key);
 			}
 			else {
+				console.handleInput(event); //Testing Console
 				userInput.k.key = sf::Keyboard::Unknown; // set key to -1
 			}
 		}
