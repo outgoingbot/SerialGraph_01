@@ -34,6 +34,9 @@ void Label::setPosition(sf::Vector2f position) {
 	_dock.setPosition(sf::Vector2f(rc.left, rc.top));
 }
 	
+void Label::setSize(sf::Vector2f size) {
+	//Todo: Implement setting the size
+}
 
 
 void Label::setText(const char* string) {

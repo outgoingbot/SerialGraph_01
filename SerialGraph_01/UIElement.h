@@ -46,6 +46,7 @@ public:
 	virtual sf::Vector2f getSize() = 0;
 	virtual sf::Vector2f getPosition() = 0;
 	virtual void setPosition(sf::Vector2f pos) = 0;
+	virtual void setSize(sf::Vector2f size) = 0;
 	
 	sf::Vector2f getTextBounds(sf::Text t) {
 			sf::FloatRect fr = t.getGlobalBounds();

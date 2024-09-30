@@ -106,6 +106,10 @@ sf::Vector2f Menu::getSize() {
 	return _dock->getSize();
 }
 
+void Menu::setSize(sf::Vector2f size) {
+	//ToDo: implement setting the size
+}
+
 sf::Vector2f Menu::getPosition() {
 	return _dock->getPosition();
 }

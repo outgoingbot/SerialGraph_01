@@ -311,6 +311,15 @@ sf::Vector2f Graph::getSize() {
 	return _dock.getSize();
 }
 
+void Graph::setSize(sf::Vector2f size) {
+	_dock.setSize(size);
+	_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y - GRAPH_NAME_PADDING));
+	_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x - GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
+	_menu->setPosition(_dock.getPosition());
+	_axis_x.setSize(sf::Vector2f(_dock.getSize().x, 2)); //x axis
+	_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + (_dock.getSize().y / 2)));
+}
+
 
 sf::Vector2f Graph::getPosition() {
 	return _dock.getPosition();
@@ -319,5 +328,10 @@ sf::Vector2f Graph::getPosition() {
 void Graph::setPosition(sf::Vector2f pos) {
 	_dock.setPosition(pos);
 	for (auto element : _elements) element->setPosition(pos);
-	
+
+	_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y - GRAPH_NAME_PADDING));
+	_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x - GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
+	_menu->setPosition(_dock.getPosition());
+	_axis_x.setSize(sf::Vector2f(_dock.getSize().x, 2)); //x axis
+	_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + (_dock.getSize().y / 2)));	
 }

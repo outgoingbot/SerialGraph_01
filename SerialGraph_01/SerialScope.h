@@ -54,6 +54,10 @@ public:
 		return sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
 
+	void setSize(sf::Vector2f size) {
+		// so something?
+	}
+
 	sf::Vector2f getPosition() {
 		return sf::Vector2f(0, 0);
 	}

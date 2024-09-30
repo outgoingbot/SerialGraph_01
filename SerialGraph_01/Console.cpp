@@ -87,6 +87,10 @@ sf::Vector2f TextConsole::getSize() {
 	return _dock.getSize();
 }
 
+void TextConsole::setSize(sf::Vector2f size) {
+	//ToDo: Implement setting the _dock size
+}
+
 sf::Vector2f TextConsole::getPosition() {
 	return _dock.getPosition();
 }

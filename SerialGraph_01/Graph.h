@@ -43,6 +43,7 @@ public:
 	void update(inputState_t userInput, bool withNewData, float *dataPoint=nullptr);
 	void draw(sf::RenderWindow& window);
 	sf::Vector2f getSize();
+	void setSize(sf::Vector2f);
 	sf::Vector2f getPosition();
 	void setPosition(sf::Vector2f pos);
 

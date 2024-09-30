@@ -137,16 +137,19 @@ UI_State_t SerialScope::updateInteractiveState(inputState_t userInput) {
 
 	//Get Keyboard inputs
 	// HANDLE IN MAIN
+	//ToDo: these user inputs may not be working correctly
 	//if (userInput.k.key == sf::Keyboard::Right) sprite->move(10, 0);
 	//if (userInput.k.key == sf::Keyboard::Left) sprite->move(-10, 0);
+	//if (userInput.k.key == sf::Keyboard::Right) sprite->move(10, 0);
+	//if (userInput.k.key == sf::Keyboard::Left) sprite->move(-10, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1)) {
+		printf("Minimize all graphs: %i\r\n");
+		for (int i = 0; i < NUM_GRAPHS; i++) {
+			_elements[i]->setSize(sf::Vector2f(1080, 80));
+			_elements[i]->setPosition(sf::Vector2f(1700, (i * 150) + 200));
+		}
+	}
 
-	//if (userInput.k.key == sf::Keyboard::Right) sprite->move(10, 0);
-	//if (userInput.k.key == sf::Keyboard::Left) sprite->move(-10, 0);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) sprite->move(10, 0);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) sprite->move(-10, 0);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) sprite->move(0, -10);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) sprite->move(0, 10);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) sprite->scale(sf::Vector2f(sprite->getScale().x + 1.0f, sprite->getScale().y + 1.0f));
 
 	//sf::Event event;
 	//while (window.pollEvent(event)) {

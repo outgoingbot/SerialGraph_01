@@ -33,6 +33,7 @@ public:
 	void draw(sf::RenderWindow& win);
 	UI_State_t updateInteractiveState(inputState_t userInput);
 	sf::Vector2f getSize();
+	void setSize(sf::Vector2f size);
 	sf::Vector2f getPosition();
 	void setPosition(sf::Vector2f pos);
 
