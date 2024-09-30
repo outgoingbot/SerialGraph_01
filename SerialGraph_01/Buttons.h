@@ -21,17 +21,18 @@ typedef enum {
 
 #define DEFAULT_TEXT_SIZE 20
 
-
+template<typename T>
 class Buttons : public UIElement
 {
 public:
+	using MemberFunctionPtr = void (T::*)(int); // Member function pointer type
 
 	//void callMemberFunction(T* instance, void (T::*func)(int), int arg) {
 	//	(instance->*func)(arg); // Call the member function on the instance
 	//}
 	//Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDraggable = false, isToggle_t isToggle = false, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
-	template<typename T>
-	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, uint8_t(T::*callback)(uint8_t), uint8_t id = 0);
+	//B(T* instance, MemberFunctionPtr func) : instance(instance), func(func) {}
+	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, MemberFunctionPtr func, uint8_t id = 0) : instance(instance), func(func) {}
 	~Buttons();
 
 	UI_State_t updateInteractiveState(inputState_t userInput);
@@ -49,13 +50,15 @@ public:
 	sf::Text text; //move back to private after i solve the menu item button size issue
 
 private:
+	T* instance;
+	MemberFunctionPtr func; // Pointer to a member function of class T
 
 	bool isMouseOverRect(sf::Vector2f mousePosition);
 	sf::RectangleShape buttonRectangle; //create button with wideth,height
 
 	sf::Color _color;
 	sf::Font _font;
-	uint8_t(*buttonCallback)(uint8_t) = nullptr;
+	//uint8_t(*buttonCallback)(uint8_t) = nullptr;
 	uint8_t _id; // keep track of multiple buttons in callback within common parent
 	bool _mouseLeftHandled = false;
 	bool _isDragable = false;

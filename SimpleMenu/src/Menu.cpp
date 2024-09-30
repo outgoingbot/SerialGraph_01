@@ -17,17 +17,17 @@ Menu::Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char
 	_dockClosedSize = _dockOpenSize;
 	_dock->setSize(_dockClosedSize);
 
-	menuCallback = callback;
+	//menuCallback = callback;
 	//title of drop down menu. will activate on state= hover.
 
-	titleItem = new Buttons(sf::Vector2f(_dockSize.x, _dockSize.y), position, sf::Color(MENU_DEFUALT_COLOR), string, false, false, instance, menuCallback, 0);
+	titleItem = new Buttons(sf::Vector2f(_dockSize.x, _dockSize.y), position, sf::Color(MENU_DEFUALT_COLOR), string, false, false, instance, callback, 0);
 	_elements.push_back(titleItem);
 	_menuItems.push_back(titleItem);
 
 	//will change this to false when i get titleItem = hover working
 	menuShown = true;
 	componentOutlinesShown = false;
-	menuCallback = callback;
+	//menuCallback = callback;
 }
 
 Menu::~Menu()
@@ -40,7 +40,7 @@ bool Menu::addMenuItem(const std::string text, T* instance, uint8_t(T::*callback
 	numElements++;
 
 	//I dont like this constructor. need to think about either a default constructor. will need my call back functions
-	Buttons* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(20, 20), sf::Color(MENU_DEFUALT_COLOR), "Empty", false, true, this, menuCallback, _elements.size());
+	Buttons* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(20, 20), sf::Color(MENU_DEFUALT_COLOR), "Empty", false, true, this, callback, _elements.size());
 
 	_elements.push_back(newItem);
 	_menuItems.push_back(newItem);
@@ -60,6 +60,7 @@ bool Menu::addMenuItem(const std::string text, T* instance, uint8_t(T::*callback
 
 	//Some issue here indexing through _elements or its some algrbra
 	_dockOpenSize.y = _elements[_elements.size() - 1]->getPosition().y + _elements[_elements.size() - 1]->getSize().y - this->getPosition().y;
+	
 	return true;
 }
 

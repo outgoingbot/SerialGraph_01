@@ -5,7 +5,7 @@
 //Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, uint8_t(*callback)(uint8_t), uint8_t id) {
 
 template<typename T>
-Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, uint8_t(T::*callback)(uint8_t), uint8_t id) {
+Buttons<T>::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, MemberFunctionPtr func, uint8_t id) : instance(instance), func(func) {
 	//Load private Font
 	if (!_font.loadFromFile("../res/arial.ttf")) {
 		printf("Error loading Font");
@@ -27,19 +27,19 @@ Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, cons
 	//text.setOrigin(rc.width / 2, rc.height / 2);
 	text.setPosition(position);
 	text.setFillColor(sf::Color::White);
-	buttonCallback = callback;
+	//buttonCallback = callback;
 	_id = id;
 	_isDragable = isDragable;
 	_isToggle = isToggle;
 }
 
-
-Buttons::~Buttons() {
+template<typename T>
+Buttons<T>::~Buttons() {
 	//delete rectangle shape and text. needed?
 }
 
-
-UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
+template<typename T>
+UI_State_t Buttons<T>::updateInteractiveState(inputState_t userInput) {
 	UI_State_t returnVal = BUTTON_STATE_READY;
 	buttonRectangle.setFillColor(sf::Color::Yellow);
 
@@ -50,7 +50,8 @@ UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
 
 		buttonRectangle.setFillColor(sf::Color(255, 0, 255));
 		returnVal |= BUTTON_STATE_CLICK_LEFT;
-		if (buttonCallback != nullptr) buttonCallback(_id);
+		//Todo: Handle the button callback
+		//if (buttonCallback != nullptr) buttonCallback(_id);
 		_mouseLeftHandled = true; // Prevents button from being spammed when mouse is held down
 	}
 	else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && _mouseLeftHandled == true) {
@@ -88,8 +89,8 @@ UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
 	return returnVal;
 }
 
-
-bool Buttons::isMouseOverRect(sf::Vector2f mousePosition) {
+template<typename T>
+bool Buttons<T>::isMouseOverRect(sf::Vector2f mousePosition) {
 	if (mousePosition.x > buttonRectangle.getPosition().x && mousePosition.x < buttonRectangle.getPosition().x + (buttonRectangle.getSize().x)) {
 		if (mousePosition.y > buttonRectangle.getPosition().y
 			&& mousePosition.y < buttonRectangle.getPosition().y + (buttonRectangle.getSize().y)) {
@@ -100,34 +101,39 @@ bool Buttons::isMouseOverRect(sf::Vector2f mousePosition) {
 }
 
 
-
-void Buttons::draw(sf::RenderWindow& window) {
+template<typename T>
+void Buttons<T>::draw(sf::RenderWindow& window) {
 	window.draw(buttonRectangle);
 	window.draw(text);
 }
 
-
-void Buttons::setTextSize(unsigned int size) {
+template<typename T>
+void Buttons<T>::setTextSize(unsigned int size) {
 	text.setCharacterSize(size);
 }
 
-void Buttons::setPosition(sf::Vector2f pos) {
+template<typename T>
+void Buttons<T>::setPosition(sf::Vector2f pos) {
 	text.setPosition(pos);
 	buttonRectangle.setPosition(pos);
 }
 
-void Buttons::setText(const std::string s) {
+template<typename T>
+void Buttons<T>::setText(const std::string s) {
 	text.setString(s);
 }
 
-void Buttons::setSize(sf::Vector2f size) {
+template<typename T>
+void Buttons<T>::setSize(sf::Vector2f size) {
 	buttonRectangle.setSize(size);
 }
 
-sf::Vector2f Buttons::getSize() {
+template<typename T>
+sf::Vector2f Buttons<T>::getSize() {
 	return buttonRectangle.getSize();
 }
 
-sf::Vector2f Buttons::getPosition() {
+template<typename T>
+sf::Vector2f Buttons<T>::getPosition() {
 	return buttonRectangle.getPosition();
 }

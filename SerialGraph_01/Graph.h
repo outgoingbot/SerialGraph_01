@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <vector>
 #include "Label.h"
-#include "SimpleMenu/Src/Menu.h" // Fix later
+//#include "SimpleMenu/Src/Menu.h" // Fix later
 #include "Buttons.h"
 #include <iostream>
 #define NUMFLOATS 3
@@ -71,7 +71,7 @@ private:
 
 	Label *_textCrossHairData; //mouse position related to graph scale
 
-	Menu *_menu;
+	//Menu *_menu;
 
 	char textBuff[64];
 	//will want to to add some color blocks to inidcate the 3 variables color

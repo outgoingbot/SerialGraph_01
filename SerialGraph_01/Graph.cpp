@@ -81,13 +81,14 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	_interactive.push_back(&_xMouseCross);
 	_interactive.push_back(&_yMouseCross);
 
-
+	/*
 	_menu = new Menu(sf::Vector2f(120, 30), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", this, &Graph::handleMenu_1);
 	_elements.push_back(_menu);
 	// add menu items. list of available com ports	
 	_menu->addMenuItem((std::string)"AutoScale", this, &Graph::handleMenu_1_A);
 	_menu->addMenuItem("Pause", this, &Graph::handleMenu_1_B);
 	_menu->addMenuItem("Percent", this, &Graph::handleMenu_1_C);
+	*/
 	//end UI elements
 
 	//these could both be vectors
@@ -276,7 +277,7 @@ UI_State_t Graph::updateInteractiveState(inputState_t userInput) {
 		_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y - GRAPH_NAME_PADDING));
 		_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x - GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
 		_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + _dock.getSize().y));
-		_menu->setPosition(_dock.getPosition());
+		//_menu->setPosition(_dock.getPosition());
 		this->update(userInput, false); //call this to keep the graph visually updated with user input changes
 		returnVal |= UI_STATE_CLICK_RIGHT;
 	}

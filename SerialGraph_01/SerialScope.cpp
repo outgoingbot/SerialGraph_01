@@ -80,20 +80,24 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	//Label* mousePosText = new Label(25, sf::Vector2f(100, 700), sf::Color::Green, charArrayMousePos);
 	//_elements.push_back(mousePosText);
 
+	/*
 	Buttons* Button_minimize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2000, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_minimize);
 	_elements.push_back(Button_minimize);
 
 
 	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, this, &SerialScope::handleButton_connect);
 	_elements.push_back(Button_1);
-
-	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_disconnect);
+	
+	Button_2 = new Buttons<SerialScope>(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_disconnect);
 	_elements.push_back(Button_2);
+	*/
 
 	//To Display the serial data received
 	serialText = new Label(40, sf::Vector2f(900, 1500), sf::Color::White, "Empty");
 	_elements.push_back(serialText);
+	
 
+	/*
 	// create menu object
 	Menu* Menu_1 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(0, 0), sf::Color(10, 10, 10), "Comm Port", this, &SerialScope::handleMenu_1);
 	_elements.push_back(Menu_1);
@@ -114,7 +118,7 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	for (auto ComPortBaud : SP->ComPortBauds) {
 		Menu_2->addMenuItem(ComPortBaud, this, &SerialScope::handleMenu_2);
 	}
-
+	*/
 	rxBuffer = (char*)calloc(rxBufferSz, 1);
 	//this is gonna need to be moved into Connect Button to start the thread
 	SP->Connect(COMM_PORT);

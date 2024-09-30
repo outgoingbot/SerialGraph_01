@@ -67,7 +67,7 @@ private:
 	int componentBuffer;	//space between menu components
 	float compOutlinePadding;	//space between menu components and their outline objects
 	int numElements;	//number of total menu items
-	uint8_t(*menuCallback)(uint8_t) = nullptr;
+	//uint8_t(*menuCallback)(uint8_t) = nullptr;
 	sf::RectangleShape* _dock = nullptr; //the object for drawing the menu's background
 	sf::Color _dockColor;	//set to transparent by default
 	sf::Vector2f _dockOpenSize;

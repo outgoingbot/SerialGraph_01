@@ -51,9 +51,6 @@
     <ClCompile Include="UIElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\SimpleMenu\src\Menu.cpp">
-      <Filter>Source Files\SimpleMenu</Filter>
-    </ClCompile>
     <ClCompile Include="SerialScope.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -94,9 +91,6 @@
     </ClInclude>
     <ClInclude Include="UIElement.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SimpleMenu\src\Menu.h">
-      <Filter>Header Files\SimpleMenu</Filter>
     </ClInclude>
     <ClInclude Include="SerialScope.h">
       <Filter>Header Files</Filter>

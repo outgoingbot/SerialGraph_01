@@ -158,7 +158,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\RS232Comm\RS232Comm.cpp" />
-    <ClCompile Include="..\SimpleMenu\src\Menu.cpp" />
     <ClCompile Include="Buttons.cpp" />
     <ClCompile Include="CheckBox.cpp" />
     <ClCompile Include="CircularQueue.cpp" />
@@ -176,7 +175,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\RS232Comm\RS232Comm.h" />
-    <ClInclude Include="..\SimpleMenu\src\Menu.h" />
     <ClInclude Include="Buttons.h" />
     <ClInclude Include="CheckBox.h" />
     <ClInclude Include="CircularQueue.h" />

@@ -26,7 +26,15 @@
 #include <thread>
 #include <chrono>
 #include <algorithm>
-#include "SimpleMenu/Src/Menu.h" // Fix later
+//#include "SimpleMenu/Src/Menu.h" // Fix later
+
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <vector>
 
 
 typedef enum {
@@ -62,6 +70,14 @@ public:
 		//return something?
 	}
 
+	Buttons* Button_2;
+
+	uint8_t handleButton_minimize(uint8_t val);
+	uint8_t handleButton_connect(uint8_t val);
+	uint8_t handleButton_disconnect(uint8_t val);
+	uint8_t handleMenu_1(uint8_t val);
+	uint8_t handleMenu_2(uint8_t val);
+
 private:
 	std::thread *serial_thread = nullptr;
 	char* rxBuffer;
@@ -74,10 +90,6 @@ private:
 	Label* serialText;
 	int _bytesReceived;
 
-	uint8_t handleButton_minimize(uint8_t val);
-	uint8_t handleButton_connect(uint8_t val);
-	uint8_t handleButton_disconnect(uint8_t val);
-	uint8_t handleMenu_1(uint8_t val);
-	uint8_t handleMenu_2(uint8_t val);
+
 };
 
