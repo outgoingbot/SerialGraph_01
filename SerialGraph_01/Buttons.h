@@ -24,7 +24,7 @@ typedef enum {
 class Buttons : public UIElement
 {
 public:
-
+	//Modified for templating
 	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDraggable = false, isToggle_t isToggle = false, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
 
 	~Buttons();
