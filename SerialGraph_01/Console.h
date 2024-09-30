@@ -15,11 +15,11 @@ public:
 
 	void updateDisplayText();
 
+
 	UI_State_t updateInteractiveState(inputState_t userInput);
 	bool isMouseOverRect(sf::Vector2f mousePosition);
 
 	sf::Vector2f getSize();
-	void setSize(sf::Vector2f size);
 	sf::Vector2f getPosition();
 	void setPosition(sf::Vector2f pos);
 

@@ -14,7 +14,7 @@ TextConsole::TextConsole(sf::Vector2f size, sf::Vector2f position) {
 	inputText.setFont(font);
 	inputText.setFillColor(sf::Color::Yellow);
 	inputText.setCharacterSize(24);
-	inputText.setPosition(sf::Vector2f(position.x+15, position.y + 15));
+	inputText.setPosition(sf::Vector2f(position.x + 15, position.y + 15));
 
 	displayText.setFont(font);
 	displayText.setFillColor(sf::Color::Green);
@@ -25,21 +25,21 @@ TextConsole::TextConsole(sf::Vector2f size, sf::Vector2f position) {
 void TextConsole::handleInput(const char key) {
 	if (key == -1) return;
 	printf_s("\r\nkey entered: %i", key);
-		if (key < 128 && key != '\b' && key != '\r') {
-			
-			input += static_cast<char>(key);
+	if (key < 128 && key != '\b' && key != '\r') {
+
+		input += static_cast<char>(key);
+	}
+	else if (key == '\b') {
+		if (!input.empty()) {
+			input.pop_back();
 		}
-		else if (key == '\b') {
-			if (!input.empty()) {
-				input.pop_back();
-			}
+	}
+	else if (key == '\r') {
+		if (!input.empty()) {
+			messages.push_back(input);
+			input.clear();
 		}
-		else if (key == '\r') {
-			if (!input.empty()) {
-				messages.push_back(input);
-				input.clear();
-			}
-		}
+	}
 	updateDisplayText();
 }
 
@@ -85,10 +85,6 @@ sf::Vector2f TextConsole::getSize() {
 	//sf::FloatRect fr = _text.getGlobalBounds();
 
 	return _dock.getSize();
-}
-
-void TextConsole::setSize(sf::Vector2f size) {
-	//ToDo: Implement setting the _dock size
 }
 
 sf::Vector2f TextConsole::getPosition() {

@@ -24,13 +24,13 @@ public:
 	void setText(const float f);
 
 	void setPosition(sf::Vector2f position);
-	void setSize(sf::Vector2f size);
+
 	UI_State_t updateInteractiveState(inputState_t userInput);
 	void draw(sf::RenderWindow& window);
 	sf::Vector2f getSize();
 	sf::Vector2f getPosition();
-	
-	
+
+
 private:
 	bool isMouseOverRect(sf::Vector2f mousePosition);
 	sf::Color _color;
@@ -39,5 +39,5 @@ private:
 
 	sf::RectangleShape _dock;
 
-	
+
 };

@@ -2,7 +2,10 @@
 
 
 //set size, position, text
-Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, uint8_t(*callback)(uint8_t), uint8_t id) {
+//Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, uint8_t(*callback)(uint8_t), uint8_t id) {
+
+template<typename T>
+Buttons::Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, uint8_t(T::*callback)(uint8_t), uint8_t id) {
 	//Load private Font
 	if (!_font.loadFromFile("../res/arial.ttf")) {
 		printf("Error loading Font");
@@ -47,7 +50,7 @@ UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
 
 		buttonRectangle.setFillColor(sf::Color(255, 0, 255));
 		returnVal |= BUTTON_STATE_CLICK_LEFT;
-		if(buttonCallback != nullptr) buttonCallback(_id);
+		if (buttonCallback != nullptr) buttonCallback(_id);
 		_mouseLeftHandled = true; // Prevents button from being spammed when mouse is held down
 	}
 	else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && _mouseLeftHandled == true) {
@@ -56,7 +59,7 @@ UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
 
 	//move the object
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && _isDragable) {
-		buttonRectangle.setPosition(sf::Vector2f(userInput.m.mousePosf.x - buttonRectangle.getSize().x/2, userInput.m.mousePosf.y - buttonRectangle.getSize().y / 2));
+		buttonRectangle.setPosition(sf::Vector2f(userInput.m.mousePosf.x - buttonRectangle.getSize().x / 2, userInput.m.mousePosf.y - buttonRectangle.getSize().y / 2));
 		text.setPosition(buttonRectangle.getPosition());
 		returnVal |= BUTTON_STATE_CLICK_RIGHT;
 		//while (sf::Mouse::isButtonPressed(sf::Mouse::Left));
@@ -73,7 +76,7 @@ UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
 			text.setFillColor(sf::Color::White);
 			buttonRectangle.setFillColor(_color); // constructor color
 		}
-		else if(!_isToggle){
+		else if (!_isToggle) {
 			text.setFillColor(sf::Color::White);
 			buttonRectangle.setFillColor(_color); // constructor color
 		}
@@ -88,7 +91,7 @@ UI_State_t Buttons::updateInteractiveState(inputState_t userInput) {
 
 bool Buttons::isMouseOverRect(sf::Vector2f mousePosition) {
 	if (mousePosition.x > buttonRectangle.getPosition().x && mousePosition.x < buttonRectangle.getPosition().x + (buttonRectangle.getSize().x)) {
-		if (mousePosition.y > buttonRectangle.getPosition().y 
+		if (mousePosition.y > buttonRectangle.getPosition().y
 			&& mousePosition.y < buttonRectangle.getPosition().y + (buttonRectangle.getSize().y)) {
 			return true;
 		}

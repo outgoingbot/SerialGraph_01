@@ -12,7 +12,8 @@
 class Menu : public UIElement {
 
 public:
-	Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, uint8_t(*callback)(uint8_t)=nullptr);
+	template<typename T>
+	Menu(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, T* instance, uint8_t(T::*callback)(uint8_t));
 	~Menu();
 
 	//bool setDockingPosition(sf::Vector2f pos);
@@ -27,13 +28,13 @@ public:
 	void showComponentOutlines();
 	void hideComponentOutlines();
 	void toggleComponentOutlines();
-	bool addMenuItem(const std::string text);
+	template<typename T>
+	bool addMenuItem(const std::string text, T* instance, uint8_t(T::*callback)(uint8_t));
 	//void setFontSize(int fontSize);
 
 	void draw(sf::RenderWindow& win);
 	UI_State_t updateInteractiveState(inputState_t userInput);
 	sf::Vector2f getSize();
-	void setSize(sf::Vector2f size);
 	sf::Vector2f getPosition();
 	void setPosition(sf::Vector2f pos);
 
@@ -41,8 +42,8 @@ private:
 	// ------------------------------------------------------
 	// Constants
 	// formatting
-	
-	 sf::Font _font;
+
+	sf::Font _font;
 	const sf::Vector2f DEFAULT_DOCKING_POSITION = { 0,0 };
 	const sf::Vector2f DEFAULT_TEXT_ORIGIN_POINT = { 0,0 };
 	const sf::Vector2f DEFAULT_PADDING = { 25, 25 };
@@ -67,7 +68,6 @@ private:
 	float compOutlinePadding;	//space between menu components and their outline objects
 	int numElements;	//number of total menu items
 	uint8_t(*menuCallback)(uint8_t) = nullptr;
-	
 	sf::RectangleShape* _dock = nullptr; //the object for drawing the menu's background
 	sf::Color _dockColor;	//set to transparent by default
 	sf::Vector2f _dockOpenSize;

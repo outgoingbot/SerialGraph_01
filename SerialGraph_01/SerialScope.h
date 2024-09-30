@@ -44,7 +44,7 @@ public:
 	SerialScope(uint16_t rxBufferSz, int bytesReceived);
 	~SerialScope();
 	void update(inputState_t userInput);
-	
+
 	UI_State_t updateInteractiveState(inputState_t userInput);
 	void draw(sf::RenderWindow& win);
 
@@ -52,10 +52,6 @@ public:
 	// would be wise to define SerialScope width/height
 	sf::Vector2f getSize() {
 		return sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT);
-	}
-
-	void setSize(sf::Vector2f size) {
-		// so something?
 	}
 
 	sf::Vector2f getPosition() {
@@ -77,6 +73,11 @@ private:
 
 	Label* serialText;
 	int _bytesReceived;
-	//uint8_t handleButton_minimize(uint8_t val);
+
+	uint8_t handleButton_minimize(uint8_t val);
+	uint8_t handleButton_connect(uint8_t val);
+	uint8_t handleButton_disconnect(uint8_t val);
+	uint8_t handleMenu_1(uint8_t val);
+	uint8_t handleMenu_2(uint8_t val);
 };
 

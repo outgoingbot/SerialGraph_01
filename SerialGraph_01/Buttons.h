@@ -5,6 +5,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <iostream>
+#include <functional> //used for templating
 
 
 typedef bool isDragable_t;
@@ -24,9 +25,13 @@ typedef enum {
 class Buttons : public UIElement
 {
 public:
-	//Modified for templating
-	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDraggable = false, isToggle_t isToggle = false, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
 
+	//void callMemberFunction(T* instance, void (T::*func)(int), int arg) {
+	//	(instance->*func)(arg); // Call the member function on the instance
+	//}
+	//Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDraggable = false, isToggle_t isToggle = false, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
+	template<typename T>
+	Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, uint8_t(T::*callback)(uint8_t), uint8_t id = 0);
 	~Buttons();
 
 	UI_State_t updateInteractiveState(inputState_t userInput);
@@ -42,12 +47,12 @@ public:
 	sf::Vector2f getPosition();
 
 	sf::Text text; //move back to private after i solve the menu item button size issue
-	
+
 private:
-	
+
 	bool isMouseOverRect(sf::Vector2f mousePosition);
 	sf::RectangleShape buttonRectangle; //create button with wideth,height
-	
+
 	sf::Color _color;
 	sf::Font _font;
 	uint8_t(*buttonCallback)(uint8_t) = nullptr;

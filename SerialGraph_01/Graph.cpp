@@ -21,19 +21,19 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 		switch (j) {
 		case 0:
 			_lineColor[j] = sf::Color::Red;
-		break;
+			break;
 
 		case 1:
 			_lineColor[j] = sf::Color::Green;
-		break;
+			break;
 
 		case 2:
 			_lineColor[j] = sf::Color::Yellow;
-		break;
+			break;
 		}
 	}
-	
-	for(int j=0; j<numVars; j++) dataArray[j] = new float[frameSamples];
+
+	for (int j = 0; j < numVars; j++) dataArray[j] = new float[frameSamples];
 
 	_dock.setSize(size);
 	_dock.setPosition(sf::Vector2f(position.x, position.y));
@@ -42,65 +42,65 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	_dock.setFillColor(sf::Color::Black);
 
 	_axis_x.setSize(sf::Vector2f(_dock.getSize().x, 2)); //x axis
-	_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + (_dock.getSize().y/2)));
+	_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + (_dock.getSize().y / 2)));
 	_axis_x.setFillColor(sf::Color::White);
-	
+
 	_graphName = new Label(40, _dock.getPosition(), sf::Color::White, title);
 	_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y - GRAPH_NAME_PADDING));
 	_elements.push_back(_graphName);
 
 	_textYaxisScale = new Label(20, _dock.getPosition(), sf::Color::White, "Empty");
-	_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x-GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
+	_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x - GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
 	_elements.push_back(_textYaxisScale);
-	
+
 	_textXaxisScale_start = new Label(20, _dock.getPosition(), sf::Color::White, "E");
 	_textXaxisScale_start->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_start->getSize().y - GRAPH_NAME_PADDING));
 	_elements.push_back(_textXaxisScale_start);
 
 	_textXaxisScale_stop = new Label(20, _dock.getPosition(), sf::Color::White, "E");
-	_textXaxisScale_stop->setPosition(sf::Vector2f(_dock.getPosition().x+ _dock.getSize().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_stop->getSize().y - GRAPH_NAME_PADDING));
+	_textXaxisScale_stop->setPosition(sf::Vector2f(_dock.getPosition().x + _dock.getSize().x, _dock.getPosition().y + _dock.getSize().y + _textXaxisScale_stop->getSize().y - GRAPH_NAME_PADDING));
 	_elements.push_back(_textXaxisScale_stop);
 
 	_textCrossHairData = new Label(20, _dock.getPosition(), sf::Color::Magenta, "E");
 	//_elements.push_back(_textCrossHairData); //dont push this oneto the vector
 
 
-	_xMouseCross.setSize(sf::Vector2f(_dock.getSize().x,2));
+	_xMouseCross.setSize(sf::Vector2f(_dock.getSize().x, 2));
 	_yMouseCross.setSize(sf::Vector2f(2, _dock.getSize().y));
 
-	_xMouseCross.setPosition(sf::Vector2f(_dock.getSize().x, _dock.getPosition().y+(_dock.getSize().y/2)));
-	_yMouseCross.setPosition(sf::Vector2f(_dock.getSize().x + (_dock.getSize().x/2), _dock.getSize().y));
-	
+	_xMouseCross.setPosition(sf::Vector2f(_dock.getSize().x, _dock.getPosition().y + (_dock.getSize().y / 2)));
+	_yMouseCross.setPosition(sf::Vector2f(_dock.getSize().x + (_dock.getSize().x / 2), _dock.getSize().y));
+
 	_xMouseCross.setFillColor(sf::Color::Magenta);
 	_yMouseCross.setFillColor(sf::Color::Magenta);
 
-	
+
 	_drawables.push_back(&_dock);
 	_drawables.push_back(&_axis_x);
-	
+
 	_interactive.push_back(&_xMouseCross);
 	_interactive.push_back(&_yMouseCross);
 
 
-	_menu = new Menu(sf::Vector2f(120, 30), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", handleMenu_1);
+	_menu = new Menu(sf::Vector2f(120, 30), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", this, &Graph::handleMenu_1);
 	_elements.push_back(_menu);
 	// add menu items. list of available com ports	
-	_menu->addMenuItem((std::string)"AutoScale");
-	_menu->addMenuItem("Pause");
-	_menu->addMenuItem("Percent");
+	_menu->addMenuItem((std::string)"AutoScale", this, &Graph::handleMenu_1_A);
+	_menu->addMenuItem("Pause", this, &Graph::handleMenu_1_B);
+	_menu->addMenuItem("Percent", this, &Graph::handleMenu_1_C);
 	//end UI elements
-	
+
 	//these could both be vectors
 	for (int j = 0; j < numVars; j++) {
 		for (uint32_t i = 0; i < frameSamples; i++) { //initialize the dataArray (//change this to memSet)
 			dataArray[j][i] = 0.0f;
 		}
 	}
-	
+
 	for (int j = 0; j < numVars; j++) {
 		_lineInterpol[j] = new sf::Vertex[frameSamples];
-		for (uint32_t i = 0; i < frameSamples; i++){//initialize the lineStrip verticies
-			_lineInterpol[j][i] = sf::Vertex((sf::Vector2f(_dock.getPosition().x+i, _axis_x.getPosition().y))); //place all verticies on the x axis
+		for (uint32_t i = 0; i < frameSamples; i++) {//initialize the lineStrip verticies
+			_lineInterpol[j][i] = sf::Vertex((sf::Vector2f(_dock.getPosition().x + i, _axis_x.getPosition().y))); //place all verticies on the x axis
 		}
 	}
 
@@ -130,7 +130,7 @@ void Graph::update(inputState_t userInput, bool withNewData, float *dataPoint) {
 	}
 
 	float xRatio = (_dock.getSize().x / _size);
-	
+
 
 	maxVal = 0;
 	minVal = 100000;  //(this is ugly)
@@ -138,9 +138,9 @@ void Graph::update(inputState_t userInput, bool withNewData, float *dataPoint) {
 	for (int j = 0; j < _len; j++) {
 		//Set the X axis scaling here
 		uint32_t startPos = frameSamples - (frameSamples / _Xscaler);
-		
+
 		//Search for Max and Min Values
-		
+
 		//scan through all visible datapoints that a visible
 		for (uint32_t i = startPos; i < frameSamples - 0; i++) {
 			if (dataArray[j][i] > maxVal) maxVal = dataArray[j][i];
@@ -149,26 +149,26 @@ void Graph::update(inputState_t userInput, bool withNewData, float *dataPoint) {
 
 		sprintf_s(textBuff, "%.3f", maxVal);
 		_textYaxisScale->setText(textBuff);
-		
-		sprintf_s(textBuff, " %.3f", UtilFuncs::mapFloat(userInput.m.mousePosf.y,graphRec.top+graphRec.height,graphRec.top,minVal,maxVal));
+
+		sprintf_s(textBuff, " %.3f", UtilFuncs::mapFloat(userInput.m.mousePosf.y, graphRec.top + graphRec.height, graphRec.top, minVal, maxVal));
 		_textCrossHairData->setText(textBuff);
-		
+
 		//Set the y axis scaler to multiply the data by. this auto scales the data to fit in the graph window (top edge)
 		_Yscaler = _dock.getSize().y / (maxVal*1.1f); //give 10% extra room at top of graph
-		
+
 		//Trying to Set the X axis position to so the Min Value is close graph window edge (bottom edge)		
 		_axis_x.setPosition(_dock.getPosition().x, _dock.getPosition().y + (_dock.getSize().y) - (minVal));
-		
+
 
 		//draw linear interpolated lines by shifting all the data points Left
 		if (withNewData) {
 			//shift the all data to the left one place
-			for (uint32_t i = 0; i < frameSamples - 1; i++) {	
+			for (uint32_t i = 0; i < frameSamples - 1; i++) {
 				dataArray[j][i] = dataArray[j][i + 1];
 			}
 			//Store the newest Data float value in the Rightmost data point
 			dataArray[j][frameSamples - 1] = dataPoint[j];
-			
+
 			//stash/ sqush all the unused shit data points to left side of the screen (non "visible" data points that dont fit in the graph back after x scaling (zooming in)
 			for (uint32_t i = 0; i < startPos; i++) {
 				_lineInterpol[j][i] = sf::Vertex(sf::Vector2f(_axis_x.getPosition().x, (float)_axis_x.getPosition().y), _lineColor[j]);
@@ -211,7 +211,7 @@ void Graph::draw(sf::RenderWindow& win) {
 		_textCrossHairData->draw(win);
 		for (auto Item : _interactive) win.draw(*Item);
 	}
-	
+
 }
 
 
@@ -226,7 +226,7 @@ UI_State_t Graph::updateInteractiveState(inputState_t userInput) {
 	_xMouseCross.setPosition(sf::Vector2f(_dock.getPosition().x, userInput.m.mousePosf.y));
 	_yMouseCross.setPosition(sf::Vector2f(userInput.m.mousePosf.x, _dock.getPosition().y));
 	_textCrossHairData->setPosition(sf::Vector2f(userInput.m.mousePosf.x, userInput.m.mousePosf.y - GRAPH_DATA_TEXT_MOUSE_SHIFT));
-	
+
 
 	//testing the x axis scaling (zooming)
 	static bool keyPressed = true;
@@ -250,16 +250,16 @@ UI_State_t Graph::updateInteractiveState(inputState_t userInput) {
 
 
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {	
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
 			if (_dock.getSize().y > 100) {
 				_dock.setSize(sf::Vector2f(_dock.getSize().x - 10, _dock.getSize().y - 10));
 				this->update(userInput, false);
 			}
 		}
 		else {
-		_dock.setSize(sf::Vector2f(_dock.getSize().x + 10, _dock.getSize().y + 10));
-		this->update(userInput, false);
+			_dock.setSize(sf::Vector2f(_dock.getSize().x + 10, _dock.getSize().y + 10));
+			this->update(userInput, false);
 		}
 
 		_axis_x.setSize(sf::Vector2f(_dock.getSize().x, 2)); //x axis
@@ -272,16 +272,16 @@ UI_State_t Graph::updateInteractiveState(inputState_t userInput) {
 
 	//move the object
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-		_dock.setPosition(sf::Vector2f(userInput.m.mousePosf.x - (_dock.getSize().x/2), userInput.m.mousePosf.y -(_dock.getSize().y / 2)));
-		_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y- GRAPH_NAME_PADDING));
-		_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x- GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
+		_dock.setPosition(sf::Vector2f(userInput.m.mousePosf.x - (_dock.getSize().x / 2), userInput.m.mousePosf.y - (_dock.getSize().y / 2)));
+		_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y - GRAPH_NAME_PADDING));
+		_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x - GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
 		_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + _dock.getSize().y));
 		_menu->setPosition(_dock.getPosition());
 		this->update(userInput, false); //call this to keep the graph visually updated with user input changes
 		returnVal |= UI_STATE_CLICK_RIGHT;
 	}
 
-	
+
 
 	if (this->isMouseOverRect(userInput.m.mousePosf)) {
 		drawCrosshair = true;
@@ -311,15 +311,6 @@ sf::Vector2f Graph::getSize() {
 	return _dock.getSize();
 }
 
-void Graph::setSize(sf::Vector2f size) {
-	_dock.setSize(size);
-	_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y - GRAPH_NAME_PADDING));
-	_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x - GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
-	_menu->setPosition(_dock.getPosition());
-	_axis_x.setSize(sf::Vector2f(_dock.getSize().x, 2)); //x axis
-	_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + (_dock.getSize().y / 2)));
-}
-
 
 sf::Vector2f Graph::getPosition() {
 	return _dock.getPosition();
@@ -329,9 +320,24 @@ void Graph::setPosition(sf::Vector2f pos) {
 	_dock.setPosition(pos);
 	for (auto element : _elements) element->setPosition(pos);
 
-	_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y - GRAPH_NAME_PADDING));
-	_textYaxisScale->setPosition(sf::Vector2f(_dock.getPosition().x - _textYaxisScale->getSize().x - GRAPH_Y_AXIS_PADDING, _dock.getPosition().y + _textYaxisScale->getSize().y));
-	_menu->setPosition(_dock.getPosition());
-	_axis_x.setSize(sf::Vector2f(_dock.getSize().x, 2)); //x axis
-	_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + (_dock.getSize().y / 2)));	
+}
+
+uint8_t Graph::handleMenu_1(uint8_t val) {
+
+	return 0;
+}
+
+uint8_t Graph::handleMenu_1_A(uint8_t val) {
+
+	return 0;
+}
+
+uint8_t Graph::handleMenu_1_B(uint8_t val) {
+
+	return 0;
+}
+
+uint8_t Graph::handleMenu_1_C(uint8_t val) {
+
+	return 0;
 }

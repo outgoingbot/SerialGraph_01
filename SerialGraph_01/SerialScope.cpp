@@ -1,32 +1,32 @@
 #include "SerialScope.h"
 
 /* Element Handler Callbacks */
-static uint8_t handleButton_connect(uint8_t val) {
+uint8_t SerialScope::handleButton_connect(uint8_t val) {
 	printf("Clicked Connect %d\r\n", val);
 	return 0;
 }
 
-static uint8_t handleButton_disconnect(uint8_t val) {
+uint8_t SerialScope::handleButton_disconnect(uint8_t val) {
 	printf("Clicked Disconnect %d\r\n", val);
 	return 0;
 }
 
 
-static uint8_t handleMenu_1(uint8_t val) {
+uint8_t SerialScope::handleMenu_1(uint8_t val) {
 	printf("Menu_1 Button: %i\r\n", val);
 	return 0;
 }
 
-static uint8_t handleMenu_2(uint8_t val) {
+uint8_t SerialScope::handleMenu_2(uint8_t val) {
 	printf("Menu_2 Button: %i\r\n", val);
 	return 0;
 }
 
-static uint8_t handleButton_minimize(uint8_t val) {
+uint8_t SerialScope::handleButton_minimize(uint8_t val) {
 	printf("Minimize all graphs: %i\r\n", val);
 	for (int i = 0; i < NUM_GRAPHS; i++) {
 		//Graph_Vector[i]->_dock.setSize(sf::Vector2f(1080, 100));
-		//SerialScope::Graph_Vector[i]->setPosition(sf::Vector2f(1800, (i * 150) + 150));
+		//Graph_Vector[i]->setPosition(sf::Vector2f(1800, (i * 150) + 150));
 	}
 	return 0;
 }
@@ -74,16 +74,20 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	// stuff elements vector with Graph_Vector
 	for (auto vector : Graph_Vector) _elements.push_back(vector);
 
-	
+
 	//give me the mouse postion to help with layout
 	//char charArrayMousePos[256] = "";
 	//Label* mousePosText = new Label(25, sf::Vector2f(100, 700), sf::Color::Green, charArrayMousePos);
 	//_elements.push_back(mousePosText);
 
-	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, &handleButton_connect);
+	Buttons* Button_minimize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2000, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_minimize);
+	_elements.push_back(Button_minimize);
+
+
+	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, this, &SerialScope::handleButton_connect);
 	_elements.push_back(Button_1);
 
-	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, &handleButton_disconnect);
+	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_disconnect);
 	_elements.push_back(Button_2);
 
 	//To Display the serial data received
@@ -91,27 +95,24 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	_elements.push_back(serialText);
 
 	// create menu object
-	Menu* Menu_1 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(0, 0), sf::Color(10, 10, 10), "Comm Port", handleMenu_1);
+	Menu* Menu_1 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(0, 0), sf::Color(10, 10, 10), "Comm Port", this, &SerialScope::handleMenu_1);
 	_elements.push_back(Menu_1);
 
 	// add menu items. list of available com ports
 	for (auto ComPortName : SP->ComPortNames) {
-		Menu_1->addMenuItem(ComPortName);
+		Menu_1->addMenuItem(ComPortName, this, &SerialScope::handleMenu_1);
 	}
 
-	Menu* Menu_2 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(310, 0), sf::Color(10, 10, 10), "Baud Rate", handleMenu_2);
+	Menu* Menu_2 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(310, 0), sf::Color(10, 10, 10), "Baud Rate", this, &SerialScope::handleMenu_2);
 	_elements.push_back(Menu_2);
 
 	console = new TextConsole(sf::Vector2f(780, 550), sf::Vector2f(100, 100)); //Testing Console
 	_elements.push_back(console);
 
-	//auto lambda = [](uint8_t a) { return (uint8_t)a; };
-	Buttons* Button_minimize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2000, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, &handleButton_minimize);
-	_elements.push_back(Button_minimize);
 
 	// add menu items. list of available com ports
 	for (auto ComPortBaud : SP->ComPortBauds) {
-		Menu_2->addMenuItem(ComPortBaud);
+		Menu_2->addMenuItem(ComPortBaud, this, &SerialScope::handleMenu_2);
 	}
 
 	rxBuffer = (char*)calloc(rxBufferSz, 1);
@@ -137,19 +138,16 @@ UI_State_t SerialScope::updateInteractiveState(inputState_t userInput) {
 
 	//Get Keyboard inputs
 	// HANDLE IN MAIN
-	//ToDo: these user inputs may not be working correctly
 	//if (userInput.k.key == sf::Keyboard::Right) sprite->move(10, 0);
 	//if (userInput.k.key == sf::Keyboard::Left) sprite->move(-10, 0);
-	//if (userInput.k.key == sf::Keyboard::Right) sprite->move(10, 0);
-	//if (userInput.k.key == sf::Keyboard::Left) sprite->move(-10, 0);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1)) {
-		printf("Minimize all graphs: %i\r\n");
-		for (int i = 0; i < NUM_GRAPHS; i++) {
-			_elements[i]->setSize(sf::Vector2f(1080, 80));
-			_elements[i]->setPosition(sf::Vector2f(1700, (i * 150) + 200));
-		}
-	}
 
+	//if (userInput.k.key == sf::Keyboard::Right) sprite->move(10, 0);
+	//if (userInput.k.key == sf::Keyboard::Left) sprite->move(-10, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) sprite->move(10, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) sprite->move(-10, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) sprite->move(0, -10);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) sprite->move(0, 10);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) sprite->scale(sf::Vector2f(sprite->getScale().x + 1.0f, sprite->getScale().y + 1.0f));
 
 	//sf::Event event;
 	//while (window.pollEvent(event)) {
@@ -180,12 +178,12 @@ UI_State_t SerialScope::updateInteractiveState(inputState_t userInput) {
 	return returnVal;
 }
 
-void SerialScope::update(inputState_t userInput){
+void SerialScope::update(inputState_t userInput) {
 	// MOVE TO UPDATE()!!!!
 	if (SP->payloadComplete) { // ascii to bin
 		SP->payloadComplete = false;
 		//printf("Data: %f, %f, %f Qs:%i pIdx:%i\r\n", SP.myData[0], SP.myData[1], SP.myData[2], SP.queueSize, SP.graphIDX);
-		
+
 		//label debug text. convert to terminal-ish side menu item
 		char charArraySerialData[256];
 		sprintf_s(charArraySerialData, "Serial Data: %f, %f, %f", SP->myData[0], SP->myData[1], SP->myData[2]);
@@ -201,7 +199,7 @@ void SerialScope::update(inputState_t userInput){
 			//that are stored in a 1-d array [24] length
 			int x = SP->graphIDX;
 			int y = SP->floatsPerGraph[i];
-			Graph_Vector[i]->update(userInput, true, (float*)(&(SP->myData[i*3]) )); //this sucks. use some datastructures or some vectors or some objects!!!!!!
+			Graph_Vector[i]->update(userInput, true, (float*)(&(SP->myData[i * 3]))); //this sucks. use some datastructures or some vectors or some objects!!!!!!
 			//ToDo: optimize(everything) the way the serialdata is moved around and converted.
 			//this was for sending 3 at a time from a small buffer (3)
 			//Graph_Vector[i]->update(userInput, true, SP->myData); 

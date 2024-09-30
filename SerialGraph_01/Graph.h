@@ -25,10 +25,10 @@ class Graph : public UIElement
 {
 public:
 
-	static uint8_t handleMenu_1(uint8_t val) {
-		printf("Graph Menu_1 Button: %i\r\n", val);
-		return 0;
-	}
+	//static uint8_t handleMenu_1(uint8_t val) {
+	//	printf("Graph Menu_1 Button: %i\r\n", val);
+	//	return 0;
+	//}
 
 	Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_t numVars);
 	~Graph();
@@ -40,10 +40,9 @@ public:
 	bool xAxisMode = false; //true = sample,, false = time
 
 
-	void update(inputState_t userInput, bool withNewData, float *dataPoint=nullptr);
+	void update(inputState_t userInput, bool withNewData, float *dataPoint = nullptr);
 	void draw(sf::RenderWindow& window);
 	sf::Vector2f getSize();
-	void setSize(sf::Vector2f);
 	sf::Vector2f getPosition();
 	void setPosition(sf::Vector2f pos);
 
@@ -66,12 +65,12 @@ private:
 
 	Label *_graphName; //The graph title
 	Label *_textYaxisScale;
-	
+
 	Label *_textXaxisScale_start;
 	Label *_textXaxisScale_stop;
 
 	Label *_textCrossHairData; //mouse position related to graph scale
-	
+
 	Menu *_menu;
 
 	char textBuff[64];
@@ -82,12 +81,15 @@ private:
 	int _len; //number of floats per graph
 
 	float _size;
-	float maxVal=0;
-	float minVal=100000;
-	
+	float maxVal = 0;
+	float minVal = 100000;
+
 	std::vector <sf::Drawable*> _drawables;
 	std::vector <sf::Drawable*> _interactive;
 	//std::vector<UIElement*> _elements;
 
-	
+	uint8_t handleMenu_1(uint8_t val);
+	uint8_t handleMenu_1_A(uint8_t val);
+	uint8_t handleMenu_1_B(uint8_t val);
+	uint8_t handleMenu_1_C(uint8_t val);
 };
