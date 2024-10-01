@@ -34,7 +34,9 @@ bld/
 [Ll]ogs/
 
 SerialGraph_01/Debug/vc141.idb
+
 Debug/SerialGraph_01.exe
+
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

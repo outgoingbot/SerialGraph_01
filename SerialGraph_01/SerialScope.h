@@ -66,6 +66,15 @@ public:
 		//return something?
 	}
 
+	//TODO: These may need to be private and/or may not need to be declared here
+	//Buttons<SerialScope>* Button_2;
+
+	uint8_t handleButton_minimize(uint8_t val);
+	uint8_t handleButton_connect(uint8_t val);
+	uint8_t handleButton_disconnect(uint8_t val);
+	uint8_t handleMenu_1(uint8_t val);
+	uint8_t handleMenu_2(uint8_t val);
+
 private:
 	std::thread *serial_thread = nullptr;
 	char* rxBuffer;

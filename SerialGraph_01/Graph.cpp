@@ -82,7 +82,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	_interactive.push_back(&_yMouseCross);
 
 
-	_menu = new Menu(sf::Vector2f(120, 30), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", handleMenu_1);
+	_menu = new Menu(sf::Vector2f(120, 30), sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y), sf::Color(10, 10, 10), "Options", this, &Graph::handleMenu_1);
 	_elements.push_back(_menu);
 	// add menu items. list of available com ports	
 	_menu->addMenuItem((std::string)"AutoScale");

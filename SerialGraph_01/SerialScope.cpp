@@ -1,32 +1,34 @@
 #include "SerialScope.h"
 
 /* Element Handler Callbacks */
-static uint8_t handleButton_connect(uint8_t val) {
+uint8_t SerialScope::handleButton_connect(uint8_t val) {
 	printf("Clicked Connect %d\r\n", val);
 	return 0;
 }
 
-static uint8_t handleButton_disconnect(uint8_t val) {
-	printf("Clicked Disconnect %d\r\n", val);
+uint8_t SerialScope::handleButton_disconnect(uint8_t val) {
+	printf("Clicked Disconnect DUDE! %d\r\n", val);
 	return 0;
 }
 
 
-static uint8_t handleMenu_1(uint8_t val) {
+uint8_t SerialScope::handleMenu_1(uint8_t val) {
 	printf("Menu_1 Button: %i\r\n", val);
 	return 0;
 }
 
-static uint8_t handleMenu_2(uint8_t val) {
+uint8_t SerialScope::handleMenu_2(uint8_t val) {
 	printf("Menu_2 Button: %i\r\n", val);
 	return 0;
 }
 
-static uint8_t handleButton_minimize(uint8_t val) {
+uint8_t SerialScope::handleButton_minimize(uint8_t val) {
 	printf("Minimize all graphs: %i\r\n", val);
 	for (int i = 0; i < NUM_GRAPHS; i++) {
-		//Graph_Vector[i]->_dock.setSize(sf::Vector2f(1080, 100));
-		//SerialScope::Graph_Vector[i]->setPosition(sf::Vector2f(1800, (i * 150) + 150));
+		Graph_Vector[i]->setSize(sf::Vector2f(1080, 80));
+		Graph_Vector[i]->setPosition(sf::Vector2f(1700, (i * 150) + 200));
+		//_elements[i]->setSize(sf::Vector2f(1080, 80));
+		//_elements[i]->setPosition(sf::Vector2f(1700, (i * 150) + 200));
 	}
 	return 0;
 }
@@ -80,18 +82,17 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	//Label* mousePosText = new Label(25, sf::Vector2f(100, 700), sf::Color::Green, charArrayMousePos);
 	//_elements.push_back(mousePosText);
 
-	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, &handleButton_connect);
+	Buttons<SerialScope>* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, this, &SerialScope::handleButton_connect, 0);
 	_elements.push_back(Button_1);
 
-	Buttons* Button_2 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, &handleButton_disconnect);
+	Buttons<SerialScope>* Button_2 = new Buttons<SerialScope>(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_disconnect, 1);
 	_elements.push_back(Button_2);
 
-	//To Display the serial data received
-	serialText = new Label(40, sf::Vector2f(900, 1500), sf::Color::White, "Empty");
-	_elements.push_back(serialText);
+	Buttons<SerialScope>* Button_minimize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2000, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_minimize, 2);
+	_elements.push_back(Button_minimize);
 
 	// create menu object
-	Menu* Menu_1 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(0, 0), sf::Color(10, 10, 10), "Comm Port", handleMenu_1);
+	Menu<SerialScope>* Menu_1 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(0, 0), sf::Color(10, 10, 10), "Comm Port", this, &SerialScope::handleMenu_1);
 	_elements.push_back(Menu_1);
 
 	// add menu items. list of available com ports
@@ -99,20 +100,22 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 		Menu_1->addMenuItem(ComPortName);
 	}
 
-	Menu* Menu_2 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(310, 0), sf::Color(10, 10, 10), "Baud Rate", handleMenu_2);
+	Menu<SerialScope>* Menu_2 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(310, 0), sf::Color(10, 10, 10), "Baud Rate", this, &SerialScope::handleMenu_2);
 	_elements.push_back(Menu_2);
-
-	console = new TextConsole(sf::Vector2f(780, 550), sf::Vector2f(100, 100)); //Testing Console
-	_elements.push_back(console);
-
-	//auto lambda = [](uint8_t a) { return (uint8_t)a; };
-	Buttons* Button_minimize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2000, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, &handleButton_minimize);
-	_elements.push_back(Button_minimize);
-
+	
 	// add menu items. list of available com ports
 	for (auto ComPortBaud : SP->ComPortBauds) {
 		Menu_2->addMenuItem(ComPortBaud);
 	}
+
+	//Text Console
+	console = new TextConsole(sf::Vector2f(780, 550), sf::Vector2f(100, 100)); //Testing Console
+	_elements.push_back(console);
+
+	//To Display the serial data received
+	serialText = new Label(40, sf::Vector2f(900, 1500), sf::Color::White, "Empty");
+	_elements.push_back(serialText);
+
 
 	rxBuffer = (char*)calloc(rxBufferSz, 1);
 	//this is gonna need to be moved into Connect Button to start the thread

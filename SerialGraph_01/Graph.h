@@ -25,7 +25,7 @@ class Graph : public UIElement
 {
 public:
 
-	static uint8_t handleMenu_1(uint8_t val) {
+	uint8_t handleMenu_1(uint8_t val) {
 		printf("Graph Menu_1 Button: %i\r\n", val);
 		return 0;
 	}
@@ -72,7 +72,7 @@ private:
 
 	Label *_textCrossHairData; //mouse position related to graph scale
 	
-	Menu *_menu;
+	Menu<Graph> *_menu;
 
 	char textBuff[64];
 	//will want to to add some color blocks to inidcate the 3 variables color
