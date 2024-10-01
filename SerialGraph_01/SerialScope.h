@@ -70,7 +70,7 @@ public:
 		//return something?
 	}
 
-	Buttons* Button_2;
+	Buttons<SerialScope>* Button_2;
 
 	uint8_t handleButton_minimize(uint8_t val);
 	uint8_t handleButton_connect(uint8_t val);

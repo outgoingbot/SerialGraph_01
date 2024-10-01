@@ -7,7 +7,7 @@ uint8_t SerialScope::handleButton_connect(uint8_t val) {
 }
 
 uint8_t SerialScope::handleButton_disconnect(uint8_t val) {
-	printf("Clicked Disconnect %d\r\n", val);
+	printf("Clicked Disconnect DUDE! %d\r\n", val);
 	return 0;
 }
 
@@ -87,10 +87,10 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 
 	Buttons* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, this, &SerialScope::handleButton_connect);
 	_elements.push_back(Button_1);
-	
-	Button_2 = new Buttons<SerialScope>(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_disconnect);
-	_elements.push_back(Button_2);
 	*/
+	Button_2 = new Buttons<SerialScope>(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_disconnect, 0);
+	_elements.push_back(Button_2);
+	
 
 	//To Display the serial data received
 	serialText = new Label(40, sf::Vector2f(900, 1500), sf::Color::White, "Empty");

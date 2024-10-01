@@ -72,7 +72,7 @@ private:
 	sf::Color _dockColor;	//set to transparent by default
 	sf::Vector2f _dockOpenSize;
 	sf::Vector2f _dockClosedSize;
-	Buttons* titleItem = nullptr;
+	Buttons<Menu>* titleItem = nullptr;
 	std::vector <UIElement*> _menuItems;
 
 };
