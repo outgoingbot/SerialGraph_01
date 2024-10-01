@@ -1,7 +1,7 @@
 #include "Graph.h"
 
 //#define XSCALE 10//testing 1,10,100
-#define GRAPH_NAME_PADDING 20
+#define GRAPH_NAME_PADDING 10
 #define GRAPH_X_AXIS_PADDING 20
 #define GRAPH_Y_AXIS_PADDING 20
 //size, position
@@ -45,7 +45,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + (_dock.getSize().y/2)));
 	_axis_x.setFillColor(sf::Color::White);
 	
-	_graphName = new Label(40, _dock.getPosition(), sf::Color::White, title);
+	_graphName = new Label(30, _dock.getPosition(), sf::Color::White, title);
 	_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y - GRAPH_NAME_PADDING));
 	_elements.push_back(_graphName);
 

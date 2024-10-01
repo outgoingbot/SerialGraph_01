@@ -81,6 +81,15 @@ void TextConsole::updateDisplayText() {
 	inputText.setString(input);
 }
 
+void TextConsole::update(std::string str) {
+	messages.push_back(str);
+	if (messages.size() > 25) {
+		messages.erase(messages.begin());
+	}
+	updateDisplayText();
+}
+
+
 sf::Vector2f TextConsole::getSize() {
 	//sf::FloatRect fr = _text.getGlobalBounds();
 

@@ -22,16 +22,34 @@ uint8_t SerialScope::handleMenu_2(uint8_t val) {
 	return 0;
 }
 
+//TODO: Animate this
 uint8_t SerialScope::handleButton_minimize(uint8_t val) {
 	printf("Minimize all graphs: %i\r\n", val);
 	for (int i = 0; i < NUM_GRAPHS; i++) {
 		Graph_Vector[i]->setSize(sf::Vector2f(1080, 80));
 		Graph_Vector[i]->setPosition(sf::Vector2f(1700, (i * 150) + 200));
-		//_elements[i]->setSize(sf::Vector2f(1080, 80));
-		//_elements[i]->setPosition(sf::Vector2f(1700, (i * 150) + 200));
 	}
 	return 0;
 }
+
+//TODO: Animate this
+uint8_t SerialScope::handleButton_maximize(uint8_t val) {
+	printf("Maximize all graphs: %i\r\n", val);
+	for (int i = 0; i < NUM_GRAPHS; i++) {
+		Graph_Vector[i]->setSize(sf::Vector2f(1200, WINDOW_HEIGHT / 7));
+	}
+	
+	for (int i = 0; i < 4; i++) {
+		Graph_Vector[i]->setPosition(sf::Vector2f(150, (i + 1) * 300));
+	}
+
+	for (int i = 0; i < 4; i++) {
+		Graph_Vector[i+4]->setPosition(sf::Vector2f(1500, (i + 1) * 300));
+	}
+	return 0;
+}
+
+
 
 SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	_bytesReceived = bytesReceived;
@@ -88,8 +106,11 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	Buttons<SerialScope>* Button_2 = new Buttons<SerialScope>(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_disconnect, 1);
 	_elements.push_back(Button_2);
 
-	Buttons<SerialScope>* Button_minimize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2000, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_minimize, 2);
+	Buttons<SerialScope>* Button_minimize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2150, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_minimize, 2);
 	_elements.push_back(Button_minimize);
+
+	Buttons<SerialScope>* Button_maximize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2300, 0), sf::Color(10, 10, 10), "Maximize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_maximize, 2);
+	_elements.push_back(Button_maximize);
 
 	// create menu object
 	Menu<SerialScope>* Menu_1 = new Menu(sf::Vector2f(300, 50), sf::Vector2f(0, 0), sf::Color(10, 10, 10), "Comm Port", this, &SerialScope::handleMenu_1);
@@ -109,7 +130,7 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	}
 
 	//Text Console
-	console = new TextConsole(sf::Vector2f(780, 550), sf::Vector2f(100, 100)); //Testing Console
+	console = new TextConsole(sf::Vector2f(600, 800), sf::Vector2f(100, 100)); //Testing Console
 	_elements.push_back(console);
 
 	//To Display the serial data received
@@ -208,7 +229,13 @@ void SerialScope::update(inputState_t userInput){
 			//ToDo: optimize(everything) the way the serialdata is moved around and converted.
 			//this was for sending 3 at a time from a small buffer (3)
 			//Graph_Vector[i]->update(userInput, true, SP->myData); 
+			
+			
 		}
+		
+		//Testing Dump some of the floats to the console for fun
+		std::string temp = std::to_string(SP->myData[0]) + " , " + std::to_string(SP->myData[1]) + " , " + std::to_string(SP->myData[2]);
+		console->update(temp);
 	}
 
 }

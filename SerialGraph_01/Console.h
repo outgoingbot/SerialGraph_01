@@ -15,7 +15,9 @@ public:
 
 	void updateDisplayText();
 
-	UI_State_t updateInteractiveState(inputState_t userInput);
+	void update(std::string str);
+
+	UI_State_t updateInteractiveState(inputState_t userInput) override;
 	bool isMouseOverRect(sf::Vector2f mousePosition);
 
 	sf::Vector2f getSize();
