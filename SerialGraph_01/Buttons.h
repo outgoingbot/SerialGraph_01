@@ -27,12 +27,6 @@ class Buttons : public UIElement
 public:
 	using MemberFunctionPtr = uint8_t (T::*)(uint8_t); // Member function pointer type
 
-	//void callMemberFunction(T* instance, void (T::*func)(int), int arg) {
-	//	(instance->*func)(arg); // Call the member function on the instance
-	//}
-	//Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDraggable = false, isToggle_t isToggle = false, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
-	//B(T* instance, MemberFunctionPtr func) : instance(instance), func(func) {}
-	//Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, MemberFunctionPtr func, uint8_t id = 0) : instance(instance), func(func) {}
 	Buttons<T>(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, MemberFunctionPtr func, uint8_t id) : instance(instance), func(func) {
 		//Load private Font
 		if (!_font.loadFromFile("../res/arial.ttf")) {
@@ -56,7 +50,7 @@ public:
 		text.setPosition(position);
 		text.setFillColor(sf::Color::White);
 		
-		//buttonCallback = callback;
+		//buttonCallback = callback; //Dont think I need to save it here as the initialization list in the constructor handles this
 		_id = id;
 		_isDragable = isDragable;
 		_isToggle = isToggle;
@@ -65,11 +59,6 @@ public:
 	~Buttons() {
 
 	}
-	//template<typename T>
-	//Buttons<T>::~Buttons() {
-	//	//delete rectangle shape and text. needed?
-	//}
-
 	
 	UI_State_t updateInteractiveState(inputState_t userInput) {
 		UI_State_t returnVal = BUTTON_STATE_READY;
@@ -84,8 +73,8 @@ public:
 			returnVal |= BUTTON_STATE_CLICK_LEFT;
 			//Todo: Handle the button callback
 			//if (buttonCallback != nullptr) buttonCallback(_id);
-			//std::invoke(func, instance, 0)
-			(instance->*func)(10);
+			
+			(instance->*func)(10); //I think I can use std::invoke(func, instance, 0) somehow
 			_mouseLeftHandled = true; // Prevents button from being spammed when mouse is held down
 		}
 		else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && _mouseLeftHandled == true) {
