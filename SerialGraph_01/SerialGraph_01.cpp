@@ -24,6 +24,30 @@ expected data format: "%f,%f,%f\n"
 next change will allow CSV strings with \r\n terminating
 
 
+---Task List---
+General:
+Logging
+number of graphs
+Serial Packet Structure of some sort
+
+Console:
+ability to send data as well as receive
+DTR button would be nice to reboot Arduino based boards
+
+Serial:
+Cleanup How the Serial Connection is created
+Imprive how the serial data is organized (use better datastructure for organizing)
+
+Labels:
+Add a constructor parameter (True, False) as to whether the label is "interactable" (highlight on mouse over)
+
+Graphs:
+Most of the work will be here. going to need lots of features.
+Color coded keys (legend) that match the trace colors
+small label below graph showing what the serial data is
+minimize/maximize button
+maybe dragable resize (bottom right corner has click spot)
+pause
 
 */
 
@@ -54,7 +78,7 @@ next change will allow CSV strings with \r\n terminating
 #include "SerialScope.h"
 #include "Console.h"
 
-#include "SimpleMenu/Src/Menu.h"
+#include "Menu.h"
 
 
 //Debug vars

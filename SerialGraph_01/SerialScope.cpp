@@ -51,6 +51,9 @@ uint8_t SerialScope::handleButton_maximize(uint8_t val) {
 
 
 
+
+
+
 SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	_bytesReceived = bytesReceived;
 

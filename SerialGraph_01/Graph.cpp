@@ -45,7 +45,7 @@ Graph::Graph(sf::Vector2f size, sf::Vector2f position, const char* title, uint8_
 	_axis_x.setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y + (_dock.getSize().y/2)));
 	_axis_x.setFillColor(sf::Color::White);
 	
-	_graphName = new Label(30, _dock.getPosition(), sf::Color::White, title);
+	_graphName = new Label(30, _dock.getPosition(), sf::Color::White, title, false);
 	_graphName->setPosition(sf::Vector2f(_dock.getPosition().x, _dock.getPosition().y - _graphName->getSize().y - GRAPH_NAME_PADDING));
 	_elements.push_back(_graphName);
 
@@ -286,9 +286,11 @@ UI_State_t Graph::updateInteractiveState(inputState_t userInput) {
 	if (this->isMouseOverRect(userInput.m.mousePosf)) {
 		drawCrosshair = true;
 		_dock.setFillColor(sf::Color(20, 20, 20)); // highlight gray
+		_dock.setOutlineColor(sf::Color::Yellow);
 	}
 	else {
 		_dock.setFillColor(sf::Color::Black); // black color
+		_dock.setOutlineColor(sf::Color::White);
 		drawCrosshair = false;
 	}
 	// Call parent updateInteractiveState to evaluate children states

@@ -144,10 +144,10 @@ UI_State_t TextConsole::updateInteractiveState(inputState_t userInput) {
 	}
 
 	if (this->isMouseOverRect(userInput.m.mousePosf)) {
-		//_text.setFillColor(sf::Color::Yellow);
+		_dock.setOutlineColor(sf::Color::Yellow);
 	}
 	else {
-		//_text.setFillColor(_color);
+		_dock.setOutlineColor(sf::Color::White);
 	}
 
 	// Call parent updateInteractiveState to evaluate children states

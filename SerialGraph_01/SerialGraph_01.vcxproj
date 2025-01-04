@@ -158,13 +158,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\RS232Comm\RS232Comm.cpp" />
-    <ClCompile Include="..\SimpleMenu\src\Menu.cpp" />
     <ClCompile Include="Buttons.cpp" />
     <ClCompile Include="CheckBox.cpp" />
     <ClCompile Include="CircularQueue.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="Label.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="SerialGraph_01.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\RS232Comm;C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\RS232Comm;C:\Users\Tower\Desktop\Dev Experiments\SerialGraph_01\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -176,7 +176,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\RS232Comm\RS232Comm.h" />
-    <ClInclude Include="..\SimpleMenu\src\Menu.h" />
     <ClInclude Include="Buttons.h" />
     <ClInclude Include="CheckBox.h" />
     <ClInclude Include="CircularQueue.h" />
@@ -184,6 +183,7 @@
     <ClInclude Include="Console.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Label.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="SerialGraph_01.h" />
     <ClInclude Include="SerialScope.h" />
     <ClInclude Include="Slider.h" />

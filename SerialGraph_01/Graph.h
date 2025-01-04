@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <vector>
 #include "Label.h"
-#include "SimpleMenu/Src/Menu.h" // Fix later
+#include "Menu.h" // Fix later
 #include "Buttons.h"
 #include <iostream>
 #define NUMFLOATS 3

@@ -7,18 +7,15 @@ Serial::Serial()
 	rxBuffer = new CircularQueue(256);
 	rxBuffer->zeroBuffer();
 	
-	
 	//again, this shit should be in its own class!
 	for (int i = 0; i < NUM_GRAPHS_HARDCODED; i++) {
 		floatsPerGraph[i] = 1; //at least 1 data point per graph (this may be changed)
 	}
-	
 		
-		//We're not yet connected
+	//We're not yet connected
 	this->connected = false;
-
-
 }
+
 
 Serial::~Serial()
 {
@@ -31,6 +28,7 @@ Serial::~Serial()
 		CloseHandle(this->hSerial);
 	}
 }
+
 
 void Serial::ReadData(char* buffer, unsigned int nbChar, int* returnVal)
 {
@@ -183,6 +181,7 @@ bool Serial::WriteData(const char *buffer, unsigned int nbChar)
 		return true;
 }
 
+
 bool Serial::ListBaudRates() {
 	for (auto i = 0; i < SERIAL_NUM_BAUDS; i++) ComPortBauds.push_back(baudlist[i]);
 	return 0;
@@ -214,6 +213,7 @@ bool Serial::ListComPorts() //added function to find the present serial
 
 	return gotPort;
 }
+
 
 bool Serial::Connect(const char* portName, DCB dcbSerialParams)
 {

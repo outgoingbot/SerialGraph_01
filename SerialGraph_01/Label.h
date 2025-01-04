@@ -18,7 +18,7 @@ typedef enum {
 class Label : public UIElement
 {
 public:
-	Label(unsigned int size, sf::Vector2f position, sf::Color color, const char* string);
+	Label(unsigned int size, sf::Vector2f position, sf::Color color, const char* string, bool interactive = true);
 	~Label();
 	void setText(const char* string);
 	void setText(const float f);
@@ -36,8 +36,8 @@ private:
 	sf::Color _color;
 	sf::Font _font;
 	sf::Text _text;
-
 	sf::RectangleShape _dock;
 
-	
+	bool _interactive;
+
 };

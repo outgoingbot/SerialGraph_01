@@ -1,7 +1,7 @@
 #include "Label.h"
 
 //set size, position, text
-Label::Label(unsigned int size, sf::Vector2f position, sf::Color color, const char* string) {
+Label::Label(unsigned int size, sf::Vector2f position, sf::Color color, const char* string, bool interactive) {
 	//load private font
 	if (!_font.loadFromFile("../res/arial.ttf")) {
 		printf("Error loading Font");
@@ -21,7 +21,8 @@ Label::Label(unsigned int size, sf::Vector2f position, sf::Color color, const ch
 	_dock.setFillColor(sf::Color(20,20,20));
 	sf::FloatRect rc = _text.getGlobalBounds();
 	_dock.setSize(sf::Vector2f(rc.width, rc.height));
-	_dock.setPosition(sf::Vector2f(rc.left, rc.top));	
+	_dock.setPosition(sf::Vector2f(rc.left, rc.top));
+	_interactive = interactive;
 }
 
 
@@ -34,6 +35,7 @@ void Label::setPosition(sf::Vector2f position) {
 	_dock.setPosition(sf::Vector2f(rc.left, rc.top));
 }
 	
+
 void Label::setSize(sf::Vector2f size) {
 	//Todo: Implement setting the size
 }
@@ -46,6 +48,7 @@ void Label::setText(const char* string) {
 	_dock.setPosition(sf::Vector2f(rc.left,rc.top));
 }
 
+
 void Label::setText(const float f) {
 	char string[64];
 	sprintf_s(string, "%f", f);
@@ -54,6 +57,7 @@ void Label::setText(const float f) {
 	_dock.setSize(sf::Vector2f(rc.width, rc.height));
 	_dock.setPosition(sf::Vector2f(rc.left, rc.top));
 }
+
 
 UI_State_t Label::updateInteractiveState(inputState_t userInput) {
 	UI_State_t returnVal = LABEL_STATE_READY;
@@ -74,7 +78,7 @@ UI_State_t Label::updateInteractiveState(inputState_t userInput) {
 	}
 			
 	if (this->isMouseOverRect(userInput.m.mousePosf)) {
-		_text.setFillColor(sf::Color::Yellow);
+		if(_interactive) _text.setFillColor(sf::Color::Yellow);
 	}
 	else {
 		_text.setFillColor(_color);
@@ -97,12 +101,10 @@ bool Label::isMouseOverRect(sf::Vector2f mousePosition) {
 }
 
 
-
 void Label::draw(sf::RenderWindow& window) {
 	window.draw(_dock);
 	window.draw(_text);
 }
-
 
 
 sf::Vector2f Label::getSize() {
@@ -110,6 +112,7 @@ sf::Vector2f Label::getSize() {
 
 	return _dock.getSize();
 }
+
 
 sf::Vector2f Label::getPosition() {
 	return _dock.getPosition();

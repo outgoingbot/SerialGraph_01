@@ -32,4 +32,5 @@ private:
 	sf::Text displayText;
 	std::string input;
 	std::vector<std::string> messages;
+	//sf::Color _borderColor = sf::Color::White;
 };

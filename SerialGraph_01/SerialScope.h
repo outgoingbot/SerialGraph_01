@@ -26,7 +26,7 @@
 #include <thread>
 #include <chrono>
 #include <algorithm>
-#include "SimpleMenu/Src/Menu.h" // Fix later
+#include "Menu.h" // Fix later
 
 
 typedef enum {
