@@ -21,13 +21,13 @@ typedef enum {
 #define DEFAULT_TEXT_SIZE 20
 
 
-template<typename T> class Buttons : public UIElement
+template<typename T> class Button : public UIElement
 {
 public:
 	using MemberFunctionPtr = uint8_t(T::*)(uint8_t); // Member function pointer type
 
 	//Buttons(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDraggable = false, isToggle_t isToggle = false, uint8_t(*callback)(uint8_t) = nullptr, uint8_t id = 0);
-	Buttons<T>(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, MemberFunctionPtr func, uint8_t id) : instance(instance), func(func) {
+	Button<T>(sf::Vector2f size, sf::Vector2f position, sf::Color color, const char* string, isDragable_t isDragable, isToggle_t isToggle, T* instance, MemberFunctionPtr func, uint8_t id) : instance(instance), func(func) {
 		//Load private Font
 		if (!_font.loadFromFile("../res/arial.ttf")) {
 			printf("Error loading Font");
@@ -57,7 +57,7 @@ public:
 	}
 
 
-	~Buttons() {
+	~Button() {
 
 	}
 

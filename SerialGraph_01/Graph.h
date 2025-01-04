@@ -9,7 +9,7 @@
 #include <vector>
 #include "Label.h"
 #include "Menu.h" // Fix later
-#include "Buttons.h"
+#include "Button.h"
 #include <iostream>
 #define NUMFLOATS 3
 

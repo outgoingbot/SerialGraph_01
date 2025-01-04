@@ -2,7 +2,7 @@
 
 #include "Config.h"
 #include "UIElement.h"
-#include "Buttons.h"
+#include "Button.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -35,7 +35,7 @@ public:
 		//menuCallback = callback;
 		//title of drop down menu. will activate on state= hover.
 
-		titleItem = new Buttons(sf::Vector2f(_dockSize.x, _dockSize.y), position, sf::Color(MENU_DEFUALT_COLOR), string, false, false, instance, func, 0);
+		titleItem = new Button(sf::Vector2f(_dockSize.x, _dockSize.y), position, sf::Color(MENU_DEFUALT_COLOR), string, false, false, instance, func, 0);
 		_elements.push_back(titleItem);
 		_menuItems.push_back(titleItem);
 
@@ -55,7 +55,7 @@ public:
 		numElements++;
 
 		//I dont like this constructor. need to think about either a default constructor. will need my call back functions
-		Buttons<T>* newItem = new Buttons(sf::Vector2f(20, 20), sf::Vector2f(20, 20), sf::Color(MENU_DEFUALT_COLOR), "Empty", false, true, instance, func, _elements.size());
+		Button<T>* newItem = new Button(sf::Vector2f(20, 20), sf::Vector2f(20, 20), sf::Color(MENU_DEFUALT_COLOR), "Empty", false, true, instance, func, _elements.size());
 		_elements.push_back(newItem);
 		_menuItems.push_back(newItem);
 
@@ -272,7 +272,7 @@ private:
 	sf::Color _dockColor;	//set to transparent by default
 	sf::Vector2f _dockOpenSize;
 	sf::Vector2f _dockClosedSize;
-	Buttons<T>* titleItem = nullptr;
+	Button<T>* titleItem = nullptr;
 	std::vector <UIElement*> _menuItems;
 
 };

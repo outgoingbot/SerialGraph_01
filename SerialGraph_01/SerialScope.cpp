@@ -103,16 +103,16 @@ SerialScope::SerialScope(uint16_t rxBufferSz, int bytesReceived) {
 	//Label* mousePosText = new Label(25, sf::Vector2f(100, 700), sf::Color::Green, charArrayMousePos);
 	//_elements.push_back(mousePosText);
 
-	Buttons<SerialScope>* Button_1 = new Buttons(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, this, &SerialScope::handleButton_connect, 0);
+	Button<SerialScope>* Button_1 = new Button(sf::Vector2f(200, 50), sf::Vector2f(1400, 0), sf::Color(10, 10, 10), "Connect", DRAGABLE, TOGGLE, this, &SerialScope::handleButton_connect, 0);
 	_elements.push_back(Button_1);
 
-	Buttons<SerialScope>* Button_2 = new Buttons<SerialScope>(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_disconnect, 1);
+	Button<SerialScope>* Button_2 = new Button<SerialScope>(sf::Vector2f(200, 50), sf::Vector2f(1650, 0), sf::Color(10, 10, 10), "Disconnect", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_disconnect, 1);
 	_elements.push_back(Button_2);
 
-	Buttons<SerialScope>* Button_minimize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2150, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_minimize, 2);
+	Button<SerialScope>* Button_minimize = new Button(sf::Vector2f(100, 50), sf::Vector2f(2150, 0), sf::Color(10, 10, 10), "Minimize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_minimize, 2);
 	_elements.push_back(Button_minimize);
 
-	Buttons<SerialScope>* Button_maximize = new Buttons(sf::Vector2f(100, 50), sf::Vector2f(2300, 0), sf::Color(10, 10, 10), "Maximize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_maximize, 2);
+	Button<SerialScope>* Button_maximize = new Button(sf::Vector2f(100, 50), sf::Vector2f(2300, 0), sf::Color(10, 10, 10), "Maximize", DRAGABLE, NOTTOGGLE, this, &SerialScope::handleButton_maximize, 2);
 	_elements.push_back(Button_maximize);
 
 	// create menu object
